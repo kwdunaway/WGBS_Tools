@@ -11,9 +11,6 @@ use strict; use warnings;
 #
 ##########################################################################################
 
-
-
-
 ####################################################################
 # Command Line Error Checking. Global Variables and I/O Initiation #
 ####################################################################
@@ -32,7 +29,7 @@ print OUT "Sample\tConvEff_CG\tConvEff_CHG\tConvEff_CHH\n";
 # Main Loop #
 #############
 
-
+# For each input file
 while (@ARGV){
 	my $CG_unmeth = 0;
 	my $CGtot = 0;
@@ -47,6 +44,7 @@ while (@ARGV){
 	while(<IN>){
 		my @line = split("\t", $_);
 		my $chrom = $line[2];
+		# Only look at mitochondrial chromosome
 		if($chrom eq "chrM"){
 			my $methstring = substr $line[14], 5;
 			my $count = ($methstring =~ tr/x//); $CG_unmeth+=$count; $CGtot+=$count;
@@ -57,6 +55,7 @@ while (@ARGV){
 			$count = ($methstring =~ tr/Z//); $CHHtot+=$count;
 		}
 	}
+	# Print output percentages
 	my $CGper = sprintf("%.4f",$CG_unmeth/$CGtot);
 	my $CHGper = sprintf("%.4f",$CHG_unmeth/$CHGtot);
 	my $CHHper = sprintf("%.4f",$CHH_unmeth/$CHHtot);

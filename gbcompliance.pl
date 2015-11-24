@@ -3,14 +3,13 @@ use strict; use warnings;
 
 ##########################################################################################
 # Author: Roy Chu and Keith Dunaway
-# Email: rgchu@ucdavis.edu
+# Email: rgchu@ucdavis.edu kwdunaway@ucdavis.edu
 # Date: 12-12-2014
 # Script Name: gbcompliance.pl
 #
 # This script deals with certain genome browser errors, allowing replacement of 
 # the header and gets rid of positions past the reference chromosomes.
 #
-# Arguments:
 ##########################################################################################
 
 
@@ -20,14 +19,19 @@ use strict; use warnings;
 ####################################################################
 
 die "usage: gbcompliance.pl
-    1) Database (hg19, hg18, hg38, rn4, rn6)
+    1) Database (hg19, hg18, hg38, mm10, rn4, rn6)
     2) Input Prefix (Include full path)
     3) Output Prefix (Include full path)
     4) Track Name Prefix
     5) Description Prefix
 " unless @ARGV == 5;
 
+# Example Usage
+# perl ./gbcompliance.pl mm10 JLAC001A/tmp/PerMeth_JLAC001A_ JLAC001A/PerMeth_JLAC001A/PerMeth_JLAC001A_ JLAC001A JLAC001A
+
 my $genome = shift(@ARGV);
+
+# %Chroms stores the last bp position of each chromosome based on the assembly
 my %Chroms;	
 if($genome eq "hg18"){
         %Chroms = ("chr1" => '247249719',
@@ -188,6 +192,7 @@ my $description = shift(@ARGV);
 
 print "Initializing...\n";
 
+# Check each chromosome bed file
 foreach my $chr (sort keys %Chroms)
 {
 	
@@ -198,8 +203,11 @@ foreach my $chr (sort keys %Chroms)
 	my $outputfile = $outputprefix . $chr . ".bed";
 	open(OUT, ">$outputfile") or die "gbcompliance.pl: Error: cannot open $outputfile output file";
 
+	# Create track name
 	print OUT "track name=", $trackname, $chr, " description=", $description, $chr, " useScore=0 itemRgb=On db=", $genome, "\n";
 
+	# Check for header in input
+	# Otherwise, store first line
 	my $original = <IN>; # Remove header
 	my @line = split("\t",$original);
 	if ($line[0] =~ /^chr/)
@@ -212,6 +220,7 @@ foreach my $chr (sort keys %Chroms)
 	} 
 	else {}
 
+	# Copy every line over whose positions are valid
 	while(<IN>)
 	{
 		my $original = $_;

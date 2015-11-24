@@ -2,11 +2,12 @@
 use strict; use warnings;
 
 ##########################################################################################
-# Author: Keith Dunaway
-# Email: kwdunaway@ucdavis.edu
+# Author: Keith Dunaway & Roy Chu
+# Email: kwdunaway@ucdavis.edu rgchu@ucdavis.edu
 # Last Updated: 3/25/2015
 #
-# This script can be used to find counts in 2 lists
+# This script takes regions from a GTF or bed file and 
+# creates an output with the promoter region of those positions
 #
 ##########################################################################################
 
@@ -30,6 +31,8 @@ open(PROM, ">$promoutfile") or die "cannot open $promoutfile promoutfile";
 
 my $promoterstart = -500;
 my $promoterend = 1500;
+print "The promoter start is $promoterstart from TSS\n";
+print "The promoter end is +$promoterend from TSS\n";
 #my $genebodystart = 3000;
 #my $genebodyminsize = 5000;
 
@@ -38,26 +41,29 @@ my $promoterend = 1500;
 ###################
 
 while (<GTF>){
-    chomp;
-    my @line = split ("\t", $_);
-#    if($line[2] - $line[1] < $genebodyminsize) {next;}
+	chomp;
+	my @line = split ("\t", $_);
+	# if($line[2] - $line[1] < $genebodyminsize) {next;}
     
-    my $pstart = $line[1] + $promoterstart;
-    my $pend = $line[1] + $promoterend;
-#    my $bstart = $line[1] + $genebodystart;
-#    my $bend = $line[2];
+	# Strand is forward, get promoter
+	my $pstart = $line[1] + $promoterstart;
+	my $pend = $line[1] + $promoterend;
+	# my $bstart = $line[1] + $genebodystart;
+	# my $bend = $line[2];
 
+	# Strand is reverse, get promoter
 	if($line[5] eq "-"){
 		$pend = $line[2] - $promoterstart;
-    	$pstart = $line[2] - $promoterend;
- #   	$bend = $line[2] - $genebodystart;
- #   	$bstart = $line[1];
+		$pstart = $line[2] - $promoterend;
+		# $bend = $line[2] - $genebodystart;
+		# $bstart = $line[1];
 	}
 	elsif($line[5] eq "+"){}
 	else{next;}
     
-    print PROM $line[0] ,"\t",$pstart, "\t",$pend, "\t", $line[3], "\t",$line[4], "\t",$line[5],"\n";
-#    print BODY $line[0] ,"\t",$bstart, "\t",$bend, "\t", $line[3], "\t",$line[4],"\n";
+	# Print to output
+	print PROM $line[0] ,"\t",$pstart, "\t",$pend, "\t", $line[3], "\t",$line[4], "\t",$line[5],"\n";
+	# print BODY $line[0] ,"\t",$bstart, "\t",$bend, "\t", $line[3], "\t",$line[4],"\n";
 }
 close GTF;
 close PROM;

@@ -2,8 +2,8 @@
 use strict; use warnings;
 
 ##########################################################################################
-# Author: Keith Dunaway
-# Email: kwdunaway@ucdavis.edu
+# Author: Keith Dunaway & Roy Chu
+# Email: kwdunaway@ucdavis.edu rgchu@ucdavis.edu
 # Date: 5-28-2014
 # Script Name: splitFASTAfile.pl
 #
@@ -19,7 +19,7 @@ use strict; use warnings;
 # Command Line Error Checking. Global Variables and I/O Initiation #
 ####################################################################
 
-die "splitfile.pl needs the following parameters:
+die "$0 needs the following parameters:
     1) Input file
     2) Output files prefix (folder and prefix)
     3) Output files suffix (everything after the fasta ID, usually .fa)
@@ -36,6 +36,7 @@ my $outsuffix = shift(@ARGV);
 # Main Loop #
 #############
 
+# For every >, make a new file
 while(<IN>){
 	my $first = substr($_, 0, 1);
 	if($first eq ">"){

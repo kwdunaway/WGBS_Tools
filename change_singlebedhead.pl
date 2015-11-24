@@ -2,9 +2,9 @@
 use strict; use warnings;
 
 ##########################################################################################
-# Author: Keith Dunaway
+# Author: Keith Dunaway & Roy Chu
 # Email: kwdunaway@ucdavis.edu rgchu@ucdavis.edu
-# Script Name: change_bedhead.pl
+# Script Name: change_singlebedhead.pl
 # Version: 1.0
 # Last Updated: 5-15-2013
 #
@@ -23,16 +23,16 @@ use strict; use warnings;
 ####################################################################
 
 die "This script needs the following arguments:
-    1) BedFile
+    1) Input bed file
     2) NewID
 " unless @ARGV == 2;
 
 my $infile = shift(@ARGV);
 my $newid = shift(@ARGV);
 
-###################
-# Another section #
-###################
+####################
+#   Main Process   #
+####################
 
 change_singlebedhead($infile,$newid);
 
@@ -41,6 +41,7 @@ sub change_singlebedhead
 	# Input
 	my ($inputfolder, $newid) = @_;
 	open(IN, "<$infile") or die "Error: Cannot open $infile infile";
+	# Temporary Output
 	my $outfile = "temp_chr.bed";
 	open(OUT, ">$outfile") or die "Error: change_bedhead.pl: cannot open $outfile outfile";
 		
@@ -65,6 +66,7 @@ sub change_singlebedhead
 
 }
 
+# Replace input file with output data
 my $commandline = "rm " . $infile;
 `$commandline`;
 $commandline = "mv temp_chr.bed " . $infile;

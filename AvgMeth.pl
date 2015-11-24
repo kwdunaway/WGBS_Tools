@@ -5,6 +5,7 @@ use strict; use warnings;
 # Author: Keith Dunaway and Roy Chu
 # Email: kwdunaway@ucdavis.edu rgchu@ucdavis.edu
 # Date: 8-14-2014
+# Version: 5.0.1
 #
 # This script calculates average percent methylation of all CpG sites in each 
 # line of a BED file. Multiple percent methylation folders with sorted

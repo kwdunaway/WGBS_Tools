@@ -2,8 +2,8 @@
 use strict; use warnings;
 
 ##########################################################################################
-# Author: Keith Dunaway
-# Email: kwdunaway@ucdavis.edu
+# Author: Keith Dunaway & Roy Chu
+# Email: kwdunaway@ucdavis.edu rgchu@ucdavis.edu
 # Last Update Date: 11-11-2014
 # Version: 2.1
 #
@@ -37,28 +37,35 @@ die "Usage: $0 needs the following parameters:
     4) Chew back length (ex: 5 or 10)
 " unless @ARGV == 4;
 
+# Take in arguments
 my $infile = shift(@ARGV);
 my $outfile = shift(@ARGV);
 my $minreadlength = shift(@ARGV);
 my $trimlength = shift(@ARGV);
 
+# Adapter sequence to find
+
 #Solexa_reverse_contam
 #AGATCGGAAGAGCGGTTCAGCAGGAATGCCGAGACCGATCTCGTATGCCGTCTTCTGCTTGAAAAA
 #my $adapter =    "AGATCGGAAG";
 my $fulladapter = "AGATCGGAAGAGCGGTTCAGCAGGAATGCCGAGACCGATCTCGTATGCCGTCTTCTGCTTGAA";
-
+print "The adapter sequence is $fulladapter\n";
+print "To change, go to adapter_split.pl and change \$fulladapter\n\n";
 
 
 #################
 # Main Commands #
 #################
 
+# Check if zipped
 my $zipflag = "N";
 if ($outfile =~ /\.gz$/) {
 	$outfile = substr($outfile, 0 , -3);
 	$zipflag = "Y";
 }
+# Run process
 Print_Trimmed_FASTQ_file($infile, $outfile, $fulladapter, $minreadlength, $trimlength);
+# Zip again if necessary
 if($zipflag eq "Y"){
 	my $commandline = "gzip $outfile";
 	`$commandline`;
@@ -83,46 +90,55 @@ sub Print_Trimmed_FASTQ_file{
 	# File handles
 	open(OUT, ">$outfile") or die "cannot open $outfile outfile";
 	#Opens file if gzipped
-    if ($infile =~ /\.gz$/) {open(IN, "gunzip -c $infile |") || die "can't open pipe to $infile";}
+	if ($infile =~ /\.gz$/) {open(IN, "gunzip -c $infile |") || die "can't open pipe to $infile";}
 	#Or not gzipped
-    else{open(IN, "<$infile") or die "cannot open $infile infile";}
+	else{open(IN, "<$infile") or die "cannot open $infile infile";}
 
 	while (<IN>) {
 		chomp;
-	    my $ID = $_;
-   		my $seq = <IN>;
-	  	chop($seq); #gets rid of return character at end of sequence
-	    my $third = <IN>;
-	    $third = "+";
-	    my $quality = <IN>;
-	    chop($quality);
-	    $counter++;
+		my $ID = $_;
+		my $seq = <IN>;
+		chop($seq); #gets rid of return character at end of sequence
+		my $third = <IN>;
+		$third = "+";
+		my $quality = <IN>;
+		chop($quality);
+		# Print processing progress
+		$counter++;
 		if($counter % 1000000 == 0) {print "Finished procesing read:\t" , $counter , "\n";}
-		if($quality =~ m/####/) {next;}		
-	    if($seq =~ m/$adapter_seq/) {
-		    my @trimmedseq = split($adapter_seq, $seq);
+		# Quality check
+		if($quality =~ m/####/) {next;}
+		# If adapter sequence is found
+		if($seq =~ m/$adapter_seq/) {
+			my @trimmedseq = split($adapter_seq, $seq);
 			# Trim sequence 
 			$seq = $trimmedseq[0];
 			my $seqlength = length($seq);
 			$quality = substr($quality, 0, length($seq));			
-	    }
-	    else{
-	    	for(my $t = 0; $t < @adapter_ends; $t++){
-	    		my $adap_end_length = -1 * length($adapter_ends[$t]);
-	    		my $end = substr($seq, $adap_end_length);
-	    		if($end eq $adapter_ends[$t]){
-	    			$seq = substr($seq, 0, $adap_end_length);
-	    			$quality = substr($quality, 0, $adap_end_length);
-	    			$t = @adapter_ends;
-	    		}
-	    	}
-	    }
+		}
+		# Otherwise
+		else{
+			# Match the read ends to different lengths of the
+			# adapter sequence
+			for(my $t = 0; $t < @adapter_ends; $t++){
+				my $adap_end_length = -1 * length($adapter_ends[$t]);
+				my $end = substr($seq, $adap_end_length);
+				# If match, trim
+				if($end eq $adapter_ends[$t]){
+					$seq = substr($seq, 0, $adap_end_length);
+					$quality = substr($quality, 0, $adap_end_length);
+					$t = @adapter_ends;
+				}
+			}
+		}
 		my $seqlength = length($seq);
 		my $newseqlength = length($seq) - $trimlength;
 		$seq = substr($seq, 0, $newseqlength);
-	    $quality = substr($quality, 0, $newseqlength);
+		$quality = substr($quality, 0, $newseqlength);
+		# Check if passes minimum read length
 		if($seqlength < $minreadlength) {next;}
-	    print OUT $ID , "\n" , $seq , "\n" , $third , "\n" , $quality , "\n";
+		# Print to output new sequence
+		print OUT $ID , "\n" , $seq , "\n" , $third , "\n" , $quality , "\n";
 	}
 	close IN;
 	close OUT;

@@ -17,7 +17,7 @@ use strict; use warnings;
 # The positions in the resulting percent methylation (permeth) BED files are what you
 # would get if you go to the following website. For example, if you go here: 
 #    http://genome.ucsc.edu/cgi-bin/das/hg19/dna?segment=chrY:59032572,59032573
-# if would return CG. However, when you look at the position on the genome browswer, the
+# if would return CG. However, when you look at the position on the genome browser, the
 # color will only cover 1 base (the 2nd one).
 #
 ##########################################################################################
@@ -44,11 +44,13 @@ my $bedprefix = shift(@ARGV);
 my $genome_version = shift(@ARGV);
 my $meth_type = shift(@ARGV);
 
+# Choose methylation type to search, validation checking
 my @searchchars;
 if ($meth_type eq "CG") { @searchchars = ("X","x");}
 elsif($meth_type eq "CH") { @searchchars = ("Z","z", "Y","y");}
 else { die "Methylation type $meth_type is not one of:  CG or CH\n\n";}
 
+# Validation checking on strand type
 my $strand_type = shift(@ARGV);
 unless (($strand_type eq "combined") || ($strand_type eq "positive") || ($strand_type eq "negative")) {
     die "Strand type $strand_type is not one of: combined, positive, or negative\n\n";
@@ -65,7 +67,7 @@ my $prevstart = 0;
 my $prevstrand = "+";
 my $prevmethstring = "";
 
-#Columns for formatting SAM files
+# Columns for formatting SAM files
 my $chrc = 2;
 my $startc = 3;
 my $methc = 14;
@@ -77,6 +79,9 @@ my $strandc = 11;
 # Main Loop #
 #############
 
+# Note
+# In the hash, 1's signify a methylated hit and 0's signify an unmethylated hit
+
 if ($meth_type eq "CG") # Run this process if CG
 {
 	print "Scanning for 'CG'\n";
@@ -84,9 +89,10 @@ if ($meth_type eq "CG") # Run this process if CG
 		my @line = split("\t", $_);
 		
 		if ($line[0] =~ /@/) {next;}
+		# Take in chromosome
 		my $chrom = $line[$chrc];
 	
-		#takes out weird chromosomes like chr#_random and ect.
+		# Takes out weird chromosomes like chr#_random and ect.
 		if ($chrom =~ /_/) {next;}
 
 		my $start = $line[$startc];
@@ -105,40 +111,46 @@ if ($meth_type eq "CG") # Run this process if CG
 			next;
 		}
 
-		# On next chromosome
+		# On next chromosome, so print current one if not set yet
 		if($chrom ne $currentchrom){
 			if($currentchrom ne "Not Set Yet"){
 				Print_MethylationHash(\%Methylation, $outprefix, $currentchrom, $bedprefix);
 			}
+			# Reset variables
 			%Methylation = ();
 			$currentchrom = $chrom;
 			print "Starting " , $chrom , "\n";
 		}
-	
+		
+		# If found characters for CG (X/x), add to the hash
 		if($prevmethstring =~ m/$searchchars[0]/ || $prevmethstring =~ m/$searchchars[1]/){
 			Addto_MethylationHash(\%Methylation, $searchchars[0], $prevmethstring, $prevstart, $prevstrand);
 		}
+		# Increment
 		$prevmethstring = $methstring;
 		$prevstart = $start;
 		$prevstrand = $strand;
 	}
+	# Finish last line/chromosome
 	Addto_MethylationHash(\%Methylation, $searchchars[0], $prevmethstring, $prevstart, $prevstrand);
 	Print_MethylationHash(\%Methylation, $outprefix, $currentchrom, $bedprefix);
 }
-elsif ($meth_type eq "CH") # Run this process for CH
+elsif ($meth_type eq "CH") # Run this process instead if CH
 {
 	print "Scanning for 'CH'\n";
 	while(<IN>){
 		my @line = split("\t", $_);
+		# Take in chromosome
 		my $chrom = $line[$chrc];
 	
-		#takes out weird chromosomes like chr#_random and ect.
+		# Takes out weird chromosomes like chr#_random and ect.
 		if ($chrom =~ /_/) {next;}
 
 		my $start = $line[$startc];
 		my $methstring = substr $line[$methc], 5;
 		my $strand = substr $line[$strandc], 5,1;
 
+		# Check for valid CH methylation characters
 		next unless ($methstring =~ m/$searchchars[0]/ || $prevmethstring =~ m/$searchchars[1]/ || $methstring =~ m/$searchchars[2]/ || $methstring =~ m/$searchchars[3]/);
 
 		# Skips read if only looking at positive or negative strand
@@ -153,23 +165,27 @@ elsif ($meth_type eq "CH") # Run this process for CH
 			next;
 		}
 
-		# On next chromosome
+		# On next chromosome, so print current one if not set yet
 		if($chrom ne $currentchrom){
 			if($currentchrom ne "Not Set Yet"){
 				Print_MethylationHash_CH(\%Methylation, $outprefix, $currentchrom, $bedprefix);
 			}
+			# Reset variables
 			%Methylation = ();
 			%positions = ();
 			$currentchrom = $chrom;
 			print "Starting " , $chrom , "\n";
 		}
 
+		# Get end position
 		my $end = $line[5];
 		$end =~ s/[^\d]//g;
 		$end = $end + $start;
 		my $positionstart = $start;
+		# Flip start if negative strand to store strand type in hash
 		if($strand eq "-") {$positionstart = $start * -1;}
 
+		# If methylated, add to methylation hash
 		if($prevmethstring =~ m/$searchchars[0]/ || $prevmethstring =~ m/$searchchars[2]/){
 			Addto_MethylationHash_CH(\%Methylation, $prevmethstring, $prevstart, $prevstrand);
 			$positions{$positionstart} = $end;
@@ -178,10 +194,13 @@ elsif ($meth_type eq "CH") # Run this process for CH
 			$positions{$positionstart} = $end;
 		}
 
+		# Increment
 		$prevmethstring = $methstring;
 		$prevstart = $start;
 		$prevstrand = $strand;
 
+		# Keep the hash small to not overload memory
+		# Add to the hash every 1000 counts and empty positions hash
 		$count++;
 		if($count >= 1000)
 		{
@@ -250,32 +269,41 @@ elsif ($meth_type eq "CH") # Run this process for CH
 # Subroutines #
 ###############
 
+# Add for CG
 sub Addto_MethylationHash{
 	my ($Methylation_ref, $charsearch, $methstring, $start, $strand) = @_;
 	
-	#Finds Methylated
-	$charsearch =~ tr/a-z/A-Z/;
+	# Finds Methylated
+	$charsearch =~ tr/a-z/A-Z/; # Search uppercases
 	my $offset = 0;
 	my $position = 0;
+	# Search the string until it ends
 	while ($position >= 0)
 	{
   		$position = index($methstring, $charsearch, $offset);
+		# If past string, done searching
   		if($position == -1) {last;}
+		# If positive strand
  		if($strand eq "+"){
 			my $startpos = $start + $position;
+			# Exists already, append a 1 for methylated hit
 			if(defined $Methylation_ref->{$startpos}) {$Methylation_ref->{$startpos} = $Methylation_ref->{$startpos} . "1";}
+			# else, new find, make it 1 for a methylated hit
 			else {$Methylation_ref->{$startpos} = "1";}
  		}
+		# If negative strand
  		elsif($strand eq "-"){
 			my $startpos = $start + length($methstring) - $position -2;
 			if(defined $Methylation_ref->{$startpos}) {$Methylation_ref->{$startpos} = $Methylation_ref->{$startpos} . "1";}
 			else {$Methylation_ref->{$startpos} = "1";}
  		}
+		# else error, confused strand
  		else { die "Strand not + or - but $strand \n";}
 		$offset=$position+1;
 	}
 	
-	#Finds Unmethylated
+	# Finds Unmethylated
+	# Same algorithm as above but searches lowercase and adds 0's
 	$charsearch =~ tr/A-Z/a-z/;
 	$offset = 0;
 	$position = 0;
@@ -298,10 +326,13 @@ sub Addto_MethylationHash{
 	}
 }
 
+# Add for CH
+# Similar algorithm as above for CG but only looks at methylated and at Z/Y
 sub Addto_MethylationHash_CH{
 	my ($Methylation_ref, $methstring, $start, $strand) = @_;
-	
+
 	my @search = ("Z", "Y");
+	# Run for Z and Y
 	foreach my $charsearch(@search)
 	{
 		my $offset = 0;
@@ -326,16 +357,20 @@ sub Addto_MethylationHash_CH{
 	}
 }
 
+# Print the hash to the output file for CG methylation
 sub Print_MethylationHash{
 	my ($Methylation_ref, $outprefix, $currentchrom, $bedprefix) = @_;
 	
 	my $outfile = $outprefix . "_" . $currentchrom . ".bed";
 	open(OUT, ">$outfile") or die "cannot open $outfile outfile";
+	# Print header
 	print OUT "track name=" , $bedprefix, $currentchrom, " description=" , $bedprefix, "_", $currentchrom, " useScore=0 itemRgb=On db=" , $genome_version , "\n";
+	# For each position
 	foreach my $posstart (sort { $a <=> $b }  keys %{$Methylation_ref}) {
-		#Example print format
+		# Example print format
 		#chr10   51332   51333   0.50-2  0       +       0       0       27,74,210
 		my $posend = $posstart + 1;
+		# Calculate the percentage methylation
 		my $methperc = 0;
 		my @methraw = split("",$Methylation_ref->{$posstart});
 		my $methnum = @methraw;
@@ -345,15 +380,19 @@ sub Print_MethylationHash{
 		}
 		$methperc = $methperc / $methnum;
 		$methperc = sprintf("%.2f", $methperc);
+		# Choose the color, low meth > blue, med > green, high > red
 		my $color = "0,0,0"; #black
 		if ($methperc > 0 && $methperc <= .6) {$color = "27,74,210";} #blue
 		elsif ($methperc > .6 && $methperc <= .8) {$color = "27,210,57";} #green
 		elsif ($methperc > .8) {$color = "210,27,27";} #red
+		# Finally print
 		print OUT $currentchrom , "\t" , $posstart , "\t" , $posend , "\t" , $methperc , "-", $methnum , "\t" , "0\t+\t0\t0\t" , $color , "\n";
 	}
 	close OUT;
 }
 
+# Print the hash to the output file for CH methylation
+# Similar algorithm to the above 
 sub Print_MethylationHash_CH{
 	my ($Methylation_ref, $outprefix, $currentchrom, $bedprefix) = @_;
 	
@@ -364,6 +403,7 @@ sub Print_MethylationHash_CH{
 		#Example print format
 		#chr10   51332   51333   0.50-2  0       +       0       0       27,74,210
 		my $str = "+";
+		# Find the start (depends on strand)
 		my $trueposstart = $posstart;
 		if($posstart < 0)
 		{
@@ -371,6 +411,7 @@ sub Print_MethylationHash_CH{
 			$str = "-";
 		}
 		my $posend = $trueposstart + 1;
+		# Calculate percentage methylation
 		my $methperc = 0;
 		my @methraw = split("",$Methylation_ref->{$posstart});
 		my $methnum = @methraw;
@@ -384,12 +425,14 @@ sub Print_MethylationHash_CH{
 		}
 		$methperc = $methperc / $methnum;
 		$methperc = sprintf("%.2f", $methperc);
+		# Choose the color, negative strand is yellow, positive is magenta
 		my $color = "0,0,0"; #black
 		if ($methperc > 0 && $str eq "-") {$color = "0,51,0";} #yellow
 		elsif ($methperc > 0 && $str eq "+") {$color = "255,0,255";} #magenta
+		# Finally print if methylation percentage is not 0
 		if ($methperc != 0) 
 		{
-		print OUT $currentchrom , "\t" , $trueposstart , "\t" , $posend , "\t" , $methperc , "-", $methnum , "\t" , "0\t", $str, "\t0\t0\t" , $color , "\n";
+			print OUT $currentchrom , "\t" , $trueposstart , "\t" , $posend , "\t" , $methperc , "-", $methnum , "\t" , "0\t", $str, "\t0\t0\t" , $color , "\n";
 		}
 	}
 	close OUT;
