@@ -4,6 +4,7 @@ WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfi
 
 1. New Features
 ============
+v1.0: EVERYTHING!
 
 2. Supported Formats
 ============
