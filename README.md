@@ -27,17 +27,17 @@ v1.0: EVERYTHING!
 
 Contents
 ------------
-(1) [adapter_split.pl](#adapter_split.pl)
-(2) [adapter_trimmer.pl](#adapter_trimmer.pl)
-(3) [AvgMeth.pl](#AvgMeth.pl)
-(4) [change_singlebedhead.pl](#change_singlebedhead.pl)
-(5) [ConvEff_SAM.pl](#ConvEff_SAM.pl)
-(6) [gbcompliance.pl](#gbcompliance.pl)
-(7) [GTF_to_promoterbed.pl](#GTF_to_promoterbed.pl)
-(8) [process_BSSeeker2log.pl](#process_BSSeeker2log.pl)
-(9) [SAMsorted_to_permeth.pl](#SAMsorted_to_permeth.pl)
-(10) [splitFASTAfile.pl](#splitFASTAfile.pl)
-(11) [Window_permeth_readcentric.pl](#Window_permeth_readcentric.pl)
+- (1) [adapter_split.pl](#adapter_split.pl)
+- (2) [adapter_trimmer.pl](#adapter_trimmer.pl)
+- (3) [AvgMeth.pl](#AvgMeth.pl)
+- (4) [change_singlebedhead.pl](#change_singlebedhead.pl)
+- (5) [ConvEff_SAM.pl](#ConvEff_SAM.pl)
+- (6) [gbcompliance.pl](#gbcompliance.pl)
+- (7) [GTF_to_promoterbed.pl](#GTF_to_promoterbed.pl)
+- (8) [process_BSSeeker2log.pl](#process_BSSeeker2log.pl)
+- (9) [SAMsorted_to_permeth.pl](#SAMsorted_to_permeth.pl)
+- (10) [splitFASTAfile.pl](#splitFASTAfile.pl)
+- (11) [Window_permeth_readcentric.pl](#Window_permeth_readcentric.pl)
 
 
 <a name="adapter_split.pl">(1) adapter_split.pl </a>
@@ -98,29 +98,29 @@ This script trims adapter sequence from a fastq file. Currently, it takes the fi
 
 - This script can handle gzipped input ([gzip](http://www.gzip.org/)).
 
-(3) AvgMeth.pl
+<a name="AvgMeth.pl">(3) AvgMeth.pl</a>
 ------------
 
-(4) change_singlebedhead.pl
+<a name="change_singlebedhead.pl">(4) change_singlebedhead.pl</a>
 ------------
 
-(5) ConvEff_SAM.pl
+<a name="ConvEff_SAM.pl">(5) ConvEff_SAM.pl</a>
 ------------
 
-(6) gbcompliance.pl
+<a name="gbcompliance.pl">(6) gbcompliance.pl</a>
 ------------
 
-(7) GTF_to_promoterbed.pl
+<a name="GTF_to_promoterbed.pl">(7) GTF_to_promoterbed.pl</a>
 ------------
 
-(8) process_BSSeeker2log.pl
+<a name="process_BSSeeker2log.pl">(8) process_BSSeeker2log.pl</a>
 ------------
 
-(9) SAMsorted_to_permeth.pl
+<a name="SAMsorted_to_permeth.pl">(9) SAMsorted_to_permeth.pl</a>
 ------------
 
-(10) splitFASTAfile.pl
+<a name="splitFASTAfile.pl">(10) splitFASTAfile.pl</a>
 ------------
 
-(11) Window_permeth_readcentric.pl
+<a name="Window_permeth_readcentric.pl">(11) Window_permeth_readcentric.pl</a>
 ------------
