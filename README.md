@@ -6,7 +6,12 @@ WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfi
 ============
 v1.0: EVERYTHING!
 
-2. Supported Formats
+2. Requirements
+============
+
+####Perl 5.18.2 or newer
+
+3. Supported Formats
 ============
 
 * Supported file formats
@@ -22,7 +27,7 @@ v1.0: EVERYTHING!
   - [Pysam](https://github.com/pysam-developers/pysam)
   - [SRA Toolkit](http://www.ncbi.nlm.nih.gov/books/NBK158900/)
   
-3. Script Descriptions
+4. Script Descriptions
 ============
 
 Contents
@@ -33,11 +38,11 @@ Contents
 - (4) [change_singlebedhead.pl](#change_singlebedhead.pl) - Changes bed file header
 - (5) [ConvEff_SAM.pl](#ConvEff_SAM.pl) - Takes SAM output from BS_Seeker2 and finds the conversion efficiency
 - (6) [gbcompliance.pl](#gbcompliance.pl) - Handles genome browser errors
-- (7) [GTF_to_promoterbed.pl](#GTF_to_promoterbed.pl)
-- (8) [process_BSSeeker2log.pl](#process_BSSeeker2log.pl)
-- (9) [SAMsorted_to_permeth.pl](#SAMsorted_to_permeth.pl)
-- (10) [splitFASTAfile.pl](#splitFASTAfile.pl)
-- (11) [Window_permeth_readcentric.pl](#Window_permeth_readcentric.pl)
+- (7) [GTF_to_promoterbed.pl](#GTF_to_promoterbed.pl) - Takes regions from GTF/bed file and outputs the promoter regions
+- (8) [process_BSSeeker2log.pl](#process_BSSeeker2log.pl) - Takes one or more BSSeeker2 log files and makes it more human readable.
+- (9) [SAMsorted_to_permeth.pl](#SAMsorted_to_permeth.pl) - Takes SAM output from BS_Seeker2 and creates percentage methylation BED files
+- (10) [splitFASTAfile.pl](#splitFASTAfile.pl) - Splits a fasta file into individual files, each with a single fasta section.
+- (11) [Window_permeth_readcentric.pl](#Window_permeth_readcentric.pl) - Takes sliding windows of positions and outputs average methylation across windows
 
 
 <a name="adapter_split.pl">(1) adapter_split.pl </a>
@@ -59,10 +64,6 @@ Separates fastq files for those with and without adapter sequence.
 ####Example:
 
     perl adapter_split.pl input.fq output_noadap.fq output_withadap.fq
-
-####Requirements:
-
-- Perl 5.18.2 or newer
 
 ####Additional Info:
 
@@ -89,10 +90,6 @@ Trims adapter sequence from a fastq file. Currently, it takes the first X bases 
 ####Example:
 
     perl adapter_trimmer.pl input.fq output.fq 30 10
-
-####Requirements:
-
-- Perl 5.18.2 or newer
 
 ####Additional Info:
 
@@ -123,10 +120,6 @@ Calculates average percent methylation of all CpG sites in each line of a BED fi
 
     perl Avg_Meth.pl percentmethyloutput input.bed 3 20 1 1 PercentMethyl_Sample1/PercentMethyl_Sample1_ Sample1 PercentMethyl_Sample2/PercentMethyl_Sample2_ Sample2
 
-####Requirements:
-
-- Perl 5.18.2 or newer
-
 ####Additional Info:
 
 - Multiple percent methylation folders with sorted percent methylation bed files of each chromosome may be entered as inputs to be compared side by side.
@@ -151,10 +144,6 @@ Reads an input bed file and changes "PercMethylation" in the track name and "Per
 
     perl change_singlebedhead.pl input.bed sampleA
 
-####Requirements:
-
-- Perl 5.18.2 or newer
-
 ####Additional Info:
 
 - The script may be used to change any bed file headers.
@@ -178,10 +167,6 @@ Takes SAM output from BS_Seeker2 and finds the conversion efficiency by looking 
 
     perl ConvEff_SAM.pl conv_eff_output sample1run.sam sample2run.sam
 
-####Requirements:
-
-- Perl 5.18.2 or newer
-
 <a name="gbcompliance.pl">(6) gbcompliance.pl</a>
 ------------
 
@@ -204,10 +189,6 @@ Handles certain genome browser errors, allowing replacement of the header and ge
 
     perl gbcompliance.pl mm10 Sample1/PerMeth_Sample1_temp_ Sample1/PerMeth_Sample1_ Sample1 Sample1Desc
 
-####Requirements:
-
-- Perl 5.18.2 or newer
-
 ####Additional Info:
 
 - The script runs on an input folder with chromosomes corresponding to reference chromosomes from chosen assembly.
@@ -215,14 +196,128 @@ Handles certain genome browser errors, allowing replacement of the header and ge
 <a name="GTF_to_promoterbed.pl">(7) GTF_to_promoterbed.pl</a>
 ------------
 
+Takes regions from a GTF or bed file and creates an output with the promoter region of those positions.
+
+
+####Usage :
+
+    Usage: GTF_to_promoterbed.pl [1] [2]
+
+    Input:
+    1) Input GTF or bed file name
+    2) Promoter Output file name
+
+
+####Example:
+
+    perl GTF_to_promoterbed.pl input output
+
+####Additional Info:
+
+- The default promoter start is -500 and promoter end is +1500 from the transcription start site. Said values may be changed in the script.
+
 <a name="process_BSSeeker2log.pl">(8) process_BSSeeker2log.pl</a>
 ------------
+
+Takes one or more BSSeeker2 log files and makes it more human readable.
+
+
+####Usage :
+
+    Usage: process_BSSeeker2log.pl [1] [2] (Optional: [3] ...)
+
+    Input:
+    1) Outfile (tab delimited text file)
+    2+) Infile(s) of logs
+
+
+####Example:
+
+    perl process_BSSeeker2log.pl BSSeeker2_stats_output Sample1.BSSeeker2.log
 
 <a name="SAMsorted_to_permeth.pl">(9) SAMsorted_to_permeth.pl</a>
 ------------
 
+Takes SAM output from BS_Seeker2 and creates percentage methylation BED files that can be uploaded to the UCSC genome browser or further analyzed through StochHMM.
+
+
+####Usage :
+
+    Usage: SAMsorted_to_permeth.pl [1] [2] [3] [4] [5] [6]
+
+    Input:
+    1) Input sorted SAM file
+    2) Output files prefix (folder and prefix)
+    3) Bed track prefix
+    4) UCSC genome version (ex: hg19)
+    5) Methylation type (CG, CH)
+    6) Strand (combined, positive, or negative)
+
+
+####Example:
+
+    perl SAMsorted_to_permeth.pl input.sam OutputFolder/OutputNamePrefix OutputTrackName hg19 CG positive
+
+####Additional Info:
+
+- PCR duplicate filter: This script takes the longest read that matches a strand and position of the same chromosome. If more than one read are the longest, it only takes whichever read came first in the SAM file.
+- The positions in the resulting percent methylation (permeth) BED files are what you would get if you go to the following website. For example, if you go here: http://genome.ucsc.edu/cgi-bin/das/hg19/dna?segment=chrY:59032572,59032573 , it would return CG. However, when you look at the position on the genome browser, the color will only cover 1 base (the 2nd one).
+
 <a name="splitFASTAfile.pl">(10) splitFASTAfile.pl</a>
 ------------
 
+Splits a fasta file into individual files, each with a single fasta section.
+
+
+####Usage :
+
+    Usage: splitFASTAfile.pl [1] [2] [3]
+
+    Input:
+    1) Input file
+    2) Output files prefix (folder and prefix)
+    3) Output files suffix (everything after the fasta ID, usually .fa)
+
+
+####Example:
+
+    perl splitFASTAfile.pl input.fa OutputFolder/Sample1_ .fa
+
+####Additional Info:
+
+- Splits files by ">" symbol.
+
 <a name="Window_permeth_readcentric.pl">(11) Window_permeth_readcentric.pl</a>
 ------------
+
+This script takes windows (user defined parameters) and outputs average methylation across windows based on a read centric method. The script also outputs a count of CpG assays.
+
+
+####Usage :
+
+    Usage: Window_permeth_readcentric.pl [1] [2] [3] [4] [5] [6] [7] [8] (Optional: [9] [10]...[11] [12]...)
+
+    Input:
+    1) Output table file
+    2) NONE or CpG island GTF (or bed) file to mask. If no masking, put NONE
+    3) Window size
+    4) Min # of CpGs per window (otherwise prints NA)
+    5) Min # of reads per CpG counted
+    6) Min number of files have info
+    7,9+) Permeth prefix (leave off chr#.bed)
+    8,10+) Name of experiments in output file
+
+
+####Example:
+
+    perl Window_permeth_readcentric.pl outputtable cpg_islands.bed 20000 20 1 1 Permeth_Sample1/Permeth_Sample1_ Sample1
+
+####Additional Info:
+
+- For example: If 2 CpGs were assayed like this:
+
+	0.5-2
+	
+	1-8
+	
+	This script would output .9 for methylation and 10 for coverage.
