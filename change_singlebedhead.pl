@@ -8,7 +8,7 @@ use strict; use warnings;
 # Version: 1.0
 # Last Updated: 5-15-2013
 #
-# This script reads every bed file in the input directory and changes "PercMethylation" 
+# This script reads a bed file and changes "PercMethylation" 
 # in the track name and "PercentMethylation" in the description to a new name.
 #
 # Arguments:
@@ -39,7 +39,7 @@ change_singlebedhead($infile,$newid);
 sub change_singlebedhead
 {
 	# Input
-	my ($inputfolder, $newid) = @_;
+	my ($infile, $newid) = @_;
 	open(IN, "<$infile") or die "Error: Cannot open $infile infile";
 	# Temporary Output
 	my $outfile = "temp_chr.bed";

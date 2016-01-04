@@ -42,9 +42,9 @@ die "usage: $0
 " unless @ARGV > 7;
 
 my $outputname = shift(@ARGV);	# Output with average percentage methylation per PMD
-open(OUT, ">$outputname") or die "AvgMethv3.pl: Error: cannot open $outputname output file";
+open(OUT, ">$outputname") or die "$0: Error: cannot open $outputname output file";
 my $inputname = shift(@ARGV);	# Input BED or GTF File
-open(BED, "<$inputname") or die "AvgMethv3.pl: Error: cannot open $inputname input BED file";
+open(BED, "<$inputname") or die "$0: Error: cannot open $inputname input BED file";
 my $namecol = shift(@ARGV);	# column for name of Region of Interest <or> NA to skip that
 my $mincpg = shift(@ARGV);	# Avg % Meth = "NA" unless >= minimum CpG site threshold
 # Special case (default): 0 as threshold will cause 0 CpG sites to give "NA"
