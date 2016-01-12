@@ -22,7 +22,7 @@ die "ConvEff_SAM.pl needs the following parameters:
 
 my $outfile = shift(@ARGV);
 open(OUT, ">$outfile") or die "cannot open $outfile outfile";
-print OUT "Sample\tConvEff_CG\tConvEff_CHG\tConvEff_CHH\n";
+print OUT "Sample\tConvEff\n";
 
 
 #############
@@ -59,7 +59,8 @@ while (@ARGV){
 	my $CGper = sprintf("%.4f",$CG_unmeth/$CGtot);
 	my $CHGper = sprintf("%.4f",$CHG_unmeth/$CHGtot);
 	my $CHHper = sprintf("%.4f",$CHH_unmeth/$CHHtot);
-	print OUT $infile , "\t" , $CGper , "\t" , $CHGper , "\t" , $CHHper , "\n";
+	my $Cper = sprintf("%.4f",($CGper+$CHGper+$CHGper) / 3);
+	print OUT $infile , "\t" , $Cper , "\n";
 	close IN;
 }
 close OUT;
