@@ -78,7 +78,7 @@ print "\n";
 my @samplenames;
 print OUT "CpGName" , "\t" , "chr" , "\t" , "start";
 for (my $n = 0; $n < @Permethnames; $n++){
-	print OUT "\t" , $Permethnames[$n];
+	print OUT "\t" , $Permethnames[$n] ,"_meth\t" , $Permethnames[$n] , "_total";
 }
 print OUT "\n";
 
@@ -120,9 +120,9 @@ foreach my $cur_chr (sort keys %Chromosomes) {
 		print OUT $cpg_name , "\t" , $cur_chr , "\t" , $start;
 		for (my $n = 0; $n < @Names; $n++){
 			if(defined $MethCpG{$start}{$Names[$n]}{"meth"}){
-					print OUT "\t" , $MethCpG{$start}{$Names[$n]}{"meth"} , "/" , $MethCpG{$start}{$Names[$n]}{"total"};
+					print OUT "\t" , $MethCpG{$start}{$Names[$n]}{"meth"} , "\t" , $MethCpG{$start}{$Names[$n]}{"total"};
 			}
-			else {print OUT "\t" , "0/0";}
+			else {print OUT "\t0\t0";}
 		}
 		print OUT "\n";
 	}	
