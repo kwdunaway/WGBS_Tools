@@ -250,8 +250,8 @@ Takes multiple Percent Methylation BED files within sample folder(s) and creates
     Input:
     1) Output table file
     2) GTF (or bed) file to determine chromosome names
-    3,4+) Permeth prefix (leave off chr#.bed)
-    5,6+) Name of experiments in output file
+    3,5+) Permeth prefix (leave off chr#.bed)
+    4,6+) Name of experiments in output file
 
 
 ####Example:
