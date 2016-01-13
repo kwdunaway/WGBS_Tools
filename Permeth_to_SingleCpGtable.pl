@@ -26,9 +26,9 @@ use POSIX 'floor';
 die "$0 usage, needs the following parameters: 
     1) Output table file
     2) GTF (or bed) file to determine chromosome names
-    3,4+) Permeth prefix (leave off chr#.bed)
-    5,6+) Name of experiments in output file
-" unless @ARGV > 5;
+    3,5+) Permeth prefix (leave off chr#.bed)
+    4,6+) Name of experiments in output file
+" unless @ARGV > 3;
 
 my $outputname = shift(@ARGV);
 open(OUT, ">$outputname") or die "Error: cannot open $outputname OUT outfile";
