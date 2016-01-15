@@ -88,10 +88,12 @@ print OUT "\n";
 # Main Loop #
 #############
 
+# For each chromosome
 foreach my $cur_chr (sort keys %Chromosomes) {
 	my %MethCpG;
 	my @Permeth = @Permethfiles;
 	my @Names = @Permethnames;
+	# Open each sample's corresponding chr bed file
 	while (@Permeth){
 		my $inprefix = shift(@Permeth);
 		my $sampname = shift(@Names);
@@ -101,12 +103,15 @@ foreach my $cur_chr (sort keys %Chromosomes) {
 			open(IN, "gunzip -c $infile |") || die "can't open pipe to $infile";
 		}
 		print "Analyzing $sampname $cur_chr \n";
+		# Get data for each CpG
 		while(<IN>){
 			my @line = split("\t",$_);
 			if ($line[0] ne $cur_chr){next;}
 			my $start = $line[1];
 			my @methinfo = split("-",$line[3]);
+			# Get methylated count
 			$MethCpG{$start}{$sampname}{"meth"} = floor(($methinfo[0] * $methinfo[1]) +.5);
+			# Get total count
 			$MethCpG{$start}{$sampname}{"total"} = $methinfo[1];
 		}
 		close IN;		
@@ -122,6 +127,7 @@ foreach my $cur_chr (sort keys %Chromosomes) {
 			if(defined $MethCpG{$start}{$Names[$n]}{"meth"}){
 					print OUT "\t" , $MethCpG{$start}{$Names[$n]}{"meth"} , "\t" , $MethCpG{$start}{$Names[$n]}{"total"};
 			}
+			# if undefined, print 0 0
 			else {print OUT "\t0\t0";}
 		}
 		print OUT "\n";
