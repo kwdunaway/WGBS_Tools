@@ -4,15 +4,13 @@ use strict; use warnings;
 ##########################################################################################
 # Author: Keith Dunaway & Roy Chu
 # Email: kwdunaway@ucdavis.edu rgchu@ucdavis.edu
-# Last Update Date: 7-8-2014
-# Version: 2.0
+# Last Update Date: 1-26-2016
+# Version: 2.1
 #
 # Takes SAM output from BS_Seeker2 and creates percentage methylation BED files that
 # can be uploaded to the UCSC genome browser or further analyzed through StochHMM.
 #
-# PCR duplicate filter: This script takes the longest read that matches an strand and
-# position of the same chromosome. If more than one read are the longest, it only takes
-# whichever read came first in the SAM file.
+# PCR duplicate filter: This script takes the first X 
 #
 # The positions in the resulting percent methylation (permeth) BED files are what you
 # would get if you go to the following website. For example, if you go here: 
@@ -32,10 +30,11 @@ die "$0 needs the following parameters:
     1) Input sorted SAM file
     2) Output files prefix (folder and prefix)
     3) Bed track prefix
-    4) UCSC genome version (ex: hg19)
+    4) UCSC genome version (ex: hg38)
     5) Methylation type (CG, CH)
     6) Strand (combined, positive, or negative)
-" unless @ARGV == 6;
+    7) # max duplicate reads (ex: 1)
+" unless @ARGV == 7;
 
 my $infile = shift(@ARGV);
 open(IN, "<$infile") or die "cannot open $infile infile";
@@ -56,6 +55,8 @@ unless (($strand_type eq "combined") || ($strand_type eq "positive") || ($strand
     die "Strand type $strand_type is not one of: combined, positive, or negative\n\n";
 }
 
+my $max_dup_reads = shift(@ARGV); # Maximum duplicate reads allowed for analysis
+
 # Global Variables
 my $currentchrom = "Not Set Yet";
 my %Methylation;
@@ -66,6 +67,7 @@ my $count = 0;
 my $prevstart = 0;
 my $prevstrand = "+";
 my $prevmethstring = "";
+my $dupcount = 1;
 
 # Columns for formatting SAM files
 my $chrc = 2;
@@ -103,13 +105,12 @@ if ($meth_type eq "CG") # Run this process if CG
 		if($strand eq "-" && $strand_type eq "positive") {next;}
 		if($strand eq "+" && $strand_type eq "negative") {next;}
 
-		# If duplicate line, take longest read and then skip
+		# If duplicate line, take information until $max_dup_reads limit hit
 		if($prevstart == $start && $prevstrand eq $strand) {
-			if(length($methstring) > length($prevmethstring)){
-				$prevmethstring = $methstring;
-			}
-			next;
+			$dupcount++;
+			if($dupcount > $max_dup_reads){next;}
 		}
+		else {$dupcount = 1;}
 
 		# On next chromosome, so print current one if not set yet
 		if($chrom ne $currentchrom){
@@ -119,6 +120,7 @@ if ($meth_type eq "CG") # Run this process if CG
 			# Reset variables
 			%Methylation = ();
 			$currentchrom = $chrom;
+			$dupcount = 1;
 			print "Starting " , $chrom , "\n";
 		}
 		
