@@ -10,7 +10,7 @@ use strict; use warnings;
 # Takes SAM output from BS_Seeker2 and creates percentage methylation BED files that
 # can be uploaded to the UCSC genome browser or further analyzed through StochHMM.
 #
-# PCR duplicate filter: This script takes the first X 
+# PCR duplicate filter: This script takes the first X reads as defined in parameter #7
 #
 # The positions in the resulting percent methylation (permeth) BED files are what you
 # would get if you go to the following website. For example, if you go here: 
