@@ -24,7 +24,7 @@ use POSIX 'floor';
 
 die "$0 usage, needs the following parameters: 
     1) Output table file
-    2) NONE or CpG island GTF (or bed) file to mask. If no masking, put NONE
+    2) Input BED file to identify what chromosomes to look at
     3) Window size
     4) Min # of CpGs per window (otherwise prints NA)
     5) Min # of reads per CpG counted
@@ -37,13 +37,22 @@ my $outputname = shift(@ARGV);
 open(OUT, ">$outputname") or die "Error: cannot open $outputname OUT outfile";
 my $countoutputname = $outputname . ".count";
 open(COUNT, ">$countoutputname") or die "Error: cannot open $countoutputname COUNT outfile";
-my $CPGinputname = shift(@ARGV);
-open(CPG, "<$CPGinputname") or die "Error: cannot open $CPGinputname GTF infile";
+my $BEDinputname = shift(@ARGV);
+open(CHR, "<$BEDinputname") or die "Error: cannot open $BEDinputname bed infile";
 
+# Size of windows in bp (ex: 20000)
 my $windowsize = shift(@ARGV);
+# Threshold for number of CpGs found in a window in one sample
+# If it is not met, then NA is set
 my $mincpg = shift(@ARGV);
+# Threshold for number of reads for a CpG
+# If it is not met, then NA is set
 my $mincoverage = shift(@ARGV);
+# Threshold for number of samples that output non-"NA" data
+# If it is not met, then window is not printed to output
 my $minfiles = shift(@ARGV);
+
+# Samples
 my @Permethfiles; 
 my @Permethnames; 
 while(@ARGV){
@@ -54,20 +63,20 @@ my $commandline = "";
 
 
 
-###############
-# CPG Islands #
-###############
-# Note, at this point this is only used to identify the chromosomes
-my %CPG;
-while(<CPG>){
+#######################
+# Chromosome BED File #
+#######################
+# This is only used to identify the chromosomes
+my %CHR;
+while(<CHR>){
 	my @line = split("\t",$_);
 	if ($line[0] =~ /chr/){} else {next;}
 	if ($line[0] =~ /_/){next;}	
-	$CPG{$line[0]}{$line[1]} = $line[2];
+	$CHR{$line[0]}{$line[1]} = $line[2];
 }
-close CPG;
-print "CPGs loaded, analyzing chromosomes:\n";
-foreach my $key (sort keys %CPG) {
+close CHR;
+print "CHRs loaded, analyzing chromosomes:\n";
+foreach my $key (sort keys %CHR) {
      print "$key" , "\n";
 }
 print "\n";
@@ -88,15 +97,18 @@ print COUNT "\n";
 # Main Loop #
 #############
 
-foreach my $key (sort keys %CPG) {
+# For each chromosome
+foreach my $key (sort keys %CHR) {
 	my %MethCpG;
 	my @Permeth = @Permethfiles;
 	my @Names = @Permethnames;
+	# For said chromosome in each sample
 	while (@Permeth){
 		my $inprefix = shift(@Permeth);
 		my $sampname = shift(@Names);
+		# Open corresponding bed file
 		my $infile = $inprefix . $key . ".bed";
-#		open(IN, "<$infile") or die "Error: cannot open $infile infile";
+		# open(IN, "<$infile") or die "Error: cannot open $infile infile";
 		unless(open(IN, "<$infile")) {
 			$infile = $inprefix . $key . ".bed.gz";
 			open(IN, "gunzip -c $infile |") || die "can't open pipe to $infile";
@@ -105,23 +117,34 @@ foreach my $key (sort keys %CPG) {
 		while(<IN>){
 			my @line = split("\t",$_);
 			my @methinfo = split("-",$line[3]);
+			# Check for read threshold
 			if ($methinfo[1] < $mincoverage) {next;}
 			my $weightedmeth = $methinfo[0] * $methinfo[1];
 			my $start = $line[1];
+			# Make a key for this window
 			my $newkey = floor($start/$windowsize);
+			# Add CpG data to hash
+			# If already in hash, add to data
 			if(defined $MethCpG{$sampname}{$newkey}{"sum"}) {
 				$MethCpG{$sampname}{$newkey}{"sum"} = $MethCpG{$sampname}{$newkey}{"sum"} + $weightedmeth;
 				$MethCpG{$sampname}{$newkey}{"coverage"} = $MethCpG{$sampname}{$newkey}{"coverage"} + $methinfo[1];
 				$MethCpG{$sampname}{$newkey}{"CPGcount"}++;
+				# If window meets CpG threshold,
+				# increment the count for samples with data
+				# (used for minimum samples threshold)
 				if ($MethCpG{$sampname}{$newkey}{"CPGcount"} == $mincpg){
 					if(defined $MethCpG{"count"}{$newkey}) {$MethCpG{"count"}{$newkey}++;}
 					else {$MethCpG{"count"}{$newkey} = 1;}
 				}
 			}
+			# If new to hash, add to data
 			else{
 				$MethCpG{$sampname}{$newkey}{"sum"} = $weightedmeth;
 				$MethCpG{$sampname}{$newkey}{"coverage"} = $methinfo[1];
 				$MethCpG{$sampname}{$newkey}{"CPGcount"} = 1;
+				# If window meets CpG threshold,
+				# increment the count for samples with data
+				# (used for minimum samples threshold)
 				if ($MethCpG{$sampname}{$newkey}{"CPGcount"} == $mincpg){
 					if(defined $MethCpG{"count"}{$newkey}) {$MethCpG{"count"}{$newkey}++;}
 					else {$MethCpG{"count"}{$newkey} = 1;}
@@ -136,23 +159,28 @@ foreach my $key (sort keys %CPG) {
 	@Names = @Permethnames;
 	print "Printing $key \n\n";
 	foreach my $countkey (sort { $a <=> $b } keys( %{$MethCpG{"count"}} ) ){
+		# If window does not meet minimum sample threshold, do not print
 		if ($MethCpG{"count"}{$countkey} < $minfiles) {next;}
 		my $start = $countkey * $windowsize;
 		my $end = $start + $windowsize;
 		print OUT $key , "\t" , $start , "\t" , $end;
 		print COUNT $key , "\t" , $start , "\t" , $end;
 		for (my $n = 0; $n < @Names; $n++){
+			# Check if window is defined
 			if(defined $MethCpG{$Names[$n]}{$countkey}){
+				# If # CpGs meet minimum CpG threshold, print
 				if ( $MethCpG{$Names[$n]}{$countkey}{"CPGcount"} >= $mincpg) {
 					my $avgmeth = sprintf ("%.3f", ($MethCpG{$Names[$n]}{$countkey}{"sum"} / $MethCpG{$Names[$n]}{$countkey}{"coverage"}));
 					print OUT "\t" , $avgmeth;
 					print COUNT "\t" , $MethCpG{$Names[$n]}{$countkey}{"coverage"};
 				}
+				# else does not meet min CpGs, print NA
 				else{
 					print OUT "\t" , "NA";
 					print COUNT "\t" , "NA";
 				}
 			}
+			# else print NA if no data
 			else{
 				print OUT "\t" , "NA";
 				print COUNT "\t" , "NA";
