@@ -4,7 +4,7 @@ use strict; use warnings;
 ##########################################################################################
 # Author: Keith Dunaway & Roy Chu
 # Email: kwdunaway@ucdavis.edu rgchu@ucdavis.edu
-# Last Updated: 3/25/2015
+# Last Updated: 2/18/2016
 #
 # This script takes regions from a GTF or bed file and 
 # creates an output with the promoter region of those positions
@@ -36,13 +36,30 @@ print "The promoter end is +$promoterend from TSS\n";
 #my $genebodystart = 3000;
 #my $genebodyminsize = 5000;
 
-###################
-# Another section #
-###################
+#############
+# Main Loop #
+#############
+
+my $firstline = <GTF>; 
+my @line = split("\t",$firstline);
+if($line[0] =~ /^chr/){
+	print "Header not detected in first line, converting it.\n";
+	my $pstart = $line[1] + $promoterstart;
+	my $pend = $line[1] + $promoterend;
+	if($line[5] eq "-"){
+		$pend = $line[2] - $promoterstart;
+		$pstart = $line[2] - $promoterend;
+	}
+	elsif($line[5] eq "+"){}
+	else{next;}
+	print PROM $line[0] ,"\t",$pstart, "\t",$pend, "\t", $line[3], "\t",$line[4], "\t",$line[5],"\n";
+}
+else {print "Header detected in first line, skipping it.\n";}
 
 while (<GTF>){
 	chomp;
-	my @line = split ("\t", $_);
+	@line = split ("\t", $_);
+	
 	# if($line[2] - $line[1] < $genebodyminsize) {next;}
     
 	# Strand is forward, get promoter

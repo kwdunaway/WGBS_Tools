@@ -32,10 +32,11 @@ my @infiles = @ARGV;
 # CTCGTGGTGCGCCGTTTCTTAAGCCGGTC
 # CTCGTGGTGCGCCGTTTCTTAA
 
-my $inseq =         "CTCGTGGTGCGCCGTTTCTTAAGCCG";
-#                    TT  T  G  TGGTG  T  G  T  T  G  TTTTTTAAGT  T  G
-my @searchterms =  ("TT[CT]GTGGTG[CT]GT[CT]GTTTTTTAAGT[CT]G");
-my @captureterms = ("TT([CT])GTGGTG([CT])GT([CT])GTTTTTTAAGT([CT])G");
+
+my $inseq =         "GGYGRTTTAAGTTATAGTAGTATYGGTYGTTATTTTGGTTYG";
+#                    GG Y  G R  TTTAAGTTATAGTAGTAT Y  GGT Y  GTTATTTTGGTT Y  G
+my @searchterms =  ("GG[CT]G[AG]TTTAAGTTATAGTAGTAT[CT]GGT[CT]GTTATTTTGGTT[CT]G");
+my @captureterms = ("GG([CT])G[AG]TTTAAGTTATAGTAGTAT([CT])GGT([CT])GTTATTTTGGTT([CT])G");
 
 #my %bs_seq = BS_Convert_All($inseq);
 #my $printseq = Print_BS_Sequences(\%bs_seq);
