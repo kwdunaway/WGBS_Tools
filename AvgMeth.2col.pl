@@ -78,7 +78,19 @@ if($firstline =~ /start/){
 	print "No header found, processing first line.\n";
 	chomp($firstline);
 	my @line = split("\t",$firstline);
-	$bed_hash{$line[0]}{$line[1]}{$line[2]} = 1;	# Push line to hash
+	# Check if duplicate
+	if(!defined $bed_hash{$line[0]}{$line[1]}{$line[2]}) {
+		if($namecol ne "NA") {
+			$bed_hash{$line[0]}{$line[1]}{$line[2]} = $line[$namecol];	# Push name to hash
+		}
+		else {
+			$bed_hash{$line[0]}{$line[1]}{$line[2]} = 1;	# Push number (no name) to hash
+		}
+	}
+	# Otherwise duplicate
+	else {
+		print "Warning: duplicate found, skipping: $_\n";
+	}
 }
 else { # If first line IS a header line
 	print "Header found, skipping first line!\n";
