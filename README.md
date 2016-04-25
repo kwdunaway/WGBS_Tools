@@ -135,7 +135,36 @@ Calculates average percent methylation of all CpG sites in each line of a BED fi
 - Multiple percent methylation folders with sorted percent methylation bed files of each chromosome may be entered as inputs to be compared side by side.
 - The user can set thresholds for each read. The minimum CpG site threshold will place an "NA" for the read for that experiment if the specified amount of CpG sites found in that read is not met. The minimum read threshold will ignore CpG sites with reads pertaining to that site lower than the specified threshold. The minimum file threshold is useful when multiple folders are input and requires percent methylation data (not "NA") for a read from at least the specified number of folders. If the file threshold is not met, the bed line is not printed to the output.
 
-<a name="change_singlebedhead.pl">(4) change_singlebedhead.pl</a>
+<a name="AvgMeth.2col.pl">(4) AvgMeth.2col.pl</a>
+------------
+
+This script is a modifications of AvgMeth.pl where the output for each sample is given across 2 columns (first being methylated reads, second being total reads). You will have to determine the Average Methylation separately.
+
+
+####Usage :
+
+    Usage: Avg_Meth.2col.pl [1] [2] [3] [4] [5] [6] [7] (Optional: [8] [9]...[10] [11]...)
+
+    Input:
+    1) Output file
+    2) Input BED or GTF File (needs to have a header line)
+    3) Input BED or GTF column for name of ROI (ex: 3 for bed files) (NA for no name)
+    4) Minimum Read Threshold
+    5) Minimum File Threshold (Files without NA data)
+    6,8+) Input Percent Methylation Folder Prefix (exclude \"chr\" from the path)
+    7,9+) Input Sample Name (for header of output file)
+
+
+####Example:
+
+    perl Avg_Meth.2col.pl percentmethyloutput input.bed 3 1 1 PercentMethyl_Sample1/PercentMethyl_Sample1_ Sample1 PercentMethyl_Sample2/PercentMethyl_Sample2_ Sample2
+
+####Additional Info:
+
+- Multiple percent methylation folders with sorted percent methylation bed files of each chromosome may be entered as inputs to be compared side by side.
+- The user can set thresholds for each read. The minimum CpG site threshold will place an "NA" for the read for that experiment if the specified amount of CpG sites found in that read is not met. The minimum read threshold will ignore CpG sites with reads pertaining to that site lower than the specified threshold. The minimum file threshold is useful when multiple folders are input and requires percent methylation data (not "NA") for a read from at least the specified number of folders. If the file threshold is not met, the bed line is not printed to the output.
+
+<a name="change_singlebedhead.pl">(5) change_singlebedhead.pl</a>
 ------------
 
 Reads an input bed file and changes "PercMethylation" in the track name and "PercentMethylation" in the description to a new name. 
@@ -158,7 +187,26 @@ Reads an input bed file and changes "PercMethylation" in the track name and "Per
 
 - The script may be used to change any bed file headers.
 
-<a name="ConvEff_SAM.pl">(5) ConvEff_SAM.pl</a>
+<a name="ConvEff_and_PCRdup_for_SAM.pl">(6) ConvEff_and_PCRdup_for_SAM.pl</a>
+------------
+
+Takes SAM output from BS_Seeker2 and finds the conversion efficiency by looking at the called methylation of mitochondria DNA (it should be completely unmethylated). Also detects PCR duplicates.
+
+
+####Usage :
+
+    Usage: ConvEff_and_PCRdup_for_SAM.pl [1] [2] (Optional: [3] ...)
+
+    Input:
+    1) Output Stats
+    2-?) Input SAM files
+
+
+####Example:
+
+    perl ConvEff_and_PCRdup_for_SAM.pl conv_eff_output sample1run.sam sample2run.sam
+    
+<a name="ConvEff_SAM.pl">(7) ConvEff_SAM.pl</a>
 ------------
 
 Takes SAM output from BS_Seeker2 and finds the conversion efficiency by looking at the called methylation of mitochondria DNA (it should be completely unmethylated).
@@ -177,7 +225,26 @@ Takes SAM output from BS_Seeker2 and finds the conversion efficiency by looking 
 
     perl ConvEff_SAM.pl conv_eff_output sample1run.sam sample2run.sam
 
-<a name="gbcompliance.pl">(6) gbcompliance.pl</a>
+<a name="FASTQ_newseq.pl">(8) FASTQ_newseq.pl</a>
+------------
+
+Looks through all raw fastq sequencing reads and finds the reads that have the LINE1 pattern.
+
+
+####Usage :
+
+    Usage: FASTQ_newseq.pl [1] [2] (Optional: [3] ...)
+
+    Input:
+    1) Results Table Outfile 
+    2-?) Input fastq file(s) (only uses first if Filtering)
+
+
+####Example:
+
+    perl FASTQ_newseq.pl output reads.fq
+
+<a name="gbcompliance.pl">(9) gbcompliance.pl</a>
 ------------
 
 Handles certain genome browser errors, allowing replacement of the header and gets rid of positions past the reference chromosomes.
@@ -203,7 +270,7 @@ Handles certain genome browser errors, allowing replacement of the header and ge
 
 - The script runs on an input folder with chromosomes corresponding to reference chromosomes from chosen assembly.
 
-<a name="GTF_to_promoterbed.pl">(7) GTF_to_promoterbed.pl</a>
+<a name="GTF_to_promoterbed.pl">(10) GTF_to_promoterbed.pl</a>
 ------------
 
 Takes regions from a GTF or bed file and creates an output with the promoter region of those positions.
@@ -226,7 +293,7 @@ Takes regions from a GTF or bed file and creates an output with the promoter reg
 
 - The default promoter start is -500 and promoter end is +1500 from the transcription start site. Said values may be changed in the script.
 
-<a name="Line1_FASTQ.pl">(8) Line1_FASTQ.pl</a>
+<a name="Line1_FASTQ.pl">(11) Line1_FASTQ.pl</a>
 ------------
 
 Looks through all raw fastq sequencing reads and finds the reads that have the Line1 pattern. Then, it quantifies methylation of these sequences across the four CpG sites.
@@ -245,7 +312,47 @@ Looks through all raw fastq sequencing reads and finds the reads that have the L
 
     perl Line1_FASTQ.pl output rawseq1.fq rawseq2.fq
 
-<a name="Permeth_to_SingleCpGtable.pl">(9) Permeth_to_SingleCpGtable.pl</a>
+<a name="Permeth_to_bedGraph.pl">(12) Permeth_to_bedGraph.pl</a>
+------------
+
+Takes percentage methylation BED files and creates a single bedGraph.
+
+
+####Usage :
+
+    Usage: Permeth_to_bedGraph.pl [1] [2] [3]
+
+    Input:
+    1) genome (hg38, mm10, rn6) (for chr names)
+    2) Input prefix (leave off chr#.bed)
+    3) Outputfile name (.bedGraph)
+
+
+####Example:
+
+    perl Permeth_to_bedGraph.pl hg38 Permeth_Sample1/Permeth_Sample1_ output.bedGraph
+
+<a name="Permeth_to_DSSformat.pl">(13) Permeth_to_DSSformat.pl</a>
+------------
+
+Takes percentage methylation BED files and creates a DSS format table.
+
+
+####Usage :
+
+    Usage: Permeth_to_DSSformat.pl [1] [2] [3]
+
+    Input:
+    1) genome (hg38, mm10, rn6) (for chr names)
+    2) Input prefix (leave off chr#.bed)
+    3) Output prefix (leave off chr#.bed)
+
+
+####Example:
+
+    perl Permeth_to_DSSformat.pl hg38 Permeth_Sample1/Permeth_Sample1_ Permeth_Output/Permeth_Output_
+    
+<a name="Permeth_to_SingleCpGtable.pl">(14) Permeth_to_SingleCpGtable.pl</a>
 ------------
 
 Takes multiple Percent Methylation BED files within sample folder(s) and creates an output table based on each CpG site.
