@@ -37,8 +37,8 @@ die "usage: $0
     3) Input BED or GTF column for name of ROI (ex: 3 for bed files) (NA for no name)
     4) Minimum Read Threshold
     5) Minimum File Threshold (Files without NA data)
-    6,7+) Input Percent Methylation Folder Prefix (exclude \"chr\" from the path)
-    8,9+) Input Sample Name (for header of output file)
+    6,8+) Input Percent Methylation Folder Prefix (exclude \"chr\" from the path)
+    7,9+) Input Sample Name (for header of output file)
 " unless @ARGV > 6;
 
 my $outputname = shift(@ARGV);	# Output with average percentage methylation per PMD
@@ -78,7 +78,19 @@ if($firstline =~ /start/){
 	print "No header found, processing first line.\n";
 	chomp($firstline);
 	my @line = split("\t",$firstline);
-	$bed_hash{$line[0]}{$line[1]}{$line[2]} = 1;	# Push line to hash
+	# Check if duplicate
+	if(!defined $bed_hash{$line[0]}{$line[1]}{$line[2]}) {
+		if($namecol ne "NA") {
+			$bed_hash{$line[0]}{$line[1]}{$line[2]} = $line[$namecol];	# Push name to hash
+		}
+		else {
+			$bed_hash{$line[0]}{$line[1]}{$line[2]} = 1;	# Push number (no name) to hash
+		}
+	}
+	# Otherwise duplicate
+	else {
+		print "Warning: duplicate found, skipping: $_\n";
+	}
 }
 else { # If first line IS a header line
 	print "Header found, skipping first line!\n";
