@@ -389,7 +389,7 @@ The script would put them in a table like this:
 	chr1_2045	1/2
 	chr1_3092	8/8
 
-<a name="process_BSSeeker2log.pl">(10) process_BSSeeker2log.pl</a>
+<a name="process_BSSeeker2log.pl">(15) process_BSSeeker2log.pl</a>
 ------------
 
 Takes one or more BSSeeker2 log files and makes it more human readable.
@@ -407,8 +407,69 @@ Takes one or more BSSeeker2 log files and makes it more human readable.
 ####Example:
 
     perl process_BSSeeker2log.pl BSSeeker2_stats_output Sample1.BSSeeker2.log
+    
+<a name="SAM_chrcoverage.pl">(16) SAM_chrcoverage.pl</a>
+------------
 
-<a name="SAMsorted_to_permeth.pl">(11) SAMsorted_to_permeth.pl</a>
+Windows SAM data for coverage analysis.
+
+
+####Usage :
+
+    Usage: SAM_chrcoverage.pl [1] [2] (Optional: [3] ...)
+
+    Input:
+    1) Output File
+    2+) Input SAM File(s)
+
+
+####Example:
+
+    perl SAM_chrcoverage.pl output input1.sam
+    
+<a name="SAM_coverage_BEDdefined.pl">(17) SAM_coverage_BEDdefined.pl</a>
+------------
+
+Windows SAM data for coverage analysis. A BED file is used to define the areas.
+
+
+####Usage :
+
+    Usage: SAM_coverage_BEDdefined.pl [1] [2] [3] (Optional: [4] ...)
+
+    Input:
+    1) Output File
+    2) Bed file to define areas
+    3+) Input SAM File(s)
+
+
+####Example:
+
+    perl SAM_coverage_BEDdefined.pl output areas.bed input1.sam input2.sam
+
+<a name="SAM_coverage_windowed.pl">(18) SAM_coverage_windowed.pl</a>
+------------
+
+Windows SAM data for coverage analysis. Gives more advanced options, including window size control and minimum coverage threshold.
+
+
+####Usage :
+
+    Usage: SAM_coverage_windowed.pl [1] [2] [3] [4] [5] (Optional: [6] ...)
+
+    Input:
+    1) Output File
+    2) Window Size
+    3) Minimum control coverage (ex: 30)
+    4) Number of control samples (input those sam files first) (ex: 6)
+    5+) Input SAM File(s)
+
+
+####Example:
+
+    perl SAM_coverage_windowed.pl output 1000 30 3 control1.sam control2.sam control3.sam input4.sam input5.sam input6.sam
+    
+<a name="SAMsorted_to_permeth.pl">(19) SAMsorted_to_permeth.pl</a>
 ------------
 
 Takes SAM output from BS_Seeker2 and creates percentage methylation BED files that can be uploaded to the UCSC genome browser or further analyzed through StochHMM.
@@ -436,7 +497,7 @@ Takes SAM output from BS_Seeker2 and creates percentage methylation BED files th
 - PCR duplicate filter: This script takes the longest read that matches a strand and position of the same chromosome. If more than one read are the longest, it only takes whichever read came first in the SAM file.
 - The positions in the resulting percent methylation (permeth) BED files are what you would get if you go to the following website. For example, if you go here: http://genome.ucsc.edu/cgi-bin/das/hg19/dna?segment=chrY:59032572,59032573 , it would return CG. However, when you look at the position on the genome browser, the color will only cover 1 base (the 2nd one).
 
-<a name="splitFASTAfile.pl">(12) splitFASTAfile.pl</a>
+<a name="splitFASTAfile.pl">(20) splitFASTAfile.pl</a>
 ------------
 
 Splits a fasta file into individual files, each with a single fasta section.
@@ -460,7 +521,7 @@ Splits a fasta file into individual files, each with a single fasta section.
 
 - Splits files by ">" symbol.
 
-<a name="Window_permeth_readcentric.pl">(13) Window_permeth_readcentric.pl</a>
+<a name="Window_permeth_readcentric.pl">(21) Window_permeth_readcentric.pl</a>
 ------------
 
 This script takes windows (user defined parameters) and outputs average methylation across windows based on a read centric method. The script also outputs a count of CpG assays.
