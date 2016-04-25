@@ -35,16 +35,24 @@ Contents
 - (1) [adapter_split.pl](#adapter_split.pl) - Separates fastq files for those with and without adapter sequence
 - (2) [adapter_trimmer.pl](#adapter_trimmer.pl) - Trims adapter sequence from a fastq file
 - (3) [AvgMeth.pl](#AvgMeth.pl) - Calculates average percent methylation of all CpG sites in each line of a BED file
-- (4) [change_singlebedhead.pl](#change_singlebedhead.pl) - Changes bed file header
-- (5) [ConvEff_SAM.pl](#ConvEff_SAM.pl) - Takes SAM output from BS_Seeker2 and finds the conversion efficiency
-- (6) [gbcompliance.pl](#gbcompliance.pl) - Handles genome browser errors
-- (7) [GTF_to_promoterbed.pl](#GTF_to_promoterbed.pl) - Takes regions from GTF/bed file and outputs the promoter regions
-- (8) [Line1_FASTQ.pl] (#Line1_FASTQ.pl) - Quantifies methylation of the four CpG sites in Line 1 sequences from fastq reads
-- (9) [Permeth_to_SingleCpGtable.pl](#Permeth_to_SingleCpGtable.pl) - Takes percentage methylation BED files and creates a single CpG table
-- (10) [process_BSSeeker2log.pl](#process_BSSeeker2log.pl) - Takes one or more BSSeeker2 log files and makes it more human readable
-- (11) [SAMsorted_to_permeth.pl](#SAMsorted_to_permeth.pl) - Takes SAM output from BS_Seeker2 and creates percentage methylation BED files
-- (12) [splitFASTAfile.pl](#splitFASTAfile.pl) - Splits a fasta file into individual files, each with a single fasta section
-- (13) [Window_permeth_readcentric.pl](#Window_permeth_readcentric.pl) - Takes sliding windows of positions and outputs average methylation across windows
+- (4) [AvgMeth.2col.pl](#AvgMeth.2col.pl) - Outputs methylated and total reads for all CpG sites in each line of a BED file
+- (5) [change_singlebedhead.pl](#change_singlebedhead.pl) - Changes bed file header
+- (6) [ConvEff_and_PCRdup_for_SAM.pl](#ConvEff_and_PCRdup_for_SAM.pl) - Takes SAM output from BS_Seeker2 and checks for PCR duplicates
+- (7) [ConvEff_SAM.pl](#ConvEff_SAM.pl) - Takes SAM output from BS_Seeker2 and finds the conversion efficiency
+- (8) [FASTQ_newseq.pl](#FASTQ_newseq.pl) - Searches fastq reads for the LINE1 pattern
+- (9) [gbcompliance.pl](#gbcompliance.pl) - Handles genome browser errors
+- (10) [GTF_to_promoterbed.pl](#GTF_to_promoterbed.pl) - Takes regions from GTF/bed file and outputs the promoter regions
+- (11) [Line1_FASTQ.pl] (#Line1_FASTQ.pl) - Quantifies methylation of the four CpG sites in Line 1 sequences from fastq reads
+- (12) [Permeth_to_bedGraph.pl](#Permeth_to_bedGraph.pl) - Takes percentage methylation BED files and creates a single bedGraph
+- (13) [Permeth_to_DSSformat.pl](#Permeth_to_DSSformat.pl) - Takes percentage methylation BED files and creates a DSS format table
+- (14) [Permeth_to_SingleCpGtable.pl](#Permeth_to_SingleCpGtable.pl) - Takes percentage methylation BED files and creates a single CpG table
+- (15) [process_BSSeeker2log.pl](#process_BSSeeker2log.pl) - Takes one or more BSSeeker2 log files and makes it more human readable
+- (16) [SAM_chrcoverage.pl](#SAM_chrcoverage.pl) - Windows SAM data for coverage analysis
+- (17) [SAM_coverage_BEDdefined.pl](#SAM_coverage_BEDdefined.pl) - Windows SAM data for coverage analysis using a BED to define areas
+- (18) [SAM_coverage_windowed.pl](#SAM_coverage_windowed.pl) - Windows SAM data for coverage analysis, allowing control of minimum coverage and window size
+- (19) [SAMsorted_to_permeth.pl](#SAMsorted_to_permeth.pl) - Takes SAM output from BS_Seeker2 and creates percentage methylation BED files
+- (20) [splitFASTAfile.pl](#splitFASTAfile.pl) - Splits a fasta file into individual files, each with a single fasta section
+- (21) [Window_permeth_readcentric.pl](#Window_permeth_readcentric.pl) - Takes sliding windows of positions and outputs average methylation across windows
 
 
 <a name="adapter_split.pl">(1) adapter_split.pl </a>
