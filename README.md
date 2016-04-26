@@ -35,16 +35,24 @@ Contents
 - (1) [adapter_split.pl](#adapter_split.pl) - Separates fastq files for those with and without adapter sequence
 - (2) [adapter_trimmer.pl](#adapter_trimmer.pl) - Trims adapter sequence from a fastq file
 - (3) [AvgMeth.pl](#AvgMeth.pl) - Calculates average percent methylation of all CpG sites in each line of a BED file
-- (4) [change_singlebedhead.pl](#change_singlebedhead.pl) - Changes bed file header
-- (5) [ConvEff_SAM.pl](#ConvEff_SAM.pl) - Takes SAM output from BS_Seeker2 and finds the conversion efficiency
-- (6) [gbcompliance.pl](#gbcompliance.pl) - Handles genome browser errors
-- (7) [GTF_to_promoterbed.pl](#GTF_to_promoterbed.pl) - Takes regions from GTF/bed file and outputs the promoter regions
-- (8) [Line1_FASTQ.pl] (#Line1_FASTQ.pl) - Quantifies methylation of the four CpG sites in Line 1 sequences from fastq reads
-- (9) [Permeth_to_SingleCpGtable.pl](#Permeth_to_SingleCpGtable.pl) - Takes percentage methylation BED files and creates a single CpG table
-- (10) [process_BSSeeker2log.pl](#process_BSSeeker2log.pl) - Takes one or more BSSeeker2 log files and makes it more human readable
-- (11) [SAMsorted_to_permeth.pl](#SAMsorted_to_permeth.pl) - Takes SAM output from BS_Seeker2 and creates percentage methylation BED files
-- (12) [splitFASTAfile.pl](#splitFASTAfile.pl) - Splits a fasta file into individual files, each with a single fasta section
-- (13) [Window_permeth_readcentric.pl](#Window_permeth_readcentric.pl) - Takes sliding windows of positions and outputs average methylation across windows
+- (4) [AvgMeth.2col.pl](#AvgMeth.2col.pl) - Outputs methylated and total reads for all CpG sites in each line of a BED file
+- (5) [change_singlebedhead.pl](#change_singlebedhead.pl) - Changes bed file header
+- (6) [ConvEff_and_PCRdup_for_SAM.pl](#ConvEff_and_PCRdup_for_SAM.pl) - Takes SAM output from BS_Seeker2 and checks for PCR duplicates
+- (7) [ConvEff_SAM.pl](#ConvEff_SAM.pl) - Takes SAM output from BS_Seeker2 and finds the conversion efficiency
+- (8) [FASTQ_newseq.pl](#FASTQ_newseq.pl) - Searches fastq reads for the LINE1 pattern
+- (9) [gbcompliance.pl](#gbcompliance.pl) - Handles genome browser errors
+- (10) [GTF_to_promoterbed.pl](#GTF_to_promoterbed.pl) - Takes regions from GTF/bed file and outputs the promoter regions
+- (11) [Line1_FASTQ.pl] (#Line1_FASTQ.pl) - Quantifies methylation of the four CpG sites in Line 1 sequences from fastq reads
+- (12) [Permeth_to_bedGraph.pl](#Permeth_to_bedGraph.pl) - Takes percentage methylation BED files and creates a single bedGraph
+- (13) [Permeth_to_DSSformat.pl](#Permeth_to_DSSformat.pl) - Takes percentage methylation BED files and creates a DSS format table
+- (14) [Permeth_to_SingleCpGtable.pl](#Permeth_to_SingleCpGtable.pl) - Takes percentage methylation BED files and creates a single CpG table
+- (15) [process_BSSeeker2log.pl](#process_BSSeeker2log.pl) - Takes one or more BSSeeker2 log files and makes it more human readable
+- (16) [SAM_chrcoverage.pl](#SAM_chrcoverage.pl) - Windows SAM data for coverage analysis
+- (17) [SAM_coverage_BEDdefined.pl](#SAM_coverage_BEDdefined.pl) - Windows SAM data for coverage analysis using a BED to define areas
+- (18) [SAM_coverage_windowed.pl](#SAM_coverage_windowed.pl) - Windows SAM data for coverage analysis, allowing control of minimum coverage and window size
+- (19) [SAMsorted_to_permeth.pl](#SAMsorted_to_permeth.pl) - Takes SAM output from BS_Seeker2 and creates percentage methylation BED files
+- (20) [splitFASTAfile.pl](#splitFASTAfile.pl) - Splits a fasta file into individual files, each with a single fasta section
+- (21) [Window_permeth_readcentric.pl](#Window_permeth_readcentric.pl) - Takes sliding windows of positions and outputs average methylation across windows
 
 
 <a name="adapter_split.pl">(1) adapter_split.pl </a>
@@ -127,7 +135,36 @@ Calculates average percent methylation of all CpG sites in each line of a BED fi
 - Multiple percent methylation folders with sorted percent methylation bed files of each chromosome may be entered as inputs to be compared side by side.
 - The user can set thresholds for each read. The minimum CpG site threshold will place an "NA" for the read for that experiment if the specified amount of CpG sites found in that read is not met. The minimum read threshold will ignore CpG sites with reads pertaining to that site lower than the specified threshold. The minimum file threshold is useful when multiple folders are input and requires percent methylation data (not "NA") for a read from at least the specified number of folders. If the file threshold is not met, the bed line is not printed to the output.
 
-<a name="change_singlebedhead.pl">(4) change_singlebedhead.pl</a>
+<a name="AvgMeth.2col.pl">(4) AvgMeth.2col.pl</a>
+------------
+
+This script is a modifications of AvgMeth.pl where the output for each sample is given across 2 columns (first being methylated reads, second being total reads). You will have to determine the Average Methylation separately.
+
+
+####Usage :
+
+    Usage: Avg_Meth.2col.pl [1] [2] [3] [4] [5] [6] [7] (Optional: [8] [9]...[10] [11]...)
+
+    Input:
+    1) Output file
+    2) Input BED or GTF File (needs to have a header line)
+    3) Input BED or GTF column for name of ROI (ex: 3 for bed files) (NA for no name)
+    4) Minimum Read Threshold
+    5) Minimum File Threshold (Files without NA data)
+    6,8+) Input Percent Methylation Folder Prefix (exclude \"chr\" from the path)
+    7,9+) Input Sample Name (for header of output file)
+
+
+####Example:
+
+    perl Avg_Meth.2col.pl percentmethyloutput input.bed 3 1 1 PercentMethyl_Sample1/PercentMethyl_Sample1_ Sample1 PercentMethyl_Sample2/PercentMethyl_Sample2_ Sample2
+
+####Additional Info:
+
+- Multiple percent methylation folders with sorted percent methylation bed files of each chromosome may be entered as inputs to be compared side by side.
+- The user can set thresholds for each read. The minimum CpG site threshold will place an "NA" for the read for that experiment if the specified amount of CpG sites found in that read is not met. The minimum read threshold will ignore CpG sites with reads pertaining to that site lower than the specified threshold. The minimum file threshold is useful when multiple folders are input and requires percent methylation data (not "NA") for a read from at least the specified number of folders. If the file threshold is not met, the bed line is not printed to the output.
+
+<a name="change_singlebedhead.pl">(5) change_singlebedhead.pl</a>
 ------------
 
 Reads an input bed file and changes "PercMethylation" in the track name and "PercentMethylation" in the description to a new name. 
@@ -150,7 +187,26 @@ Reads an input bed file and changes "PercMethylation" in the track name and "Per
 
 - The script may be used to change any bed file headers.
 
-<a name="ConvEff_SAM.pl">(5) ConvEff_SAM.pl</a>
+<a name="ConvEff_and_PCRdup_for_SAM.pl">(6) ConvEff_and_PCRdup_for_SAM.pl</a>
+------------
+
+Takes SAM output from BS_Seeker2 and finds the conversion efficiency by looking at the called methylation of mitochondria DNA (it should be completely unmethylated). Also detects PCR duplicates.
+
+
+####Usage :
+
+    Usage: ConvEff_and_PCRdup_for_SAM.pl [1] [2] (Optional: [3] ...)
+
+    Input:
+    1) Output Stats
+    2-?) Input SAM files
+
+
+####Example:
+
+    perl ConvEff_and_PCRdup_for_SAM.pl conv_eff_output sample1run.sam sample2run.sam
+    
+<a name="ConvEff_SAM.pl">(7) ConvEff_SAM.pl</a>
 ------------
 
 Takes SAM output from BS_Seeker2 and finds the conversion efficiency by looking at the called methylation of mitochondria DNA (it should be completely unmethylated).
@@ -169,7 +225,26 @@ Takes SAM output from BS_Seeker2 and finds the conversion efficiency by looking 
 
     perl ConvEff_SAM.pl conv_eff_output sample1run.sam sample2run.sam
 
-<a name="gbcompliance.pl">(6) gbcompliance.pl</a>
+<a name="FASTQ_newseq.pl">(8) FASTQ_newseq.pl</a>
+------------
+
+Looks through all raw fastq sequencing reads and finds the reads that have the LINE1 pattern.
+
+
+####Usage :
+
+    Usage: FASTQ_newseq.pl [1] [2] (Optional: [3] ...)
+
+    Input:
+    1) Results Table Outfile 
+    2-?) Input fastq file(s) (only uses first if Filtering)
+
+
+####Example:
+
+    perl FASTQ_newseq.pl output reads.fq
+
+<a name="gbcompliance.pl">(9) gbcompliance.pl</a>
 ------------
 
 Handles certain genome browser errors, allowing replacement of the header and gets rid of positions past the reference chromosomes.
@@ -195,7 +270,7 @@ Handles certain genome browser errors, allowing replacement of the header and ge
 
 - The script runs on an input folder with chromosomes corresponding to reference chromosomes from chosen assembly.
 
-<a name="GTF_to_promoterbed.pl">(7) GTF_to_promoterbed.pl</a>
+<a name="GTF_to_promoterbed.pl">(10) GTF_to_promoterbed.pl</a>
 ------------
 
 Takes regions from a GTF or bed file and creates an output with the promoter region of those positions.
@@ -218,7 +293,7 @@ Takes regions from a GTF or bed file and creates an output with the promoter reg
 
 - The default promoter start is -500 and promoter end is +1500 from the transcription start site. Said values may be changed in the script.
 
-<a name="Line1_FASTQ.pl">(8) Line1_FASTQ.pl</a>
+<a name="Line1_FASTQ.pl">(11) Line1_FASTQ.pl</a>
 ------------
 
 Looks through all raw fastq sequencing reads and finds the reads that have the Line1 pattern. Then, it quantifies methylation of these sequences across the four CpG sites.
@@ -237,7 +312,47 @@ Looks through all raw fastq sequencing reads and finds the reads that have the L
 
     perl Line1_FASTQ.pl output rawseq1.fq rawseq2.fq
 
-<a name="Permeth_to_SingleCpGtable.pl">(9) Permeth_to_SingleCpGtable.pl</a>
+<a name="Permeth_to_bedGraph.pl">(12) Permeth_to_bedGraph.pl</a>
+------------
+
+Takes percentage methylation BED files and creates a single bedGraph.
+
+
+####Usage :
+
+    Usage: Permeth_to_bedGraph.pl [1] [2] [3]
+
+    Input:
+    1) genome (hg38, mm10, rn6) (for chr names)
+    2) Input prefix (leave off chr#.bed)
+    3) Outputfile name (.bedGraph)
+
+
+####Example:
+
+    perl Permeth_to_bedGraph.pl hg38 Permeth_Sample1/Permeth_Sample1_ output.bedGraph
+
+<a name="Permeth_to_DSSformat.pl">(13) Permeth_to_DSSformat.pl</a>
+------------
+
+Takes percentage methylation BED files and creates a DSS format table.
+
+
+####Usage :
+
+    Usage: Permeth_to_DSSformat.pl [1] [2] [3]
+
+    Input:
+    1) genome (hg38, mm10, rn6) (for chr names)
+    2) Input prefix (leave off chr#.bed)
+    3) Output prefix (leave off chr#.bed)
+
+
+####Example:
+
+    perl Permeth_to_DSSformat.pl hg38 Permeth_Sample1/Permeth_Sample1_ Permeth_Output/Permeth_Output_
+    
+<a name="Permeth_to_SingleCpGtable.pl">(14) Permeth_to_SingleCpGtable.pl</a>
 ------------
 
 Takes multiple Percent Methylation BED files within sample folder(s) and creates an output table based on each CpG site.
@@ -274,7 +389,7 @@ The script would put them in a table like this:
 	chr1_2045	1/2
 	chr1_3092	8/8
 
-<a name="process_BSSeeker2log.pl">(10) process_BSSeeker2log.pl</a>
+<a name="process_BSSeeker2log.pl">(15) process_BSSeeker2log.pl</a>
 ------------
 
 Takes one or more BSSeeker2 log files and makes it more human readable.
@@ -292,8 +407,69 @@ Takes one or more BSSeeker2 log files and makes it more human readable.
 ####Example:
 
     perl process_BSSeeker2log.pl BSSeeker2_stats_output Sample1.BSSeeker2.log
+    
+<a name="SAM_chrcoverage.pl">(16) SAM_chrcoverage.pl</a>
+------------
 
-<a name="SAMsorted_to_permeth.pl">(11) SAMsorted_to_permeth.pl</a>
+Windows SAM data for coverage analysis.
+
+
+####Usage :
+
+    Usage: SAM_chrcoverage.pl [1] [2] (Optional: [3] ...)
+
+    Input:
+    1) Output File
+    2+) Input SAM File(s)
+
+
+####Example:
+
+    perl SAM_chrcoverage.pl output input1.sam
+    
+<a name="SAM_coverage_BEDdefined.pl">(17) SAM_coverage_BEDdefined.pl</a>
+------------
+
+Windows SAM data for coverage analysis. A BED file is used to define the areas.
+
+
+####Usage :
+
+    Usage: SAM_coverage_BEDdefined.pl [1] [2] [3] (Optional: [4] ...)
+
+    Input:
+    1) Output File
+    2) Bed file to define areas
+    3+) Input SAM File(s)
+
+
+####Example:
+
+    perl SAM_coverage_BEDdefined.pl output areas.bed input1.sam input2.sam
+
+<a name="SAM_coverage_windowed.pl">(18) SAM_coverage_windowed.pl</a>
+------------
+
+Windows SAM data for coverage analysis. Gives more advanced options, including window size control and minimum coverage threshold.
+
+
+####Usage :
+
+    Usage: SAM_coverage_windowed.pl [1] [2] [3] [4] [5] (Optional: [6] ...)
+
+    Input:
+    1) Output File
+    2) Window Size
+    3) Minimum control coverage (ex: 30)
+    4) Number of control samples (input those sam files first) (ex: 6)
+    5+) Input SAM File(s)
+
+
+####Example:
+
+    perl SAM_coverage_windowed.pl output 1000 30 3 control1.sam control2.sam control3.sam input4.sam input5.sam input6.sam
+    
+<a name="SAMsorted_to_permeth.pl">(19) SAMsorted_to_permeth.pl</a>
 ------------
 
 Takes SAM output from BS_Seeker2 and creates percentage methylation BED files that can be uploaded to the UCSC genome browser or further analyzed through StochHMM.
@@ -321,7 +497,7 @@ Takes SAM output from BS_Seeker2 and creates percentage methylation BED files th
 - PCR duplicate filter: This script takes the longest read that matches a strand and position of the same chromosome. If more than one read are the longest, it only takes whichever read came first in the SAM file.
 - The positions in the resulting percent methylation (permeth) BED files are what you would get if you go to the following website. For example, if you go here: http://genome.ucsc.edu/cgi-bin/das/hg19/dna?segment=chrY:59032572,59032573 , it would return CG. However, when you look at the position on the genome browser, the color will only cover 1 base (the 2nd one).
 
-<a name="splitFASTAfile.pl">(12) splitFASTAfile.pl</a>
+<a name="splitFASTAfile.pl">(20) splitFASTAfile.pl</a>
 ------------
 
 Splits a fasta file into individual files, each with a single fasta section.
@@ -345,7 +521,7 @@ Splits a fasta file into individual files, each with a single fasta section.
 
 - Splits files by ">" symbol.
 
-<a name="Window_permeth_readcentric.pl">(13) Window_permeth_readcentric.pl</a>
+<a name="Window_permeth_readcentric.pl">(21) Window_permeth_readcentric.pl</a>
 ------------
 
 This script takes windows (user defined parameters) and outputs average methylation across windows based on a read centric method. The script also outputs a count of CpG assays.
