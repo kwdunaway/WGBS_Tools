@@ -42,11 +42,11 @@ die "usage: $0
 " unless @ARGV > 6;
 
 my $outputname = shift(@ARGV);	# Output with average percentage methylation per PMD
-open(OUT, ">$outputname") or die "AvgMethv3.pl: Error: cannot open $outputname output file";
+open(OUT, ">$outputname") or die "$0: Error: cannot open $outputname output file";
 $outputname = $outputname . ".2col";
-open(OUT2COL, ">$outputname") or die "AvgMethv3.pl: Error: cannot open $outputname output file";
+open(OUT2COL, ">$outputname") or die "$0: Error: cannot open $outputname output file";
 my $inputname = shift(@ARGV);	# Input BED or GTF File
-open(BED, "<$inputname") or die "AvgMethv3.pl: Error: cannot open $inputname input BED file";
+open(BED, "<$inputname") or die "$0: Error: cannot open $inputname input BED file";
 my $namecol = shift(@ARGV);	# column for name of Region of Interest <or> NA to skip that
 my $minreads = shift(@ARGV);	# Threshold for reads found at a CpG site
 my $minfiles = shift(@ARGV);	# Threshold for total data across all folders

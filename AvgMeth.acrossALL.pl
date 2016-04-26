@@ -1,15 +1,15 @@
 #!/usr/bin/perl 
 use strict; use warnings;
+use POSIX;
 
 ################################################################################
-# Author: Keith Dunaway and Roy Chu
-# Email: kwdunaway@ucdavis.edu rgchu@ucdavis.edu
-# Date: 8-14-2014
+# Author: Keith Dunaway
+# Email: kwdunaway@ucdavis.edu
+# Date: 4-62-2016
 #
-# This script calculates average percent methylation of all CpG sites in each 
-# line of a BED file. Multiple percent methylation folders with sorted
-# percent methylation bed files of each chromosome may be entered as inputs to
-# be compared side by side.
+# This script is a modifications of AvgMeth.2col.pl where the output for each sample
+# is given as three lines. First will be the # of meth reads, then # of total reads.
+# The final line with be the % meth (essentially if you divide row 1 by row 2).
 #
 # The user can set thresholds for each read. The minimum CpG site threshold 
 # will place an "NA" for the read for that experiment if the specified amount
@@ -20,8 +20,7 @@ use strict; use warnings;
 # at least the specified number of folders. If the file threshold is not met,
 # the bed line is not printed to the output.
 #
-# Arguments:
-#    <see below>
+# Note: This does NOT WORK for OVERLAPPING bed coordinates. 
 #
 ################################################################################
 
@@ -31,24 +30,17 @@ use strict; use warnings;
 
 die "usage: $0
     1) Output file
-    2) Input BED or GTF File (needs to have a header line)
-    3) Input BED or GTF column for name of ROI (ex: 3 for bed files) (NA for no name)
-    4) Minimum CpG Site Threshold 
-    5) Minimum Read Threshold
-    6) Minimum File Threshold (Files without NA data)
-    7,9+) Input Percent Methylation Folder Prefix (exclude \"chr\" from the path)
-    8,10+) Input Sample Name (for header of output file)
-" unless @ARGV > 7;
+    2) Input BED or GTF File
+    3) Minimum Read Threshold per CpG
+    4,6+) Input Percent Methylation Folder Prefix (exclude \"chr\" from the path)
+    5,7+) Input Sample Name (for header of output file)
+" unless @ARGV > 4;
 
 my $outputname = shift(@ARGV);	# Output with average percentage methylation per PMD
 open(OUT, ">$outputname") or die "$0: Error: cannot open $outputname output file";
 my $inputname = shift(@ARGV);	# Input BED or GTF File
 open(BED, "<$inputname") or die "$0: Error: cannot open $inputname input BED file";
-my $namecol = shift(@ARGV);	# column for name of Region of Interest <or> NA to skip that
-my $mincpg = shift(@ARGV);	# Avg % Meth = "NA" unless >= minimum CpG site threshold
-# Special case (default): 0 as threshold will cause 0 CpG sites to give "NA"
 my $minreads = shift(@ARGV);	# Threshold for reads found at a CpG site
-my $minfiles = shift(@ARGV);	# Threshold for total data across all folders
 my @filenames;			# Input Percent Methylation Folder Prefix (Ex: /home/user/Permeth/Permeth_)
 my @headernames;		# Input Percent Methylation Header for Column (Ex: Sample1)
 while(@ARGV){
@@ -77,26 +69,20 @@ if($firstline =~ /start/){
 	print "No header found, processing first line.\n";
 	chomp($firstline);
 	my @line = split("\t",$firstline);
-	$bed_hash{$line[0]}{$line[1]}{$line[2]} = 1;	# Push line to hash
+	$bed_hash{$line[0]}{$line[1]}{$line[2]} = 1;	# Push number (no name) to hash
 }
 else { # If first line IS a header line
 	print "Header found, skipping first line!\n";
 }
 
 # Process entire BED file
-while(<BED>)
-{ 
+while(<BED>){ 
 	chomp;
 	my @line = split("\t",$_);
 	if ($line[0] =~ /_/){next;}	# Ignore non-standard chromosomes
 	# Check if duplicate
 	if(!defined $bed_hash{$line[0]}{$line[1]}{$line[2]}) {
-		if($namecol ne "NA") {
-			$bed_hash{$line[0]}{$line[1]}{$line[2]} = $line[$namecol];	# Push line to hash
-		}
-		else {
-			$bed_hash{$line[0]}{$line[1]}{$line[2]} = 1;	# Push line to hash
-		}
+		$bed_hash{$line[0]}{$line[1]}{$line[2]} = 1;	# Push number (no name) to hash
 	}
 	# Otherwise duplicate
 	else {
@@ -133,28 +119,32 @@ print "Finished loading input BED file.\n\n";
 # thresholds set by the user.                                           #
 #########################################################################
 
-# Print header
-print OUT "Chromosome\tStart\tEnd";
-if ($namecol ne "NA"){print OUT "\tName";} 
+
+# Initialize hash for storing output information
+# Structure:
+# $outhash{filename}{"meth"} = methylated read count
+# $outhash{filename}{"total"} = total read count
+my %outhash;
+
+# Print header and initialize outhash
+print OUT "Information";
 for(my $i = 0; $i < @headernames; $i++){
 	print OUT "\t$headernames[$i]";
+	$outhash{$filenames[$i]}{"meth"} = 0;
+	$outhash{$filenames[$i]}{"total"} = 0;						
 }
 print OUT "\n";
 
 # Run process and print for each chromosome
 foreach my $chr (sort keys %bed_array){
 	print "\nLoading $chr\n";
-	# Initialize temporary hash for storing output information
-	# Structure:
-	# $outhash{chromosome}{start}{end}{filename} = ",percentmethylation"
-	my %outhash;
+	
 	# For each sample/folder, run the chromosome bed file
 	for(my $i = 0; $i < @filenames; $i++){
 		my $filename = $filenames[$i] . $chr . ".bed";	# Create File Name
 		my $bedpositioncounter = 0;	# Starting position for each iteration
 						# Increments when previous bed array lines are no longer necessary to scan
 		
-		#open (IN, "<$filename") or die "$0: Error: Couldn't open chromosome file $filename\n";
 		unless(open(IN, "<$filename")) {
 			$filename = $filename . ".gz";
 			open(IN, "gunzip -c $filename |") || die "can't open pipe to $filename";
@@ -180,11 +170,13 @@ foreach my $chr (sort keys %bed_array){
 				if($inlinearray[1] >= $bed_array{$chr}[$k][0] && $inlinearray[2] <= $bed_array{$chr}[$k][1]){
 					my @CpGmethylation = split("-", $inlinearray[3]);
 					# Check if above read threshold
+					my $totalreadcount = $CpGmethylation[1];
 					if ($CpGmethylation[1] >= $minreads) {
-						$outhash{$chr}{$bed_array{$chr}[$k][0]}{$bed_array{$chr}[$k][1]}{$filenames[$i]} .= ",$CpGmethylation[0]";
+						my $methreadcount = floor(($CpGmethylation[0] * $totalreadcount) + .5);
+						$outhash{$filenames[$i]}{"meth"} += $methreadcount;
+						$outhash{$filenames[$i]}{"total"} += $totalreadcount;						
 					}
-				}
-				
+				}				
 			}
 		}
 
@@ -207,63 +199,34 @@ foreach my $chr (sort keys %bed_array){
 				if($inlinearray[1] >= $bed_array{$chr}[$k][0] && $inlinearray[2] <= $bed_array{$chr}[$k][1]){
 					my @CpGmethylation = split("-", $inlinearray[3]);
 					# Check if above read threshold
+					my $totalreadcount = $CpGmethylation[1];
 					if ($CpGmethylation[1] >= $minreads) {
-						$outhash{$chr}{$bed_array{$chr}[$k][0]}{$bed_array{$chr}[$k][1]}{$filenames[$i]} .= ",$CpGmethylation[0]";
+						my $methreadcount = floor(($CpGmethylation[0] * $totalreadcount) + .5);
+						$outhash{$filenames[$i]}{"meth"} += $methreadcount;
+						$outhash{$filenames[$i]}{"total"} += $totalreadcount;						
 					}
 				}
 			}
 		}
 		close IN;
-
-		# Check the entire data set for positions with no methylation information and fill in with "NA"
-		for(my $k = 0; $k < $bed_array{$chr}[0][2]; $k++){
-			if (!defined $outhash{$chr}{$bed_array{$chr}[$k][0]}{$bed_array{$chr}[$k][1]}{$filenames[$i]}){
-				$outhash{$chr}{$bed_array{$chr}[$k][0]}{$bed_array{$chr}[$k][1]}{$filenames[$i]} = "NA";
-			}
-		}
 	}
+}
 
-	print "Printing $chr\n";
-	# Print data for this chromosome
-	foreach my $outstart (sort {$a<=>$b} keys %{$outhash{$chr}}){
-		foreach my $outend (sort {$a<=>$b} keys %{$outhash{$chr}{$outstart}}){
-			# Make a count for file threshold
-			my $NAcounter = 0;
-			for(my $i = 0; $i < @filenames; $i++) {
-				# For each file missing data, increment count
-				if($outhash{$chr}{$outstart}{$outend}{$filenames[$i]} eq "NA") {
-					$NAcounter++;
-				}
-				# Files with data, process percentage methylation
-				else {
-					my @data = split(",",$outhash{$chr}{$outstart}{$outend}{$filenames[$i]});
-					# Check CpG site threshold
-					if ($#data >= $mincpg){
-						# Calculate percentage methylation
-						my $sum = 0;
-						foreach my $methyl (@data){
-							if($methyl ne "") {$sum += $methyl;}
-						}
-						$outhash{$chr}{$outstart}{$outend}{$filenames[$i]} = sprintf("%.3f", $sum/$#data);
-					}
-					# Does not pass threshold, add to missing data
-					else {
-						$outhash{$chr}{$outstart}{$outend}{$filenames[$i]} = "NA";
-						$NAcounter++;
-					}
-				}
-			}
-			# Check file threshold, if met, then print
-			if($NAcounter <= @filenames - $minfiles) {
-				# Print to out
-				print OUT "$chr\t$outstart\t$outend";
-				if($namecol ne "NA"){print OUT "\t" , $bed_hash{$chr}{$outstart}{$outend};}
-				for(my $i = 0; $i < @filenames; $i++) {
-					print OUT "\t$outhash{$chr}{$outstart}{$outend}{$filenames[$i]}";
-				}
-				print OUT "\n";
-			}
-		}
-	}
+# Print results
+print "Printing results\n";
+print OUT "Methylated Reads";
+for(my $i = 0; $i < @filenames; $i++) {
+	print OUT "\t" , $outhash{$filenames[$i]}{"meth"};
+}
+print OUT "\n";
+print OUT "Total Reads";
+for(my $i = 0; $i < @filenames; $i++) {
+	print OUT "\t" , $outhash{$filenames[$i]}{"total"};
+}
+print OUT "\n";
+print OUT "Percent Methylation";
+for(my $i = 0; $i < @filenames; $i++) {
+	my $average = sprintf("%.3f",$outhash{$filenames[$i]}{"meth"} / $outhash{$filenames[$i]}{"total"});
+	print OUT "\t" , $average;
 }
 close OUT;
