@@ -41,13 +41,13 @@ Contents
 - (7) [ConvEff_and_PCRdup_for_SAM.pl](#ConvEff_and_PCRdup_for_SAM.pl) - Takes SAM output from BS_Seeker2 and checks for PCR duplicates
 - (8) [ConvEff_SAM.pl](#ConvEff_SAM.pl) - Takes SAM output from BS_Seeker2 and finds the conversion efficiency
 - (9) [FASTQ_newseq.pl](#FASTQ_newseq.pl) - Searches fastq reads for the LINE1 pattern
-- (10) [gbcompliance.pl](#gbcompliance.pl) - Handles genome browser errors
+- (10) [gbcompliance.pl](#gbcompliance.pl) - Trims bed file to make it genome browser compatible
 - (11) [GTF_to_promoterbed.pl](#GTF_to_promoterbed.pl) - Takes regions from GTF/bed file and outputs the promoter regions
 - (12) [Line1_FASTQ.pl] (#Line1_FASTQ.pl) - Quantifies methylation of the four CpG sites in Line 1 sequences from fastq reads
 - (13) [Permeth_to_bedGraph.pl](#Permeth_to_bedGraph.pl) - Takes percentage methylation BED files and creates a single bedGraph
 - (14) [Permeth_to_DSSformat.pl](#Permeth_to_DSSformat.pl) - Takes percentage methylation BED files and creates a DSS format table
 - (15) [Permeth_to_SingleCpGtable.pl](#Permeth_to_SingleCpGtable.pl) - Takes percentage methylation BED files and creates a single CpG table
-- (16) [process_BSSeeker2log.pl](#process_BSSeeker2log.pl) - Takes one or more BSSeeker2 log files and makes it more human readable
+- (16) [process_BSSeeker2log.pl](#process_BSSeeker2log.pl) - Takes one or more BSSeeker2 log files and creates a summary table.
 - (17) [SAM_chrcoverage.pl](#SAM_chrcoverage.pl) - Windows SAM data for coverage analysis
 - (18) [SAM_coverage_BEDdefined.pl](#SAM_coverage_BEDdefined.pl) - Windows SAM data for coverage analysis using a BED to define areas
 - (19) [SAM_coverage_windowed.pl](#SAM_coverage_windowed.pl) - Windows SAM data for coverage analysis, allowing control of minimum coverage and window size
@@ -265,7 +265,7 @@ Looks through all raw fastq sequencing reads and finds the reads that have the L
 <a name="gbcompliance.pl">(10) gbcompliance.pl</a>
 ------------
 
-Handles certain genome browser errors, allowing replacement of the header and gets rid of positions past the reference chromosomes.
+Trims bed files to make it genome browser compatible, allowing replacement of the header and gets rid of positions past the reference chromosomes.
 
 
 ####Usage :
@@ -410,7 +410,7 @@ The script would put them in a table like this:
 <a name="process_BSSeeker2log.pl">(16) process_BSSeeker2log.pl</a>
 ------------
 
-Takes one or more BSSeeker2 log files and makes it more human readable.
+Takes one or more BSSeeker2 log files and creates a summary table.
 
 
 ####Usage :
