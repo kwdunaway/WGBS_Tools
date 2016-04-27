@@ -1,0 +1,475 @@
+---
+title: "SingleCpGAnalysis_2016"
+author: "Roy Chu"
+date: "Wednesday, March 09, 2016"
+output: html_document
+---
+
+```{r, echo=FALSE}
+###################################
+# Libraries that must be accessed #
+#     Install if not already      #
+###################################
+
+source("http://bioconductor.org/biocLite.R")
+biocLite("edgeR")
+#install.packages("ggplot2")
+library(edgeR)
+library(ggplot2)
+library(scales)
+library(reshape2)
+library(gtable)
+#install.packages("png")
+#install.packages("RCurl")
+#install.packages("XML")
+library("RCurl")
+library("XML")
+library("png")
+library("grid")
+library(plyr)
+
+
+####################
+# Create Functions #
+####################
+
+# This is a function for calculating standard error
+se <- function(x) sqrt(var(x,na.rm=TRUE)/length(na.omit(x)))
+```
+
+```{r, echo=FALSE}
+###################################
+#         Nardone et al. 2014     #
+###################################
+
+###################################
+#          Read In Files          #
+# Edit file path to summary table #
+###################################
+NardoneBA10_hg38_hyper_SingleCpG <- read.delim("C:/Users/Roy/Dropbox/Documents/LaSalleLab/URC2016/NardoneData/NardoneBA10_hg38_hyper_SingleCpG.txt")
+NardoneBA10_hg38_hypo_SingleCpG <- read.delim("C:/Users/Roy/Dropbox/Documents/LaSalleLab/URC2016/NardoneData/NardoneBA10_hg38_hypo_SingleCpG.txt")
+
+
+NardoneBA24_hg38_hyper_SingleCpG <- read.delim("C:/Users/Roy/Dropbox/Documents/LaSalleLab/URC2016/NardoneData/NardoneBA24_hg38_hyper_SingleCpG.txt")
+NardoneBA24_hg38_hypo_SingleCpG <- read.delim("C:/Users/Roy/Dropbox/Documents/LaSalleLab/URC2016/NardoneData/NardoneBA24_hg38_hypo_SingleCpG.txt")
+
+
+####################################################################
+#     Subset the data sets by differential methylation and type    #
+#                 Calculate percentage methylation                 #
+####################################################################
+
+# Differential methylation refers to the result derived from Nardone et al. 2014
+
+# Autism _ BA10 _ Hypermethylated
+# Autism _ BA10 _ Hypomethylated
+# Autism _ BA24 _ Hypermethylated
+# Autism _ BA24 _ Hypomethylated
+# Control _ BA10 _ Hypermethylated
+# Control _ BA10 _ Hypomethylated
+# Control _ BA24 _ Hypermethylated
+# Control _ BA24 _ Hypomethylated
+
+# Autism
+
+# BA10_Aut_hyper
+
+Aut_NardoneBA10_hg38_hyper_SingleCpG <- data.frame(rowSums(cbind(NardoneBA10_hg38_hyper_SingleCpG$JLKD051_meth, NardoneBA10_hg38_hyper_SingleCpG$JLKD052_meth, NardoneBA10_hg38_hyper_SingleCpG$JLKD054_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD055_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD056_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD057_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD059_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD061_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD097_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD009_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD013meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD016_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD018_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD019_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD020_meth)))
+
+colnames(Aut_NardoneBA10_hg38_hyper_SingleCpG) <- c("meth")
+
+Aut_NardoneBA10_hg38_hyper_SingleCpG$total <- rowSums(cbind(NardoneBA10_hg38_hyper_SingleCpG$JLKD051_total, NardoneBA10_hg38_hyper_SingleCpG$JLKD052_total, NardoneBA10_hg38_hyper_SingleCpG$JLKD054_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD055_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD056_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD057_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD059_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD061_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD097_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD009_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD013total , NardoneBA10_hg38_hyper_SingleCpG$JLKD016_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD018_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD019_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD020_total))
+
+Aut_NardoneBA10_hg38_hyper_SingleCpG <- transform(Aut_NardoneBA10_hg38_hyper_SingleCpG, percent = meth/total)
+
+#remove(NardoneBA10_hg38_hyper_SingleCpG_Aut)
+
+# BA10_Aut_hypo
+
+Aut_NardoneBA10_hg38_hypo_SingleCpG <- data.frame(rowSums(cbind(NardoneBA10_hg38_hypo_SingleCpG$JLKD051_meth, NardoneBA10_hg38_hypo_SingleCpG$JLKD052_meth, NardoneBA10_hg38_hypo_SingleCpG$JLKD054_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD055_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD056_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD057_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD059_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD061_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD097_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD009_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD013meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD016_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD018_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD019_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD020_meth)))
+
+colnames(Aut_NardoneBA10_hg38_hypo_SingleCpG) <- c("meth")
+
+Aut_NardoneBA10_hg38_hypo_SingleCpG$total <- rowSums(cbind(NardoneBA10_hg38_hypo_SingleCpG$JLKD051_total, NardoneBA10_hg38_hypo_SingleCpG$JLKD052_total, NardoneBA10_hg38_hypo_SingleCpG$JLKD054_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD055_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD056_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD057_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD059_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD061_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD097_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD009_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD013total , NardoneBA10_hg38_hypo_SingleCpG$JLKD016_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD018_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD019_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD020_total))
+
+Aut_NardoneBA10_hg38_hypo_SingleCpG <- transform(Aut_NardoneBA10_hg38_hypo_SingleCpG, percent = meth/total)
+
+# BA24_Aut_hyper
+
+Aut_NardoneBA24_hg38_hyper_SingleCpG <- data.frame(rowSums(cbind(NardoneBA24_hg38_hyper_SingleCpG$JLKD051_meth, NardoneBA24_hg38_hyper_SingleCpG$JLKD052_meth, NardoneBA24_hg38_hyper_SingleCpG$JLKD054_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD055_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD056_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD057_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD059_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD061_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD097_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD009_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD013meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD016_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD018_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD019_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD020_meth)))
+
+colnames(Aut_NardoneBA24_hg38_hyper_SingleCpG) <- c("meth")
+
+Aut_NardoneBA24_hg38_hyper_SingleCpG$total <- rowSums(cbind(NardoneBA24_hg38_hyper_SingleCpG$JLKD051_total, NardoneBA24_hg38_hyper_SingleCpG$JLKD052_total, NardoneBA24_hg38_hyper_SingleCpG$JLKD054_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD055_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD056_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD057_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD059_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD061_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD097_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD009_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD013_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD016_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD018_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD019_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD020_total))
+
+Aut_NardoneBA24_hg38_hyper_SingleCpG <- transform(Aut_NardoneBA24_hg38_hyper_SingleCpG, percent = meth/total)
+
+#remove(NardoneBA24_hg38_hyper_SingleCpG_Aut)
+
+# BA24_Aut_hypo
+
+Aut_NardoneBA24_hg38_hypo_SingleCpG <- data.frame(rowSums(cbind(NardoneBA24_hg38_hypo_SingleCpG$JLKD051_meth, NardoneBA24_hg38_hypo_SingleCpG$JLKD052_meth, NardoneBA24_hg38_hypo_SingleCpG$JLKD054_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD055_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD056_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD057_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD059_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD061_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD097_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD009_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD013meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD016_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD018_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD019_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD020_meth)))
+
+colnames(Aut_NardoneBA24_hg38_hypo_SingleCpG) <- c("meth")
+
+Aut_NardoneBA24_hg38_hypo_SingleCpG$total <- rowSums(cbind(NardoneBA24_hg38_hypo_SingleCpG$JLKD051_total, NardoneBA24_hg38_hypo_SingleCpG$JLKD052_total, NardoneBA24_hg38_hypo_SingleCpG$JLKD054_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD055_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD056_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD057_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD059_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD061_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD097_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD009_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD013total , NardoneBA24_hg38_hypo_SingleCpG$JLKD016_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD018_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD019_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD020_total))
+
+Aut_NardoneBA24_hg38_hypo_SingleCpG <- transform(Aut_NardoneBA24_hg38_hypo_SingleCpG, percent = meth/total)
+
+
+# Controls
+
+# BA10_Ctl_hyper
+
+Ctl_NardoneBA10_hg38_hyper_SingleCpG <- data.frame(rowSums(cbind(NardoneBA10_hg38_hyper_SingleCpG$JLKD053_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD062_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD063_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD064_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD065_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD066_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD067_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD068_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD069_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD070_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD071_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD080_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD082_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD083_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD084_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD098_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD099_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD002_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD003_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD005_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD001_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD014_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD004_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD040_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD041_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD042_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD025_meth , NardoneBA10_hg38_hyper_SingleCpG$JLKD027_meth)))
+
+colnames(Ctl_NardoneBA10_hg38_hyper_SingleCpG) <- c("meth")
+
+Ctl_NardoneBA10_hg38_hyper_SingleCpG$total <- rowSums(cbind(NardoneBA10_hg38_hyper_SingleCpG$JLKD053_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD062_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD063_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD064_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD065_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD066_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD067_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD068_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD069_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD070_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD071_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD080_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD082_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD083_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD084_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD098_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD099_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD002_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD003_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD005_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD001_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD014_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD004_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD040_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD041_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD042_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD025_total , NardoneBA10_hg38_hyper_SingleCpG$JLKD027_total))
+
+Ctl_NardoneBA10_hg38_hyper_SingleCpG <- transform(Ctl_NardoneBA10_hg38_hyper_SingleCpG, percent = meth/total)
+
+# BA10_Ctl_hypo
+Ctl_NardoneBA10_hg38_hypo_SingleCpG <- data.frame(rowSums(cbind(NardoneBA10_hg38_hypo_SingleCpG$JLKD053_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD062_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD063_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD064_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD065_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD066_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD067_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD068_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD069_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD070_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD071_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD080_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD082_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD083_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD084_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD098_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD099_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD002_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD003_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD005_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD001_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD014_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD004_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD040_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD041_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD042_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD025_meth , NardoneBA10_hg38_hypo_SingleCpG$JLKD027_meth)))
+
+colnames(Ctl_NardoneBA10_hg38_hypo_SingleCpG) <- c("meth")
+
+Ctl_NardoneBA10_hg38_hypo_SingleCpG$total <- rowSums(cbind(NardoneBA10_hg38_hypo_SingleCpG$JLKD053_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD062_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD063_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD064_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD065_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD066_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD067_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD068_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD069_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD070_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD071_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD080_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD082_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD083_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD084_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD098_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD099_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD002_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD003_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD005_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD001_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD014_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD004_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD040_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD041_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD042_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD025_total , NardoneBA10_hg38_hypo_SingleCpG$JLKD027_total))
+
+Ctl_NardoneBA10_hg38_hypo_SingleCpG <- transform(Ctl_NardoneBA10_hg38_hypo_SingleCpG, percent = meth/total)
+
+# BA24_Ctl_hyper
+
+Ctl_NardoneBA24_hg38_hyper_SingleCpG <- data.frame(rowSums(cbind(NardoneBA24_hg38_hyper_SingleCpG$JLKD053_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD062_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD063_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD064_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD065_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD066_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD067_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD068_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD069_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD070_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD071_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD080_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD082_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD083_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD084_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD098_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD099_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD002_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD003_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD005_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD001_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD014_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD004_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD040_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD041_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD042_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD025_meth , NardoneBA24_hg38_hyper_SingleCpG$JLKD027_meth)))
+
+colnames(Ctl_NardoneBA24_hg38_hyper_SingleCpG) <- c("meth")
+
+Ctl_NardoneBA24_hg38_hyper_SingleCpG$total <- rowSums(cbind(NardoneBA24_hg38_hyper_SingleCpG$JLKD053_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD062_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD063_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD064_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD065_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD066_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD067_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD068_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD069_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD070_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD071_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD080_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD082_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD083_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD084_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD098_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD099_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD002_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD003_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD005_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD001_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD014_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD004_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD040_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD041_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD042_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD025_total , NardoneBA24_hg38_hyper_SingleCpG$JLKD027_total))
+
+Ctl_NardoneBA24_hg38_hyper_SingleCpG <- transform(Ctl_NardoneBA24_hg38_hyper_SingleCpG, percent = meth/total)
+
+# BA24_Ctl_hypo
+Ctl_NardoneBA24_hg38_hypo_SingleCpG <- data.frame(rowSums(cbind(NardoneBA24_hg38_hypo_SingleCpG$JLKD053_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD062_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD063_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD064_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD065_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD066_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD067_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD068_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD069_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD070_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD071_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD080_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD082_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD083_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD084_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD098_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD099_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD002_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD003_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD005_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD001_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD014_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD004_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD040_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD041_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD042_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD025_meth , NardoneBA24_hg38_hypo_SingleCpG$JLKD027_meth)))
+
+colnames(Ctl_NardoneBA24_hg38_hypo_SingleCpG) <- c("meth")
+
+Ctl_NardoneBA24_hg38_hypo_SingleCpG$total <- rowSums(cbind(NardoneBA24_hg38_hypo_SingleCpG$JLKD053_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD062_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD063_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD064_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD065_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD066_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD067_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD068_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD069_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD070_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD071_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD080_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD082_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD083_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD084_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD098_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD099_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD002_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD003_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD005_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD001_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD014_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD004_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD040_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD041_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD042_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD025_total , NardoneBA24_hg38_hypo_SingleCpG$JLKD027_total))
+
+Ctl_NardoneBA24_hg38_hypo_SingleCpG <- transform(Ctl_NardoneBA24_hg38_hypo_SingleCpG, percent = meth/total)
+
+NardoneBA10_hg38_hyper_SingleCpG$Aut_percent <- Aut_NardoneBA10_hg38_hyper_SingleCpG$percent
+NardoneBA10_hg38_hyper_SingleCpG$Ctl_percent <- Ctl_NardoneBA10_hg38_hyper_SingleCpG$percent
+
+NardoneBA10_hg38_hypo_SingleCpG$Aut_percent <- Aut_NardoneBA10_hg38_hypo_SingleCpG$percent
+NardoneBA10_hg38_hypo_SingleCpG$Ctl_percent <- Ctl_NardoneBA10_hg38_hypo_SingleCpG$percent
+
+NardoneBA24_hg38_hyper_SingleCpG$Aut_percent <- Aut_NardoneBA24_hg38_hyper_SingleCpG$percent
+NardoneBA24_hg38_hyper_SingleCpG$Ctl_percent <- Ctl_NardoneBA24_hg38_hyper_SingleCpG$percent
+
+NardoneBA24_hg38_hypo_SingleCpG$Aut_percent <- Aut_NardoneBA24_hg38_hypo_SingleCpG$percent
+NardoneBA24_hg38_hypo_SingleCpG$Ctl_percent <- Ctl_NardoneBA24_hg38_hypo_SingleCpG$percent
+
+
+
+#remove(NardoneBA10_graphing)
+
+
+```
+
+```{r, echo=FALSE}
+
+
+###################
+#     t-tests     #
+###################
+
+# BA10 Hypermethylated
+t.test(Aut_NardoneBA10_hg38_hyper_SingleCpG$percent, Ctl_NardoneBA10_hg38_hyper_SingleCpG$percent,paired=TRUE,alternative = "greater")
+t.test(Aut_NardoneBA10_hg38_hyper_SingleCpG$percent, Ctl_NardoneBA10_hg38_hyper_SingleCpG$percent,paired=TRUE,alternative = "less")
+t.test(Aut_NardoneBA10_hg38_hyper_SingleCpG$percent, Ctl_NardoneBA10_hg38_hyper_SingleCpG$percent,paired=TRUE,alternative = "two.sided")
+
+# BA10 Hypomethylated
+t.test(Aut_NardoneBA10_hg38_hypo_SingleCpG$percent, Ctl_NardoneBA10_hg38_hypo_SingleCpG$percent,paired=TRUE,alternative = "less")
+t.test(Aut_NardoneBA10_hg38_hypo_SingleCpG$percent, Ctl_NardoneBA10_hg38_hypo_SingleCpG$percent,paired=TRUE,alternative = "greater")
+t.test(Aut_NardoneBA10_hg38_hypo_SingleCpG$percent, Ctl_NardoneBA10_hg38_hypo_SingleCpG$percent,paired=TRUE,alternative = "two.sided")
+
+# BA24 Hypermethylated
+t.test(Aut_NardoneBA24_hg38_hyper_SingleCpG$percent, Ctl_NardoneBA24_hg38_hyper_SingleCpG$percent, paired=TRUE, alternative = "less")
+t.test(Aut_NardoneBA24_hg38_hyper_SingleCpG$percent, Ctl_NardoneBA24_hg38_hyper_SingleCpG$percent, paired=TRUE, alternative = "greater")
+t.test(Aut_NardoneBA24_hg38_hyper_SingleCpG$percent, Ctl_NardoneBA24_hg38_hyper_SingleCpG$percent, paired=TRUE, alternative = "two.sided")
+
+# BA24 Hypomethylated
+t.test(Aut_NardoneBA24_hg38_hypo_SingleCpG$percent, Ctl_NardoneBA24_hg38_hypo_SingleCpG$percent, paired=TRUE, alternative = "less")
+t.test(Aut_NardoneBA24_hg38_hypo_SingleCpG$percent, Ctl_NardoneBA24_hg38_hypo_SingleCpG$percent, paired=TRUE, alternative = "greater")
+t.test(Aut_NardoneBA24_hg38_hypo_SingleCpG$percent, Ctl_NardoneBA24_hg38_hypo_SingleCpG$percent, paired=TRUE, alternative = "two.sided")
+
+
+
+```
+
+
+```{r, echo=FALSE}
+#################
+# Scatter Plots #
+#################
+
+# BA10
+NardoneBA10scatterplot <- ggplot(data=NardoneBA10_hg38_hyper_SingleCpG) + labs(x="Control Percentage Methylation", y="Autism Percentage Methylation")
+# Adjust features of graph
+NardoneBA10scatterplot <- NardoneBA10scatterplot + theme_bw() + theme(plot.title = element_text(size = rel(1.3), face = "bold", colour = "black", vjust = 2), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank())
+
+# Graph together
+NardoneBA10scatterplot + geom_point(data=NardoneBA10_hg38_hypo_SingleCpG, aes(y = NardoneBA10_hg38_hypo_SingleCpG$Aut_percent, x = NardoneBA10_hg38_hypo_SingleCpG$Ctl_percent, colour = "Hypo")) + geom_point(aes(y = NardoneBA10_hg38_hyper_SingleCpG$Aut_percent, x = NardoneBA10_hg38_hyper_SingleCpG$Ctl_percent, colour = "Hyper")) + geom_abline()
+
+# Hypermethylated
+NardoneBA10scatterplot + geom_point(aes(y = NardoneBA10_hg38_hyper_SingleCpG$Aut_percent, x = NardoneBA10_hg38_hyper_SingleCpG$Ctl_percent), colour = "#FF9999") + geom_abline() + labs(title = "BA10 Hypermethylated")
+
+# Hypomethylated
+NardoneBA10scatterplot + geom_point(data=NardoneBA10_hg38_hypo_SingleCpG, aes(y = NardoneBA10_hg38_hypo_SingleCpG$Aut_percent, x = NardoneBA10_hg38_hypo_SingleCpG$Ctl_percent), colour = "#56B4E9") + geom_abline() + labs(title = "BA10 Hypomethylated")
+
+# BA24
+NardoneBA24scatterplot <- ggplot(data=NardoneBA24_hg38_hyper_SingleCpG) + labs(x="Control Percentage Methylation", y="Autism Percentage Methylation", title = "BA24")
+NardoneBA24scatterplot <- NardoneBA24scatterplot + theme_bw() + theme(plot.title = element_text(size = rel(1.3), face = "bold", colour = "black", vjust = 2), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank())
+
+# Hypermethylated
+NardoneBA24scatterplot + geom_point(aes(y = NardoneBA24_hg38_hyper_SingleCpG$Aut_percent, x = NardoneBA24_hg38_hyper_SingleCpG$Ctl_percent), colour = "#FF9999") + geom_abline() + labs(title = "BA24 Hypermethylated")
+
+# Hypomethylated
+NardoneBA24scatterplot + geom_point(data=NardoneBA24_hg38_hypo_SingleCpG, aes(y = NardoneBA24_hg38_hypo_SingleCpG$Aut_percent, x = NardoneBA24_hg38_hypo_SingleCpG$Ctl_percent), colour = "#56B4E9") + geom_abline() + labs(title = "BA24 Hypomethylated")
+
+
+```
+
+
+```{r, echo=FALSE}
+##############
+# Bar Graphs #
+##############
+
+# x-axis is the category for percentage methylation
+# low (<10%), partial (10%-75%), high (>75%)
+
+# BA10 Hyper
+
+# Calculate average percentage methylation and normalized percentage methylation
+NardoneBA10_hg38_hyper_SingleCpG <- transform(NardoneBA10_hg38_hyper_SingleCpG, Avg_percent = (Aut_percent + Ctl_percent)/2)
+NardoneBA10_hg38_hyper_SingleCpG <- transform(NardoneBA10_hg38_hyper_SingleCpG, Norm_percent = (Aut_percent - Ctl_percent))
+
+#remove(BA10Hyper)
+
+# subset into low, partial, high
+BA10Hyper_Low <- subset(NardoneBA10_hg38_hyper_SingleCpG, Avg_percent <= 0.10)
+BA10Hyper_Low$methcat <- "low";
+BA10Hyper_Partial <- subset(NardoneBA10_hg38_hyper_SingleCpG, Avg_percent > 0.10 & Avg_percent <= 0.75)
+BA10Hyper_Partial$methcat <- "partial";
+BA10Hyper_High <- subset(NardoneBA10_hg38_hyper_SingleCpG, Avg_percent > 0.75)
+BA10Hyper_High$methcat <- "high";
+
+# t-test within categories
+t.test(BA10Hyper_Low$Aut_percent, BA10Hyper_Low$Ctl_percent,paired=TRUE,alternative = "greater")
+t.test(BA10Hyper_Low$Aut_percent, BA10Hyper_Low$Ctl_percent,paired=TRUE,alternative = "less")
+t.test(BA10Hyper_Low$Aut_percent, BA10Hyper_Low$Ctl_percent,paired=TRUE,alternative = "two.sided")
+t.test(BA10Hyper_Partial$Aut_percent, BA10Hyper_Partial$Ctl_percent,paired=TRUE,alternative = "greater")
+t.test(BA10Hyper_Partial$Aut_percent, BA10Hyper_Partial$Ctl_percent,paired=TRUE,alternative = "less")
+t.test(BA10Hyper_Partial$Aut_percent, BA10Hyper_Partial$Ctl_percent,paired=TRUE,alternative = "two.sided")
+
+t.test(BA10Hyper_High$Aut_percent, BA10Hyper_High$Ctl_percent,paired=TRUE,alternative = "greater")
+t.test(BA10Hyper_High$Aut_percent, BA10Hyper_High$Ctl_percent,paired=TRUE,alternative = "less")
+t.test(BA10Hyper_High$Aut_percent, BA10Hyper_High$Ctl_percent,paired=TRUE,alternative = "two.sided")
+
+# Calculate normalized percentages
+BA10Hyper <- data.frame(c("low","partial","high"))
+colnames(BA10Hyper) <- c("methcat")
+BA10Hyper$Norm_percent <- c(mean(BA10Hyper_Low$Aut_percent) - mean(BA10Hyper_Low$Ctl_percent), mean(BA10Hyper_Partial$Aut_percent) - mean(BA10Hyper_Partial$Ctl_percent), mean(BA10Hyper_High$Aut_percent - mean(BA10Hyper_High$Ctl_percent)))
+BA10Hyper$se <- c(se(BA10Hyper_Low$Norm_percent), se(BA10Hyper_Partial$Norm_percent), se(BA10Hyper_High$Norm_percent))
+
+# Ordering
+BA10Hyper$methcat <- factor(BA10Hyper$methcat,levels = c("low", "partial", "high"))
+BA10Hyper.m <- melt(BA10Hyper, id.vars="methcat")
+
+# Used for error bars
+limits <- aes(x=methcat, ymax = Norm_percent + se, ymin=Norm_percent - se)
+dodge <- position_dodge(width=0.9)
+
+# Graphing
+NardoneBA10bargraph_hyper <- ggplot(data=BA10Hyper) + labs(x="Methylation Category", y="Normalized Percentage Change", title = "BA10 Hypermethylated")
+NardoneBA10bargraph_hyper <- NardoneBA10bargraph_hyper + theme_bw() + theme(plot.title = element_text(size = rel(1.3), face = "bold", colour = "black", vjust = 2), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank())
+NardoneBA10bargraph_hyper + geom_bar(data=BA10Hyper, aes(x=methcat, y=Norm_percent, fill = methcat), position = "dodge", stat = "identity") + scale_fill_manual(values=c("#56B4E9","#0072B2", "#9999CC")) + coord_cartesian(ylim=c(-0.020,0.020)) + geom_hline(yintercept=0) + geom_errorbar(limits, position=dodge, width=0.25)
+
+# BA10 Hypo
+NardoneBA10_hg38_hypo_SingleCpG <- transform(NardoneBA10_hg38_hypo_SingleCpG, Avg_percent = (Aut_percent + Ctl_percent)/2)
+NardoneBA10_hg38_hypo_SingleCpG <- transform(NardoneBA10_hg38_hypo_SingleCpG, Norm_percent = (Aut_percent - Ctl_percent))
+
+BA10hypo_Low <- subset(NardoneBA10_hg38_hypo_SingleCpG, Avg_percent <= 0.10)
+BA10hypo_Low$methcat <- "low";
+BA10hypo_Partial <- subset(NardoneBA10_hg38_hypo_SingleCpG, Avg_percent > 0.10 & Avg_percent <= 0.75)
+BA10hypo_Partial$methcat <- "partial";
+BA10hypo_High <- subset(NardoneBA10_hg38_hypo_SingleCpG, Avg_percent > 0.75)
+BA10hypo_High$methcat <- "high";
+
+t.test(BA10hypo_Low$Aut_percent, BA10hypo_Low$Ctl_percent,paired=TRUE,alternative = "greater")
+t.test(BA10hypo_Low$Aut_percent, BA10hypo_Low$Ctl_percent,paired=TRUE,alternative = "less")
+t.test(BA10hypo_Low$Aut_percent, BA10hypo_Low$Ctl_percent,paired=TRUE,alternative = "two.sided")
+
+t.test(BA10hypo_Partial$Aut_percent, BA10hypo_Partial$Ctl_percent,paired=TRUE,alternative = "greater")
+t.test(BA10hypo_Partial$Aut_percent, BA10hypo_Partial$Ctl_percent,paired=TRUE,alternative = "less")
+t.test(BA10hypo_Partial$Aut_percent, BA10hypo_Partial$Ctl_percent,paired=TRUE,alternative = "two.sided")
+
+t.test(BA10hypo_High$Aut_percent, BA10hypo_High$Ctl_percent,paired=TRUE,alternative = "greater")
+t.test(BA10hypo_High$Aut_percent, BA10hypo_High$Ctl_percent,paired=TRUE,alternative = "less")
+t.test(BA10hypo_High$Aut_percent, BA10hypo_High$Ctl_percent,paired=TRUE,alternative = "two.sided")
+
+BA10hypo <- data.frame(c("low","partial","high"))
+colnames(BA10hypo) <- c("methcat")
+BA10hypo$Norm_percent <- c(mean(BA10hypo_Low$Aut_percent) - mean(BA10hypo_Low$Ctl_percent), mean(BA10hypo_Partial$Aut_percent) - mean(BA10hypo_Partial$Ctl_percent), mean(BA10hypo_High$Aut_percent - mean(BA10hypo_High$Ctl_percent)))
+BA10hypo$se <- c(se(BA10hypo_Low$Norm_percent), se(BA10hypo_Partial$Norm_percent), se(BA10hypo_High$Norm_percent))
+
+# Ordering
+BA10hypo$methcat <- factor(BA10hypo$methcat,levels = c("low", "partial", "high"))
+BA10hypo.m <- melt(BA10hypo, id.vars="methcat")
+
+limits <- aes(x=methcat, ymax = Norm_percent + se, ymin=Norm_percent - se)
+dodge <- position_dodge(width=0.9)
+
+NardoneBA10bargraph_hypo <- ggplot(data=BA10hypo) + labs(x="Methylation Category", y="Normalized Percentage Change", title = "BA10 Hypomethylated")
+NardoneBA10bargraph_hypo <- NardoneBA10bargraph_hypo + theme_bw() + theme(plot.title = element_text(size = rel(1.3), face = "bold", colour = "black", vjust = 2), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank())
+NardoneBA10bargraph_hypo + geom_bar(data=BA10hypo, aes(x=methcat, y=Norm_percent, fill = methcat), position = "dodge", stat = "identity") + scale_fill_manual(values=c("#56B4E9","#0072B2", "#9999CC")) + coord_cartesian(ylim=c(-0.020,0.020)) + geom_hline(yintercept=0) + geom_errorbar(limits, position=dodge, width=0.25)
+
+# BA24 Hyper
+NardoneBA24_hg38_hyper_SingleCpG <- transform(NardoneBA24_hg38_hyper_SingleCpG, Avg_percent = (Aut_percent + Ctl_percent)/2)
+NardoneBA24_hg38_hyper_SingleCpG <- transform(NardoneBA24_hg38_hyper_SingleCpG, Norm_percent = (Aut_percent - Ctl_percent))
+
+BA24hyper_Low <- subset(NardoneBA24_hg38_hyper_SingleCpG, Avg_percent <= 0.10)
+BA24hyper_Low$methcat <- "low";
+BA24hyper_Partial <- subset(NardoneBA24_hg38_hyper_SingleCpG, Avg_percent > 0.10 & Avg_percent <= 0.75)
+BA24hyper_Partial$methcat <- "partial";
+BA24hyper_High <- subset(NardoneBA24_hg38_hyper_SingleCpG, Avg_percent > 0.75)
+BA24hyper_High$methcat <- "high";
+
+t.test(BA24hyper_Low$Aut_percent, BA24hyper_Low$Ctl_percent,paired=TRUE,alternative = "greater")
+t.test(BA24hyper_Low$Aut_percent, BA24hyper_Low$Ctl_percent,paired=TRUE,alternative = "less")
+t.test(BA24hyper_Low$Aut_percent, BA24hyper_Low$Ctl_percent,paired=TRUE,alternative = "two.sided")
+
+t.test(BA24hyper_Partial$Aut_percent, BA24hyper_Partial$Ctl_percent,paired=TRUE,alternative = "greater")
+t.test(BA24hyper_Partial$Aut_percent, BA24hyper_Partial$Ctl_percent,paired=TRUE,alternative = "less")
+t.test(BA24hyper_Partial$Aut_percent, BA24hyper_Partial$Ctl_percent,paired=TRUE,alternative = "two.sided")
+
+t.test(BA24hyper_High$Aut_percent, BA24hyper_High$Ctl_percent,paired=TRUE,alternative = "greater")
+t.test(BA24hyper_High$Aut_percent, BA24hyper_High$Ctl_percent,paired=TRUE,alternative = "less")
+t.test(BA24hyper_High$Aut_percent, BA24hyper_High$Ctl_percent,paired=TRUE,alternative = "two.sided")
+
+BA24hyper <- data.frame(c("low","partial","high"))
+colnames(BA24hyper) <- c("methcat")
+BA24hyper$Norm_percent <- c(mean(BA24hyper_Low$Aut_percent) - mean(BA24hyper_Low$Ctl_percent), mean(BA24hyper_Partial$Aut_percent) - mean(BA24hyper_Partial$Ctl_percent), mean(BA24hyper_High$Aut_percent - mean(BA24hyper_High$Ctl_percent)))
+BA24hyper$se <- c(se(BA24hyper_Low$Norm_percent), se(BA24hyper_Partial$Norm_percent), se(BA24hyper_High$Norm_percent))
+
+# Ordering
+BA24hyper$methcat <- factor(BA24hyper$methcat,levels = c("low", "partial", "high"))
+BA24hyper.m <- melt(BA24hyper, id.vars="methcat")
+
+limits <- aes(x=methcat, ymax = Norm_percent + se, ymin=Norm_percent - se)
+dodge <- position_dodge(width=0.9)
+
+NardoneBA24bargraph_hyper <- ggplot(data=BA24hyper) + labs(x="Methylation Category", y="Normalized Percentage Change", title = "BA24 Hypermethylated")
+NardoneBA24bargraph_hyper <- NardoneBA24bargraph_hyper + theme_bw() + theme(plot.title = element_text(size = rel(1.3), face = "bold", colour = "black", vjust = 2), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank())
+NardoneBA24bargraph_hyper + geom_bar(data=BA24hyper, aes(x=methcat, y=Norm_percent, fill = methcat), position = "dodge", stat = "identity") + scale_fill_manual(values=c("#56B4E9","#0072B2", "#9999CC")) + coord_cartesian(ylim=c(-0.035,0.035)) + geom_hline(yintercept=0) + geom_errorbar(limits, position=dodge, width=0.25)
+
+# BA24 Hypo
+NardoneBA24_hg38_hypo_SingleCpG <- transform(NardoneBA24_hg38_hypo_SingleCpG, Avg_percent = (Aut_percent + Ctl_percent)/2)
+NardoneBA24_hg38_hypo_SingleCpG <- transform(NardoneBA24_hg38_hypo_SingleCpG, Norm_percent = (Aut_percent - Ctl_percent))
+
+BA24hypo_Low <- subset(NardoneBA24_hg38_hypo_SingleCpG, Avg_percent <= 0.10)
+BA24hypo_Low$methcat <- "low";
+BA24hypo_Partial <- subset(NardoneBA24_hg38_hypo_SingleCpG, Avg_percent > 0.10 & Avg_percent <= 0.75)
+BA24hypo_Partial$methcat <- "partial";
+BA24hypo_High <- subset(NardoneBA24_hg38_hypo_SingleCpG, Avg_percent > 0.75)
+BA24hypo_High$methcat <- "high";
+
+t.test(BA24hypo_Low$Aut_percent, BA24hypo_Low$Ctl_percent,paired=TRUE,alternative = "greater")
+t.test(BA24hypo_Low$Aut_percent, BA24hypo_Low$Ctl_percent,paired=TRUE,alternative = "less")
+t.test(BA24hypo_Low$Aut_percent, BA24hypo_Low$Ctl_percent,paired=TRUE,alternative = "two.sided")
+
+t.test(BA24hypo_Partial$Aut_percent, BA24hypo_Partial$Ctl_percent,paired=TRUE,alternative = "greater")
+t.test(BA24hypo_Partial$Aut_percent, BA24hypo_Partial$Ctl_percent,paired=TRUE,alternative = "less")
+t.test(BA24hypo_Partial$Aut_percent, BA24hypo_Partial$Ctl_percent,paired=TRUE,alternative = "two.sided")
+
+t.test(BA24hypo_High$Aut_percent, BA24hypo_High$Ctl_percent,paired=TRUE,alternative = "greater")
+t.test(BA24hypo_High$Aut_percent, BA24hypo_High$Ctl_percent,paired=TRUE,alternative = "less")
+t.test(BA24hypo_High$Aut_percent, BA24hypo_High$Ctl_percent,paired=TRUE,alternative = "two.sided")
+
+BA24hypo <- data.frame(c("low","partial","high"))
+colnames(BA24hypo) <- c("methcat")
+BA24hypo$Norm_percent <- c(mean(BA24hypo_Low$Aut_percent) - mean(BA24hypo_Low$Ctl_percent), mean(BA24hypo_Partial$Aut_percent) - mean(BA24hypo_Partial$Ctl_percent), mean(BA24hypo_High$Aut_percent - mean(BA24hypo_High$Ctl_percent)))
+BA24hypo$se <- c(se(BA24hypo_Low$Norm_percent), se(BA24hypo_Partial$Norm_percent), se(BA24hypo_High$Norm_percent))
+
+# Ordering
+BA24hypo$methcat <- factor(BA24hypo$methcat,levels = c("low", "partial", "high"))
+BA24hypo.m <- melt(BA24hypo, id.vars="methcat")
+
+limits <- aes(x=methcat, ymax = Norm_percent + se, ymin=Norm_percent - se)
+dodge <- position_dodge(width=0.9)
+
+NardoneBA24bargraph_hypo <- ggplot(data=BA24hypo) + labs(x="Methylation Category", y="Normalized Percentage Change", title = "BA24 Hypomethylated")
+NardoneBA24bargraph_hypo <- NardoneBA24bargraph_hypo + theme_bw() + theme(plot.title = element_text(size = rel(1.3), face = "bold", colour = "black", vjust = 2), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank())
+NardoneBA24bargraph_hypo + geom_bar(data=BA24hypo, aes(x=methcat, y=Norm_percent, fill = methcat), position = "dodge", stat = "identity") + scale_fill_manual(values=c("#56B4E9","#0072B2", "#9999CC")) + coord_cartesian(ylim=c(-0.020,0.020)) + geom_hline(yintercept=0) + geom_errorbar(limits, position=dodge, width=0.25)
+
+
+```
+
+
+```{r, echo=FALSE}
+###########################
+# Ladd-Acosta et al. 2014 #
+###########################
+
+# Again, change file pathing to correct data file
+LA_SingleCpG <- read.delim("C:/Users/Roy/Dropbox/Documents/LaSalleLab/URC2016/LAData/LA_SingleCpG.txt")
+
+# Autism
+
+Aut_LA_SingleCpG <- data.frame(rowSums(cbind(LA_SingleCpG$JLKD051_meth, LA_SingleCpG$JLKD052_meth, LA_SingleCpG$JLKD054_meth , LA_SingleCpG$JLKD055_meth , LA_SingleCpG$JLKD056_meth , LA_SingleCpG$JLKD057_meth , LA_SingleCpG$JLKD059_meth , LA_SingleCpG$JLKD061_meth , LA_SingleCpG$JLKD097_meth , LA_SingleCpG$JLKD009_meth , LA_SingleCpG$JLKD013meth , LA_SingleCpG$JLKD016_meth , LA_SingleCpG$JLKD018_meth , LA_SingleCpG$JLKD019_meth , LA_SingleCpG$JLKD020_meth)))
+
+colnames(Aut_LA_SingleCpG) <- c("meth")
+
+Aut_LA_SingleCpG$total <- rowSums(cbind(LA_SingleCpG$JLKD051_total, LA_SingleCpG$JLKD052_total, LA_SingleCpG$JLKD054_total , LA_SingleCpG$JLKD055_total , LA_SingleCpG$JLKD056_total , LA_SingleCpG$JLKD057_total , LA_SingleCpG$JLKD059_total , LA_SingleCpG$JLKD061_total , LA_SingleCpG$JLKD097_total , LA_SingleCpG$JLKD009_total , LA_SingleCpG$JLKD013total , LA_SingleCpG$JLKD016_total , LA_SingleCpG$JLKD018_total , LA_SingleCpG$JLKD019_total , LA_SingleCpG$JLKD020_total))
+
+Aut_LA_SingleCpG <- transform(Aut_LA_SingleCpG, percent = meth/total)
+
+
+# Control
+
+Ctl_LA_SingleCpG <- data.frame(rowSums(cbind(LA_SingleCpG$JLKD053_meth , LA_SingleCpG$JLKD062_meth , LA_SingleCpG$JLKD063_meth , LA_SingleCpG$JLKD064_meth , LA_SingleCpG$JLKD065_meth , LA_SingleCpG$JLKD066_meth , LA_SingleCpG$JLKD067_meth , LA_SingleCpG$JLKD068_meth , LA_SingleCpG$JLKD069_meth , LA_SingleCpG$JLKD070_meth , LA_SingleCpG$JLKD071_meth , LA_SingleCpG$JLKD080_meth , LA_SingleCpG$JLKD082_meth , LA_SingleCpG$JLKD083_meth , LA_SingleCpG$JLKD084_meth , LA_SingleCpG$JLKD098_meth , LA_SingleCpG$JLKD099_meth , LA_SingleCpG$JLKD002_meth , LA_SingleCpG$JLKD003_meth , LA_SingleCpG$JLKD005_meth , LA_SingleCpG$JLKD001_meth , LA_SingleCpG$JLKD014_meth , LA_SingleCpG$JLKD004_meth , LA_SingleCpG$JLKD040_meth , LA_SingleCpG$JLKD041_meth , LA_SingleCpG$JLKD042_meth , LA_SingleCpG$JLKD025_meth , LA_SingleCpG$JLKD027_meth)))
+
+colnames(Ctl_LA_SingleCpG) <- c("meth")
+
+Ctl_LA_SingleCpG$total <- rowSums(cbind(LA_SingleCpG$JLKD053_total , LA_SingleCpG$JLKD062_total , LA_SingleCpG$JLKD063_total , LA_SingleCpG$JLKD064_total , LA_SingleCpG$JLKD065_total , LA_SingleCpG$JLKD066_total , LA_SingleCpG$JLKD067_total , LA_SingleCpG$JLKD068_total , LA_SingleCpG$JLKD069_total , LA_SingleCpG$JLKD070_total , LA_SingleCpG$JLKD071_total , LA_SingleCpG$JLKD080_total , LA_SingleCpG$JLKD082_total , LA_SingleCpG$JLKD083_total , LA_SingleCpG$JLKD084_total , LA_SingleCpG$JLKD098_total , LA_SingleCpG$JLKD099_total , LA_SingleCpG$JLKD002_total , LA_SingleCpG$JLKD003_total , LA_SingleCpG$JLKD005_total , LA_SingleCpG$JLKD001_total , LA_SingleCpG$JLKD014_total , LA_SingleCpG$JLKD004_total , LA_SingleCpG$JLKD040_total , LA_SingleCpG$JLKD041_total , LA_SingleCpG$JLKD042_total , LA_SingleCpG$JLKD025_total , LA_SingleCpG$JLKD027_total))
+
+Ctl_LA_SingleCpG <- transform(Ctl_LA_SingleCpG, percent = meth/total)
+
+LA_SingleCpG$Aut_percent <- Aut_LA_SingleCpG$percent
+LA_SingleCpG$Ctl_percent <- Ctl_LA_SingleCpG$percent
+
+# This DMR was found hypermethylated in the study
+LA_SingleCpG_chr5 <- LA_SingleCpG[26:35,]
+
+# This DMR was found hypomethylated in the study
+LA_SingleCpG_chr11 <- LA_SingleCpG[1:25,]
+
+# Hypomethylated in our data and hypomethylated in the study
+t.test(LA_SingleCpG_chr11$Aut_percent, LA_SingleCpG_chr11$Ctl_percent,paired=TRUE,alternative = "greater")
+t.test(LA_SingleCpG_chr11$Aut_percent, LA_SingleCpG_chr11$Ctl_percent,paired=TRUE,alternative = "less")
+t.test(LA_SingleCpG_chr11$Aut_percent, LA_SingleCpG_chr11$Ctl_percent,paired=TRUE,alternative = "two.sided")
+
+# Hypomethylated in our data but hypermethylated in the study
+t.test(LA_SingleCpG_chr5$Aut_percent, LA_SingleCpG_chr5$Ctl_percent,paired=TRUE,alternative = "greater")
+t.test(LA_SingleCpG_chr5$Aut_percent, LA_SingleCpG_chr5$Ctl_percent,paired=TRUE,alternative = "less")
+t.test(LA_SingleCpG_chr5$Aut_percent, LA_SingleCpG_chr5$Ctl_percent,paired=TRUE,alternative = "two.sided")
+
+# Sample sizes are lower than 30, however
+
+# scatterplot
+LAscatterplot <- ggplot(data=LA_SingleCpG) + labs(x="Control Percentage Methylation", y="Autism Percentage Methylation")
+LAscatterplot <- LAscatterplot + theme_bw() + theme(plot.title = element_text(size = rel(1.3), face = "bold", colour = "black", vjust = 2), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank())
+LAscatterplot + geom_point(aes(y = LA_SingleCpG$Aut_percent, x = LA_SingleCpG$Ctl_percent, colour = chr)) + geom_abline() + labs(title = "Ladd-Acosta 2014, Cerebellum") + coord_cartesian(xlim=c(0,1), ylim=c(0,1)) + scale_colour_manual(values=c("#E69F00", "#66CC99"))
+
+```
