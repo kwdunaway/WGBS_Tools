@@ -54,6 +54,7 @@ Contents
 - (20) [SAMsorted_to_permeth.pl](#SAMsorted_to_permeth.pl) - Takes SAM output from BS_Seeker2 and creates percentage methylation BED files
 - (21) [splitFASTAfile.pl](#splitFASTAfile.pl) - Splits a fasta file into individual files, each with a single fasta section
 - (22) [Window_permeth_readcentric.pl](#Window_permeth_readcentric.pl) - Takes sliding windows of positions and outputs average methylation across windows
+- (23) [WGBS_450k_Comparison.R](#WGBS_450k_Comparison.R) - R script template for analyzing Illumina HumanMethylation450 array data in comparison with WGBS data
 
 
 <a name="adapter_split.pl">(1) adapter_split.pl </a>
@@ -574,3 +575,9 @@ This script takes windows (user defined parameters) and outputs average methylat
 	1-8
 	
 	This script would output .9 for methylation and 10 for coverage because we have a count of 1+8=9 for methylation and 2+8=10 for total.
+
+<a name="WGBS_450k_Comparison.R">(23) WGBS_450k_Comparison.R</a>
+------------
+
+This R script is a template pipeline for analyzing data from AvgMeth.2col.pl and provides instructions on how to analyze HM450 probe locations with WGBS data. The script will require entry of experimental sample names, control sample names, file paths, and possibly edits to the graphs to fit your data. Much of the other processing is done. 
+
