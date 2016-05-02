@@ -2,36 +2,32 @@ WGBS_Tools
 =========
 WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfite Sequencing data. It is optimized for easy installation rather than efficiency. Any questions may be directed to Keith Dunaway (kwdunaway@ucdavis.edu) or Roy Chu (rgchu@ucdavis.edu).
 
-1. New Features
-============
-v1.0: EVERYTHING!
+WGBS_Tools
+=========
 
-2. Requirements
+1. [Requirements](#Requirements)
+2. [Brief Descriptions](#BriefDescriptions)
+3. [Full Descriptions](#FullDescriptions)
+4. [Pipelines](#Pipelines)
+
+1. <a name="Requirements"> Requirements </a>
 ============
 
 ####Perl 5.18.2 or newer
 
-3. Supported Formats
-============
-
-* Supported file formats
-	- [FASTA](http://en.wikipedia.org/wiki/FASTA_format)
-	- [FASTQ](http://en.wikipedia.org/wiki/FASTQ_format)
-	- [BAM](https://genome.ucsc.edu/goldenPath/help/bam.html)
-	- [SAM](https://samtools.github.io/hts-specs/SAMv1.pdf)
-
-* Supported tools
-	- [Bowtie](http://bowtie-bio.sourceforge.net/manual.shtml)
-  - [Bedtools2](https://github.com/arq5x/bedtools2)
-  - [BS-Seeker2](https://github.com/BSSeeker/BSseeker2)
-  - [Pysam](https://github.com/pysam-developers/pysam)
-  - [SRA Toolkit](http://www.ncbi.nlm.nih.gov/books/NBK158900/)
+  [Bowtie](http://bowtie-bio.sourceforge.net/manual.shtml)
   
-4. Script Descriptions
+  [Bedtools2](https://github.com/arq5x/bedtools2)
+  
+  [BS-Seeker2](https://github.com/BSSeeker/BSseeker2)
+  
+  [Pysam](https://github.com/pysam-developers/pysam)
+  
+  [SRA Toolkit](http://www.ncbi.nlm.nih.gov/books/NBK158900/)
+
+2. <a name="BriefDescriptions"> Brief Descriptions </a>
 ============
 
-Contents
-------------
 - (1) [adapter_split.pl](#adapter_split.pl) - Separates fastq files for those with and without adapter sequence
 - (2) [adapter_trimmer.pl](#adapter_trimmer.pl) - Trims adapter sequence from a fastq file
 - (3) [AvgMeth.pl](#AvgMeth.pl) - Calculates average percent methylation of all CpG sites in each line of a BED file
@@ -54,8 +50,9 @@ Contents
 - (20) [SAMsorted_to_permeth.pl](#SAMsorted_to_permeth.pl) - Takes SAM output from BS_Seeker2 and creates percentage methylation BED files
 - (21) [splitFASTAfile.pl](#splitFASTAfile.pl) - Splits a fasta file into individual files, each with a single fasta section
 - (22) [Window_permeth_readcentric.pl](#Window_permeth_readcentric.pl) - Takes sliding windows of positions and outputs average methylation across windows
-- (23) [WGBS_450k_Comparison.R](#WGBS_450k_Comparison.R) - R script template for analyzing Illumina HumanMethylation450 array data in comparison with WGBS data
 
+3. <a name="FullDescriptions"> Full Descriptions </a>
+============
 
 <a name="adapter_split.pl">(1) adapter_split.pl </a>
 ------------
@@ -576,7 +573,7 @@ This script takes windows (user defined parameters) and outputs average methylat
 	
 	This script would output .9 for methylation and 10 for coverage because we have a count of 1+8=9 for methylation and 2+8=10 for total.
 
-<a name="WGBS_450k_Comparison.R">(23) WGBS_450k_Comparison.R</a>
+4. <a name="Pipelines"> Pipelines </a>
 ------------
 
 This R script is a template pipeline for analyzing data from AvgMeth.2col.pl and provides instructions on how to analyze HM450 probe locations with WGBS data. The script will require entry of experimental sample names, control sample names, file paths, and possibly edits to the graphs to fit your data. Much of the other processing is done. 
