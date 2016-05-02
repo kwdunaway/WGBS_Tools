@@ -6,8 +6,11 @@ WGBS_Tools
 =========
 
 1. [Requirements](#Requirements)
+
 2. [Brief Descriptions](#BriefDescriptions)
+
 3. [Full Descriptions](#FullDescriptions)
+
 4. [Pipelines](#Pipelines)
 
 1. <a name="Requirements"> Requirements </a>
@@ -49,7 +52,8 @@ WGBS_Tools
 - (19) [SAM_coverage_windowed.pl](#SAM_coverage_windowed.pl) - Windows SAM data for coverage analysis, allowing control of minimum coverage and window size
 - (20) [SAMsorted_to_permeth.pl](#SAMsorted_to_permeth.pl) - Takes SAM output from BS_Seeker2 and creates percentage methylation BED files
 - (21) [splitFASTAfile.pl](#splitFASTAfile.pl) - Splits a fasta file into individual files, each with a single fasta section
-- (22) [Window_permeth_readcentric.pl](#Window_permeth_readcentric.pl) - Takes sliding windows of positions and outputs average methylation across windows
+- (22) [window_cluster.pl](#window_cluster.pl) -  Outputs three bed files: clustered, hypermethylated, and hypomethylated
+- (23) [Window_permeth_readcentric.pl](#Window_permeth_readcentric.pl) - Takes sliding windows of positions and outputs average methylation across windows
 
 3. <a name="FullDescriptions"> Full Descriptions </a>
 ============
@@ -537,7 +541,34 @@ Splits a fasta file into individual files, each with a single fasta section.
 
 - Splits files by ">" symbol.
 
-<a name="Window_permeth_readcentric.pl">(22) Window_permeth_readcentric.pl</a>
+<a name="window_cluster.pl">(22) window_cluster.pl</a>
+------------
+
+This script takes windows from Window_analysis.R and finds significant clusters given parameters found in the R script.
+
+
+####Usage :
+
+    Usage: window_cluster.pl [1] [2] [3] [4] [5] [6] [7] [8] [9] [10]
+
+    Input:
+    1) In table
+    2) Out clustered bed file
+    3) Out hyper bed file
+    4) Out hypo bed file
+    5) trackname
+    6) column of hyper/hypo calls (ex:16)
+    7) column of p values (ex: 15)
+    8) p-value cutoff (ex: .05)
+    9) minimum number of significant calls in window (ex: 5 or 7)
+    10) windowsize (ex: 17 or 12)
+
+
+####Example:
+
+    perl window_cluster.pl inputtable out.clustered.bed out.hyper.bed out.hypo.bed hg38_windows 16 15 .05 5 17
+
+<a name="Window_permeth_readcentric.pl">(23) Window_permeth_readcentric.pl</a>
 ------------
 
 This script takes windows (user defined parameters) and outputs average methylation across windows based on a read centric method. The script also outputs a count of CpG assays.
@@ -576,5 +607,17 @@ This script takes windows (user defined parameters) and outputs average methylat
 4. <a name="Pipelines"> Pipelines </a>
 ------------
 
+DRM_analysis.R
+=====
+
+Example_WGBSalignment.bash
+=====
+
+Window_analysis.R
+=====
+
+
+WGBS_450k_Comparison.R
+=====
 This R script is a template pipeline for analyzing data from AvgMeth.2col.pl and provides instructions on how to analyze HM450 probe locations with WGBS data. The script will require entry of experimental sample names, control sample names, file paths, and possibly edits to the graphs to fit your data. Much of the other processing is done. 
 
