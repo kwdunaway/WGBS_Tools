@@ -52,7 +52,7 @@ WGBS_Tools
 - (19) [SAM_coverage_windowed.pl](#SAM_coverage_windowed.pl) - Windows SAM data for coverage analysis, allowing control of minimum coverage and window size
 - (20) [SAMsorted_to_permeth.pl](#SAMsorted_to_permeth.pl) - Takes SAM output from BS_Seeker2 and creates percentage methylation BED files
 - (21) [splitFASTAfile.pl](#splitFASTAfile.pl) - Splits a fasta file into individual files, each with a single fasta section
-- (22) [window_cluster.pl](#window_cluster.pl) -  Outputs three bed files: clustered, hypermethylated, and hypomethylated
+- (22) [window_cluster.pl](#window_cluster.pl) -  Outputs three bed files: clustered, hypermethylated, and hypomethylated by using input from Window_analysis.R
 - (23) [Window_permeth_readcentric.pl](#Window_permeth_readcentric.pl) - Takes sliding windows of positions and outputs average methylation across windows
 
 3. <a name="FullDescriptions"> Full Descriptions </a>
@@ -607,17 +607,28 @@ This script takes windows (user defined parameters) and outputs average methylat
 4. <a name="Pipelines"> Pipelines </a>
 ------------
 
-DRM_analysis.R
-=====
+#### DRM_analysis.R ####
+This pipeline analyzes DMRs (usually on the order of 2kb large). Gold standard DMRs pass permutation testing.
 
-Example_WGBSalignment.bash
-=====
+#### Example_WGBSalignment.bash ####
+This is an example model of how to align and process whole genome bisulfite sequencing data using the tools listed above. 
 
-Window_analysis.R
-=====
+1. Trim adapters and align to reference genome assembly using BSSeeker2. Parameters can be changed.
+2. Sort and convert from bam to sam files
+3. Process results and remove areas in CpG islands
 
+#### Window_analysis.R ####
+This pipeline finds significant window clusters with directionality of hypermethylated/hypomethylated. It takes output from Window_permeth_readcentric.pl, outputs data for window_cluster.pl, and takes the output from running window_cluster.pl.
 
-WGBS_450k_Comparison.R
-=====
+1. Uses data from Window_permeth_readcentric.pl and performs multiple hypothesis testing
+2. window_cluster.pl is run using the output file from this R script
+3. The output of window_cluster.pl is then used in graphing the significant clusters back in this R script
+
+#### WGBS_450k_Comparison.R ####
 This R script is a template pipeline for analyzing data from AvgMeth.2col.pl and provides instructions on how to analyze HM450 probe locations with WGBS data. The script will require entry of experimental sample names, control sample names, file paths, and possibly edits to the graphs to fit your data. Much of the other processing is done. 
 
+1. Run AvgMeth.2col.pl using the locations of the probes you want to analyze as a bed file. If you want to test for hyper/hypo, make separate outputs for each.
+2. Change the sample names and file pathing in the R script.
+3. Run through the script line-by-line to ensure the latter parts have the necessary data.
+4. Create data frames of experimental/control and compare by t-testing
+5. Automatically generated scatter plots, bar graphs, and quadranting is included. They can be optionally manipulated to suit your data.
