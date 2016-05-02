@@ -5,7 +5,7 @@ use POSIX;
 ################################################################################
 # Author: Keith Dunaway
 # Email: kwdunaway@ucdavis.edu
-# Date: 4-62-2016
+# Date: 4-26-2016
 #
 # This script is a modifications of AvgMeth.2col.pl where the output for each sample
 # is given as three lines. First will be the # of meth reads, then # of total reads.

@@ -1,6 +1,4 @@
 #Authors: Keith Dunaway and Charles Mordaunt
-#setwd("~/Lab/Dup15/SingleCpG/")
-setwd(dir = "/Users/kdunaway1/Lab/Dup15/SingleCpG/")
 rm(list=ls()) # Clears memory
 library(bsseq)
 library(DSS)
