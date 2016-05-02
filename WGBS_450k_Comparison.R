@@ -17,8 +17,8 @@
 # AvgMeth.2col.pl [1] [2] [3] [4] [5] [6] [7]
 # [1], [2], etc. represent inputs
 # The inputs will be listed when you run AvgMeth.2col.pl with no inputs.
-# [2] is the HM450_hg38.bed file.
-# [3] is 3 (the fourth column in the HM450_hg38.bed file).
+# [2] is the bed file containing locations of the probes.
+# [3] is the column number of identifier.
 # [8/10/12/etc.] and [9/11/13/etc.] are additional folders/samples in the same
 # format as [6] and [7]
 
