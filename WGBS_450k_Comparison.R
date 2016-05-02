@@ -40,7 +40,7 @@ Ctl_samples <- c();
 
 # Place the full file path
 # Example: 
-# WGBS_450k_filepath <- "C:/Users/Roy/Dropbox/R/WGBS_450k_Comparison_4_2016/URC_SingleCpG.txt.2col"
+# WGBS_450k_filepath <- "~/URC_SingleCpG.txt.2col"
 WGBS_450k_filepath <- ""
 
 
@@ -148,8 +148,6 @@ PerMeth_aggregated[is.nan(PerMeth_aggregated)] <- NA
 # Hypothesis Testing #
 ######################
 
-t.test(PerMeth_aggregated$Exp_percent, PerMeth_aggregated$Ctl_percent,paired=TRUE,alternative = "greater", na.rm=TRUE)
-t.test(PerMeth_aggregated$Exp_percent, PerMeth_aggregated$Ctl_percent,paired=TRUE,alternative = "less", na.rm=TRUE)
 t.test(PerMeth_aggregated$Exp_percent, PerMeth_aggregated$Ctl_percent,paired=TRUE,alternative = "two.sided", na.rm=TRUE)
 
 ############
@@ -189,16 +187,10 @@ PerMeth_Partial$methcat <- "partial";
 PerMeth_High <- subset(PerMeth_aggregated, Avg_percent > 0.75)
 PerMeth_High$methcat <- "high";
 
-t.test(PerMeth_Low$Exp_percent, PerMeth_Low$Ctl_percent,paired=TRUE,alternative = "greater")
-t.test(PerMeth_Low$Exp_percent, PerMeth_Low$Ctl_percent,paired=TRUE,alternative = "less")
 t.test(PerMeth_Low$Exp_percent, PerMeth_Low$Ctl_percent,paired=TRUE,alternative = "two.sided")
 
-t.test(PerMeth_Partial$Exp_percent, PerMeth_Partial$Ctl_percent,paired=TRUE,alternative = "greater")
-t.test(PerMeth_Partial$Exp_percent, PerMeth_Partial$Ctl_percent,paired=TRUE,alternative = "less")
 t.test(PerMeth_Partial$Exp_percent, PerMeth_Partial$Ctl_percent,paired=TRUE,alternative = "two.sided")
 
-t.test(PerMeth_High$Exp_percent, PerMeth_High$Ctl_percent,paired=TRUE,alternative = "greater")
-t.test(PerMeth_High$Exp_percent, PerMeth_High$Ctl_percent,paired=TRUE,alternative = "less")
 t.test(PerMeth_High$Exp_percent, PerMeth_High$Ctl_percent,paired=TRUE,alternative = "two.sided")
 
 
