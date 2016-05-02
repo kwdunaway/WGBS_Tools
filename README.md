@@ -607,7 +607,7 @@ This script takes windows (user defined parameters) and outputs average methylat
 4. <a name="Pipelines"> Pipelines </a>
 ------------
 
-#### DRM_analysis.R ####
+#### DMR_analysis.R ####
 This pipeline analyzes DMRs (usually on the order of 2kb large). Gold standard DMRs pass permutation testing.
 
 #### Example_WGBSalignment.bash ####
