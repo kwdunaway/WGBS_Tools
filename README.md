@@ -636,7 +636,7 @@ WGBS_450k_Comparison.R is a template pipeline for analyzing data from AvgMeth.2c
 For this pipeline, your WGBS data must be in the format of percentage methylation bed files. These files will contain information in the format of "PercentageMethylation-TotalReadCount" (ex: 0.50-2). If your data is not in this format, check out the "Aligning WGBS" pipeline. 
 
 ###### STEP 2 ######
-Run [AvgMeth.2col.pl](#AvgMeth.2col.pl). The output will give us table for each CpG with 2 columns per sample, methylated read count and total read count. You will need to be in terminal and type:
+Run [AvgMeth.2col.pl](#AvgMeth.2col.pl). The output will give us a table for each CpG with 2 columns per sample, methylated read count and total read count. You will need to be in terminal and type:
 
     perl ./AvgMeth.2.col.pl
 
@@ -704,6 +704,8 @@ change WGBS_450k_file <- read.delim(WGBS_450k_filepath)
 
 to WGBS_450k_file <- YourDataFrame
 
+
+###### STEP 4 ######
 
 Now, go step-by-step running each command of the R script to ensure that the following commands will have the correct previous data. There are sample graphs and data manipulations created by the R script. You may edit or add your own or use the script however you need.
 
