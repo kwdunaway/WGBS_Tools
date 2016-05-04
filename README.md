@@ -616,7 +616,7 @@ Example_WGBSalignment.bash is an example bash script that aligns and process who
 4. Percent Methylation files which is the processed data file most of the other scripts in this toolkit use.
 5. Percent Methylation files with CpG Islands (CGI) masked out.
 
-These intermediate files are usually kept until a dataset is fully analyzed. If you are short on disc space, delete everything but the unmasked Percent Methylation bed files. Almost everything else can be recreated easily from those file.
+The intermediate files are usually kept until a dataset is fully analyzed. If you are short on disc space, delete everything but the unmasked Percent Methylation bed files. Almost everything else can be recreated easily from those file.
 
 #### Window_analysis.R ####
 This pipeline finds significant window clusters with directionality of hypermethylated/hypomethylated. It takes output from Window_permeth_readcentric.pl, outputs data for window_cluster.pl, and takes the output from running window_cluster.pl.
@@ -626,7 +626,7 @@ This pipeline finds significant window clusters with directionality of hypermeth
 3. The output of window_cluster.pl is then used in graphing the significant clusters back in this R script
 
 #### DMR_analysis.R ####
-This pipeline analyzes DMRs (usually on the order of 2kb large). Gold standard DMRs pass permutation testing.
+This pipeline analyzes DMRs (usually on the order of 2kb large) using R packages bsseq and DSS. Gold standard DMRs pass permutation testing.
 
 #### WGBS_450k_Comparison.R ####
 This R script is a template pipeline for analyzing data from AvgMeth.2col.pl and provides instructions on how to analyze HM450 probe locations with WGBS data. The script will require entry of experimental sample names, control sample names, file paths, and possibly edits to the graphs to fit your data. Much of the other processing is done. 
