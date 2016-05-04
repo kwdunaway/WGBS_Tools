@@ -7,9 +7,9 @@ WGBS_Tools
 
 1. [Requirements](#Requirements)
 
-2. [Brief Descriptions](#BriefDescriptions)
+2. [Brief Script Descriptions](#BriefScriptDescriptions)
 
-3. [Full Descriptions](#FullDescriptions)
+3. [Full Script Descriptions](#FullScriptDescriptions)
 
 4. [Pipelines](#Pipelines)
 
@@ -28,7 +28,7 @@ WGBS_Tools
   
   [SRA Toolkit](http://www.ncbi.nlm.nih.gov/books/NBK158900/)
 
-2. <a name="BriefDescriptions"> Brief Descriptions </a>
+2. <a name="BriefScriptDescriptions"> Brief Script Descriptions </a>
 ============
 
 - (1) [adapter_split.pl](#adapter_split.pl) - Separates fastq files for those with and without adapter sequence
@@ -55,7 +55,7 @@ WGBS_Tools
 - (22) [window_cluster.pl](#window_cluster.pl) -  Outputs three bed files: clustered, hypermethylated, and hypomethylated by using input from Window_analysis.R
 - (23) [Window_permeth_readcentric.pl](#Window_permeth_readcentric.pl) - Takes sliding windows of positions and outputs average methylation across windows
 
-3. <a name="FullDescriptions"> Full Descriptions </a>
+3. <a name="FullScriptDescriptions"> Full Script Descriptions </a>
 ============
 
 <a name="adapter_split.pl">(1) adapter_split.pl </a>
