@@ -268,12 +268,12 @@ foreach my $chr (sort keys %bed_array){
 		foreach my $outend (sort {$a<=>$b} keys %{$outhash{$chr}{$outstart}}){
 			# Make a count for file threshold
 			my $NAcounter = 0;
-#			for(my $i = 0; $i < @filenames; $i++) {
-#				# For each file missing data, increment count
-#				if($outhash{$chr}{$outstart}{$outend}{$filenames[$i][0]}{"meth"} eq "NA") {
-#					$NAcounter++;
-#				}
-#			}
+			for(my $i = 0; $i < @filenames; $i++) {
+				# For each file missing data, increment count
+				if($outhash{$chr}{$outstart}{$outend}{$filenames[$i][0]}{"meth"} eq "NA") {
+					$NAcounter++;
+				}
+			}
 			# Check file threshold, if met, then print
 			if($NAcounter <= @filenames - $minfiles) {
 				# Print to out
