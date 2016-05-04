@@ -618,18 +618,18 @@ Example_WGBSalignment.bash is an example bash script that aligns and process who
 
 The intermediate files are usually kept until a dataset is fully analyzed. If you are short on disc space, delete everything but the unmasked Percent Methylation bed files. Almost everything else can be recreated easily from those file.
 
-#### Window_analysis.R ####
-This pipeline finds significant window clusters with directionality of hypermethylated/hypomethylated. It takes output from Window_permeth_readcentric.pl, outputs data for window_cluster.pl, and takes the output from running window_cluster.pl.
+#### Window Analysis ####
+Window_analysis.R finds significant window clusters with directionality of hypermethylated/hypomethylated. It takes output from Window_permeth_readcentric.pl, outputs data for window_cluster.pl, and takes the output from running window_cluster.pl.
 
 1. Uses data from Window_permeth_readcentric.pl and performs multiple hypothesis testing
 2. window_cluster.pl is run using the output file from this R script
 3. The output of window_cluster.pl is then used in graphing the significant clusters back in this R script
 
-#### DMR_analysis.R ####
-This pipeline analyzes DMRs (usually on the order of 2kb large) using R packages bsseq and DSS. Gold standard DMRs pass permutation testing.
+#### DMR Analysis ####
+DMR_analysis.R analyzes DMRs (usually on the order of 2kb large) using R packages bsseq and DSS. Gold standard DMRs pass permutation testing.
 
-#### WGBS_450k_Comparison.R ####
-This R script is a template pipeline for analyzing data from AvgMeth.2col.pl and provides instructions on how to analyze HM450 probe locations with WGBS data. The script will require entry of experimental sample names, control sample names, file paths, and possibly edits to the graphs to fit your data. Much of the other processing is done. 
+#### WGBS to 450k Comparison ####
+WGBS_450k_Comparison.R is a template pipeline for analyzing data from AvgMeth.2col.pl and provides instructions on how to analyze HM450 probe locations with WGBS data. The script will require entry of experimental sample names, control sample names, file paths, and possibly edits to the graphs to fit your data. Much of the other processing is done. 
 
 1. Run AvgMeth.2col.pl using the locations of the probes you want to analyze as a bed file. If you want to test for hyper/hypo, make separate outputs for each.
 2. Change the sample names and file pathing in the R script.
