@@ -607,15 +607,16 @@ This script takes windows (user defined parameters) and outputs average methylat
 4. <a name="Pipelines"> Pipelines </a>
 ------------
 
-#### DMR_analysis.R ####
-This pipeline analyzes DMRs (usually on the order of 2kb large). Gold standard DMRs pass permutation testing.
+#### Aligning WGBS ####
+Example_WGBSalignment.bash is an example bash script that aligns and process whole genome bisulfite sequencing data using some of the tools listed above. The resulting files from this pipeline include:
 
-#### Example_WGBSalignment.bash ####
-This is an example model of how to align and process whole genome bisulfite sequencing data using the tools listed above. 
+1. Quality filtered reads.
+2. Reads split into two files: those without adapter contamination and those with adapters trimmed out.
+3. BAM and SAM of aligned reads
+4. Percent Methylation files which is the processed data file most of the other scripts in this toolkit use.
+5. Percent Methylation files with CpG Islands (CGI) masked out.
 
-1. Trim adapters and align to reference genome assembly using BSSeeker2. Parameters can be changed.
-2. Sort and convert from bam to sam files
-3. Process results and remove areas in CpG islands
+These intermediate files are usually kept until a dataset is fully analyzed. If you are short on disc space, delete everything but the unmasked Percent Methylation bed files. Almost everything else can be recreated easily from those file.
 
 #### Window_analysis.R ####
 This pipeline finds significant window clusters with directionality of hypermethylated/hypomethylated. It takes output from Window_permeth_readcentric.pl, outputs data for window_cluster.pl, and takes the output from running window_cluster.pl.
@@ -623,6 +624,9 @@ This pipeline finds significant window clusters with directionality of hypermeth
 1. Uses data from Window_permeth_readcentric.pl and performs multiple hypothesis testing
 2. window_cluster.pl is run using the output file from this R script
 3. The output of window_cluster.pl is then used in graphing the significant clusters back in this R script
+
+#### DMR_analysis.R ####
+This pipeline analyzes DMRs (usually on the order of 2kb large). Gold standard DMRs pass permutation testing.
 
 #### WGBS_450k_Comparison.R ####
 This R script is a template pipeline for analyzing data from AvgMeth.2col.pl and provides instructions on how to analyze HM450 probe locations with WGBS data. The script will require entry of experimental sample names, control sample names, file paths, and possibly edits to the graphs to fit your data. Much of the other processing is done. 
