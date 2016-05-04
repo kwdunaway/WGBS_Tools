@@ -641,15 +641,15 @@ Run [AvgMeth.2col.pl](#AvgMeth.2col.pl). The output will give us table for each 
     perl ./AvgMeth.2.col.pl
 
 This will bring up a brief description of its inputs. To run the script, you will need to type the above command and each input in order afterwards, separated by a space. The inputs will be:
-[1] Your choice of the name and location of the output file
-[2] Bed file containing the probe locations you are interested in (Your 450k data)
-[3] The column number of the Illumina CpG identifier (ex: 3)
-[4] Minimum Read Threshold, which means at least x number of total reads to include this CpG (ex: 1)
-[5] Minimum File Threshold, which means at least x number of samples with sufficient data to include this CpG (ex: 1)
-[6] Prefix for sample, leaving out chr (Your WGBS Data)
-[7] Sample Name (Your WGBS Data)
-[8, 10, etc. Optional] If you have more than 1 sample, same as [6], Prefix for sample
-[9, 11, etc. Optional] If you have more than 1 sample, same as [7], Sample name
+- [1] Your choice of the name and location of the output file
+- [2] Bed file containing the probe locations you are interested in (Your 450k data)
+- [3] The column number of the Illumina CpG identifier (ex: 3)
+- [4] Minimum Read Threshold, which means at least x number of total reads to include this CpG (ex: 1)
+- [5] Minimum File Threshold, which means at least x number of samples with sufficient data to include this CpG (ex: 1)
+- [6] Prefix for sample, leaving out chr (Your WGBS Data)
+- [7] Sample Name (Your WGBS Data)
+- [8, 10, etc. Optional] If you have more than 1 sample, same as [6], Prefix for sample
+- [9, 11, etc. Optional] If you have more than 1 sample, same as [7], Sample name
 
 Explanation: Say your WGBS data has two samples:
 
@@ -669,32 +669,39 @@ An example input to the terminal would be:
 ###### STEP 3 ######
 It's time to look into the R script. First, edit these locations in the script:
 
->Enter the names of your samples here (they need to be the same as what you entered above for AvgMeth.2col.pl)<
->Example: 
+Enter the names of your samples here (they need to be the same as what you entered above for AvgMeth.2col.pl)
+
+Example: 
+
 Exp_samples <- c("Sample1");
+
 Ctl_samples <- c("Sample2");
-<
->Example with multiple samples:
+
+Example with multiple samples:
+
 Ctl_samples <- c("Sample1", "Sample2");
-<
 
-Exp_samples <- c();
+>Exp_samples <- c();
 
-Ctl_samples <- c();
+>Ctl_samples <- c();
 
 
->If you want to upload from a file (same as above for AvgMeth.2col.pl)(make sure you are in the correct working directory)<
->Example:
+If you want to upload from a file (same as above for AvgMeth.2col.pl)(make sure you are in the correct working directory)
+
+Example:
+
 WGBS_450k_filepath <- "output_table.txt"
->
 
 
-WGBS_450k_filepath <- ""
+
+>WGBS_450k_filepath <- ""
 
 -OR-
 
->If you want to work with your data frame first and then enter it<
+If you want to work with your data frame first and then enter it
+
 change WGBS_450k_file <- read.delim(WGBS_450k_filepath) 
+
 to WGBS_450k_file <- YourDataFrame
 
 
