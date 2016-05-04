@@ -11,18 +11,12 @@
 # analyzes these locations. There are some preprocessing steps that must be
 # manually done.
 
-# STEP 1
-# Before this step, the WGBS data should have been converted to percentage
-# methylation folders for each sample. For this step, run this script:
-# AvgMeth.2col.pl [1] [2] [3] [4] [5] [6] [7]
-# [1], [2], etc. represent inputs
-# The inputs will be listed when you run AvgMeth.2col.pl with no inputs.
-# [2] is the bed file containing locations of the probes.
-# [3] is the column number of identifier.
-# [8/10/12/etc.] and [9/11/13/etc.] are additional folders/samples in the same
-# format as [6] and [7]
+####################################################################
+#                         FOR INSTRUCTIONS                         #
+#                        GO TO THE WIKI AT:                        #
+# https://github.com/kwdunaway/WGBS_Tools#wgbs-to-450k-comparison  #
+####################################################################
 
-# STEP 2
 # Load the file onto your local machine and 
 # *****************************************
 # *****Fill in the following variables*****
@@ -40,13 +34,9 @@ Ctl_samples <- c();
 
 # Place the full file path
 # Example: 
-# WGBS_450k_filepath <- "~/URC_SingleCpG.txt.2col"
+# WGBS_450k_filepath <- "URC_SingleCpG.txt.2col"
 WGBS_450k_filepath <- ""
 
-
-
-# STEP 3
-# Run this R script
 
 ############################
 # Call Necessary Libraries #
@@ -148,6 +138,8 @@ PerMeth_aggregated[is.nan(PerMeth_aggregated)] <- NA
 # Hypothesis Testing #
 ######################
 
+#t.test(PerMeth_aggregated$Exp_percent, PerMeth_aggregated$Ctl_percent,paired=TRUE,alternative = "greater", na.rm=TRUE)
+#t.test(PerMeth_aggregated$Exp_percent, PerMeth_aggregated$Ctl_percent,paired=TRUE,alternative = "less", na.rm=TRUE)
 t.test(PerMeth_aggregated$Exp_percent, PerMeth_aggregated$Ctl_percent,paired=TRUE,alternative = "two.sided", na.rm=TRUE)
 
 ############
@@ -187,16 +179,22 @@ PerMeth_Partial$methcat <- "partial";
 PerMeth_High <- subset(PerMeth_aggregated, Avg_percent > 0.75)
 PerMeth_High$methcat <- "high";
 
+t.test(PerMeth_Low$Exp_percent, PerMeth_Low$Ctl_percent,paired=TRUE,alternative = "greater")
+t.test(PerMeth_Low$Exp_percent, PerMeth_Low$Ctl_percent,paired=TRUE,alternative = "less")
 t.test(PerMeth_Low$Exp_percent, PerMeth_Low$Ctl_percent,paired=TRUE,alternative = "two.sided")
 
+t.test(PerMeth_Partial$Exp_percent, PerMeth_Partial$Ctl_percent,paired=TRUE,alternative = "greater")
+t.test(PerMeth_Partial$Exp_percent, PerMeth_Partial$Ctl_percent,paired=TRUE,alternative = "less")
 t.test(PerMeth_Partial$Exp_percent, PerMeth_Partial$Ctl_percent,paired=TRUE,alternative = "two.sided")
 
+t.test(PerMeth_High$Exp_percent, PerMeth_High$Ctl_percent,paired=TRUE,alternative = "greater")
+t.test(PerMeth_High$Exp_percent, PerMeth_High$Ctl_percent,paired=TRUE,alternative = "less")
 t.test(PerMeth_High$Exp_percent, PerMeth_High$Ctl_percent,paired=TRUE,alternative = "two.sided")
 
 
 ####
 # Average Percentage Bar Graph
-###
+####
 PerMeth_CatBar <- data.frame(c("low","partial","high"))
 colnames(PerMeth_CatBar) <- c("methcat")
 PerMeth_CatBar$Exp_percent <- c(mean(PerMeth_Low$Exp_percent), mean(PerMeth_Partial$Exp_percent), mean(PerMeth_High$Exp_percent))
@@ -216,7 +214,7 @@ PerMeth_CatBar_graph + geom_bar(position = "dodge", stat = "identity") + scale_f
 
 ####
 # Normalized Bar Graph
-###
+####
 PerMeth_CatBar <- data.frame(c("low","partial","high"))
 colnames(PerMeth_CatBar) <- c("methcat")
 PerMeth_CatBar$Norm_percent <- c(mean(PerMeth_Low$Exp_percent) - mean(PerMeth_Low$Ctl_percent), mean(PerMeth_Partial$Exp_percent) - mean(PerMeth_Partial$Ctl_percent), mean(PerMeth_High$Exp_percent - mean(PerMeth_High$Ctl_percent)))
@@ -234,4 +232,34 @@ PerMeth_CatBar_graph <- PerMeth_CatBar_graph+ theme_bw() + theme(plot.title = el
 # Adjust ylim to your liking and fill_manual to the colors you want
 PerMeth_CatBar_graph + geom_bar(data=PerMeth_CatBar, aes(x=methcat, y=Norm_percent, fill = methcat), position = "dodge", stat = "identity") + scale_fill_manual(values=c("#56B4E9","#0072B2", "#9999CC")) + coord_cartesian(ylim=c(-0.005,0.005)) + geom_hline(yintercept=0) + geom_errorbar(limits, position=dodge, width=0.25)
 
+####
+# Methylation Density Plot
+# Courtesy of Charles Mordaunt
+####
+mdp <- ggplot(PerMeth_aggregated)
+mdp + 
+  geom_line(aes(x = PerMeth_aggregated$Exp_percent, color = "Exp"), size = 1.5, stat = "density") +
+  geom_line(aes(x = PerMeth_aggregated$Ctl_percent, color = "Ctl"), size = 1.5, stat = "density") +
+  theme_bw(base_size = 20) +
+  theme(panel.grid.major = element_blank(), panel.border = element_rect(color = "black", size = 1.25),
+        axis.ticks = element_line(size = 1.25), legend.key = element_blank(), panel.grid.minor = element_blank()) +
+  xlab("Methylation") +
+  ylab("Density") +
+  annotate("text", label = "Label", x = 0, y = 2, size = 8, hjust = 0) +
+  scale_color_manual("", breaks = c("Exp", "Ctl"), values = c("#FF3366", "#3366CC"))
 
+####
+# Average Methylation Plot
+# Courtesy of Charles Mordaunt
+####
+amp <- ggplot(PerMeth_aggregated, aes(x = Ctl_percent, y = Exp_percent))
+amp + 
+  geom_point(color = "#3366CC", size = 2) +
+  geom_abline(slope = 1, size = 1.25, linetype = "longdash") +
+  theme_bw(base_size = 24) +
+  theme(panel.grid.major = element_blank(), panel.border = element_rect(color = "black", size = 1.25),
+        axis.ticks = element_line(size = 1.25), legend.key = element_blank(), panel.grid.minor = element_blank(), 
+        plot.title = element_text(hjust = 0, size = 22)) +
+  ggtitle("Title") +
+  xlab("Control Methylation") +
+  ylab("Experimental Methylation")

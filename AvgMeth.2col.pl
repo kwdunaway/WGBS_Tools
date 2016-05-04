@@ -52,9 +52,11 @@ my $minreads = shift(@ARGV);	# Threshold for reads found at a CpG site
 my $minfiles = shift(@ARGV);	# Threshold for total data across all folders
 my @filenames;			# Input Percent Methylation Folder Prefix (Ex: /home/user/Permeth/Permeth_)
 my @headernames;		# Input Percent Methylation Header for Column (Ex: Sample1)
+my $samplecount = 0;
 while(@ARGV){
 	push(@filenames,shift(@ARGV));
 	push(@headernames,shift(@ARGV));
+	$samplecount++;
 }
 
 # Global Variables
@@ -268,9 +270,9 @@ foreach my $chr (sort keys %bed_array){
 		foreach my $outend (sort {$a<=>$b} keys %{$outhash{$chr}{$outstart}}){
 			# Make a count for file threshold
 			my $NAcounter = 0;
-			for(my $i = 0; $i < @filenames; $i++) {
+			for(my $i = 0; $i < $samplecount; $i++) {
 				# For each file missing data, increment count
-				if($outhash{$chr}{$outstart}{$outend}{$filenames[$i][0]}{"meth"} eq "NA") {
+				if($outhash{$chr}{$outstart}{$outend}{$filenames[$i]}{"meth"} eq "NA") {
 					$NAcounter++;
 				}
 			}
