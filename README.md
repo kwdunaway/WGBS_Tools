@@ -629,10 +629,83 @@ Window_analysis.R finds significant window clusters with directionality of hyper
 DMR_analysis.R analyzes DMRs (usually on the order of 2kb large) using R packages bsseq and DSS. Gold standard DMRs pass permutation testing.
 
 #### WGBS to 450k Comparison ####
-WGBS_450k_Comparison.R is a template pipeline for analyzing data from AvgMeth.2col.pl and provides instructions on how to analyze HM450 probe locations with WGBS data. The script will require entry of experimental sample names, control sample names, file paths, and possibly edits to the graphs to fit your data. Much of the other processing is done. 
+WGBS_450k_Comparison.R is a template pipeline for analyzing data from AvgMeth.2col.pl and provides instructions on how to analyze HM450 probe locations with WGBS data. The script will require entry of experimental sample names, control sample names, file paths, and possibly edits to the graphs to fit your data. Much of the other processing is done. If you want to separate for hypermethylated/hypomethylated probe locations, separate your probe data accordingly and run this pipeline once for hypermethylated and once for hypomethylated.
 
-1. Run AvgMeth.2col.pl using the locations of the probes you want to analyze as a bed file. If you want to test for hyper/hypo, make separate outputs for each.
-2. Change the sample names and file pathing in the R script.
-3. Run through the script line-by-line to ensure the latter parts have the necessary data.
-4. Create data frames of experimental/control and compare by t-testing
-5. Automatically generated scatter plots, bar graphs, and quadranting is included. They can be optionally manipulated to suit your data.
+##### Getting Started #####
+###### STEP 1 ######
+For this pipeline, your WGBS data must be in the format of percentage methylation bed files. These files will contain information in the format of "PercentageMethylation-TotalReadCount" (ex: 0.50-2). If your data is not in this format, check out the "Aligning WGBS" pipeline. 
+
+###### STEP 2 ######
+Run [AvgMeth.2col.pl](#AvgMeth.2col.pl). The output will give us a table for each CpG with 2 columns per sample, methylated read count and total read count. You will need to be in terminal and type:
+
+    perl ./AvgMeth.2.col.pl
+
+This will bring up a brief description of its inputs. To run the script, you will need to type the above command and each input in order afterwards, separated by a space. The inputs will be:
+- [1] Your choice of the name and location of the output file
+- [2] Bed file containing the probe locations you are interested in (Your 450k data)
+- [3] The column number of the Illumina CpG identifier (ex: 3)
+- [4] Minimum Read Threshold, which means at least x number of total reads to include this CpG (ex: 1)
+- [5] Minimum File Threshold, which means at least x number of samples with sufficient data to include this CpG (ex: 1)
+- [6] Prefix for sample, leaving out chr (Your WGBS Data)
+- [7] Sample Name (Your WGBS Data)
+- [8, 10, etc. Optional] If you have more than 1 sample, same as [6], Prefix for sample
+- [9, 11, etc. Optional] If you have more than 1 sample, same as [7], Sample name
+
+Explanation: Say your WGBS data has two samples:
+
+    /home/user/John/PercentMethyl_Sample1/PercentMethyl_Sample1_chr1.bed
+    /home/user/John/PercentMethyl_Sample1/PercentMethyl_Sample1_chr2.bed
+    /home/user/John/PercentMethyl_Sample1/PercentMethyl_Sample1_chr3.bed
+    ...
+    /home/user/John/PercentMethyl_Sample2/PercentMethyl_Sample2_chr1.bed
+    /home/user/John/PercentMethyl_Sample2/PercentMethyl_Sample2_chr2.bed
+    /home/user/John/PercentMethyl_Sample2/PercentMethyl_Sample2_chr3.bed
+    ...
+
+An example input to the terminal would be:
+
+    perl ./AvgMeth.2.col.pl output_table.txt HM450_hg38.bed 3 1 1 /home/user/John/PercentMethyl_Sample1/PercentMethyl_Sample1_ Sample1 /home/user/John/PercentMethyl_Sample2/PercentMethyl_Sample2_ Sample2
+
+###### STEP 3 ######
+It's time to look into the R script. First, edit these locations in the script:
+
+Enter the names of your samples here (they need to be the same as what you entered above for AvgMeth.2col.pl)
+
+Example: 
+
+Exp_samples <- c("Sample1");
+
+Ctl_samples <- c("Sample2");
+
+Example with multiple samples:
+
+Ctl_samples <- c("Sample1", "Sample2");
+
+>Exp_samples <- c();
+
+>Ctl_samples <- c();
+
+
+If you want to upload from a file (same as above for AvgMeth.2col.pl)(make sure you are in the correct working directory)
+
+Example:
+
+WGBS_450k_filepath <- "output_table.txt"
+
+
+
+>WGBS_450k_filepath <- ""
+
+-OR-
+
+If you want to work with your data frame first and then enter it
+
+change WGBS_450k_file <- read.delim(WGBS_450k_filepath) 
+
+to WGBS_450k_file <- YourDataFrame
+
+
+###### STEP 4 ######
+
+Now, go step-by-step running each command of the R script to ensure that the following commands will have the correct previous data. There are sample graphs and data manipulations created by the R script. You may edit or add your own or use the script however you need.
+
