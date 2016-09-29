@@ -580,7 +580,7 @@ This script takes windows (user defined parameters) and outputs average methylat
 
     Input:
     1) Output table file
-    2) NONE or CpG island GTF (or bed) file to mask. If no masking, put NONE
+    2) Input BED file to identify what chromosomes to look at
     3) Window size
     4) Min # of CpGs per window (otherwise prints NA)
     5) Min # of reads per CpG counted
