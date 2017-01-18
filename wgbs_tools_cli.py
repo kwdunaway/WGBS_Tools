@@ -45,6 +45,12 @@ def cli():
               default=False,
               help='Input fastq file is already trimmed for adapter sequence.'
                    'Default: --not-trimmed')
+@click.option('--cgibed/--no-cgibed',
+              default=True,
+              help='For each PerMeth bed file, creates a separate one without '
+                   'CPG island information in it. This is useful for looking '
+                   'at windows without CGI bias. Default: --cgibed (creates '
+                   'the separate permeth bed files)')
 @click.option('--threads', type=click.INT,
               default=NUM_CPUS,
               help='Number of threads used when multiprocessing. '
@@ -62,7 +68,7 @@ def cli():
 @click.argument('input', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
 def main_pipeline(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
-                  adaptrim_bs2_params, threads, working_dir, infoyaml):
+                  trimmed, cgibed, threads, working_dir, infoyaml):
     """
     Main fastq to permeth bed pipeline.
 
@@ -94,7 +100,8 @@ samtools view JLCM007A/JLCM007A.bam > JLCM007A/JLCM007A.sam
 mkdir JLCM007A/tmp
 perl /share/lasallelab/programs/perl_script/SAMsorted_to_permeth.pl JLCM007A/JLCM007A.sam JLCM007A/tmp/PerMeth_JLCM007A JLCM007A hg38 CG combined 1
 mkdir JLCM007A/PerMeth_JLCM007A
-perl /share/lasallelab/programs/perl_script/gbcompliance.pl hg38 JLCM007A/tmp/PerMeth_JLCM007A_ JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_ JLCM007A JLCM007A
+# Unnecessary because incorporated into previous script
+#perl /share/lasallelab/programs/perl_script/gbcompliance.pl hg38 JLCM007A/tmp/PerMeth_JLCM007A_ JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_ JLCM007A JLCM007A
 rm -r JLCM007A/tmp
 mkdir JLCM007A/NoCGI_Permeth_JLCM007A
 bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr1.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chr1.bed
@@ -194,6 +201,13 @@ bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chrM.bed -b /sha
     command = 'samtools view {} > {}'.format(full_bam, full_sam)
     logging.info(command)
     subprocess.check_call(command, shell=True)
+
+    #Convert sam to permeth bed files (percent methylation bed files)
+    #This also only prints CpGs on chromosomes in ranges defined in the yaml
+
+    #Creates no CGI permeth bed files (if applicable)
+#    if cgibed:
+
 
 
 
