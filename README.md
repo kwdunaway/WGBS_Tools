@@ -22,6 +22,13 @@ The following programs need to be installed before you can use WGBS_Tools:
   [Bedtools2](https://github.com/arq5x/bedtools2)
   [SRA Toolkit](http://www.ncbi.nlm.nih.gov/books/NBK158900/)
 
+### python packages:
+pyyaml
+
+### path changes:
+Since every system has a different path, you need to edit the paths in the following files:
+
+1. **WGBS_Tools/info.yaml** = change line after bs2_path: with BS-Seeker2 path
 
 
 ## <a name="VersionHistory"> Version History </a>

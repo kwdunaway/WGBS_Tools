@@ -33,11 +33,11 @@ def cli():
               default='hg38',
               help='Genome used for alignment and analysis. Default: hg38')
 @click.option('--noadap-bs2params', 'noadap_bs2_params', type=click.STRING,
-              default='-m 3 -f bam ',
+              default='-m 3 -f bam',
               help='Parameters passed to BS Seeker 2 for alignment of reads '
                    'without adapter contamination. Default: -m 3 -f bam')
 @click.option('--adaptrim-bs2params', 'adaptrim_bs2_params', type=click.STRING,
-              default='-m 2 -f bam ',
+              default='-m 2 -f bam',
               help='Parameters passed to BS Seeker 2 for alignment of reads '
                    'with adapter contamination trimmed out. Default: -m 2 -f '
                    'bam')
@@ -68,7 +68,8 @@ def cli():
 @click.argument('input', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
 def main_pipeline(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
-                  trimmed, cgibed, threads, working_dir, infoyaml):
+                  adaptrim_bs2_params, trimmed, cgibed, threads, working_dir,
+                  infoyaml):
     """
     Main fastq to permeth bed pipeline.
 
@@ -161,6 +162,7 @@ bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chrM.bed -b /sha
         out_dir = out_prefix
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
+
     #Filter fastq file
     logging.info('Filtering out quality failed reads from fastq file')
     fastqtools.qual_filter_fastq(in_fastq, qualfil_fastq)
@@ -171,11 +173,13 @@ bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chrM.bed -b /sha
                              info_dict['adapter'])
 
     #Align to genome
-    logging.info('Aligning noadap contamination reads to {}'.format(genome))
+    logging.info('Aligning reads without adapter contamination to {}'
+                 .format(genome))
     noadap_bs2_params = '--bt-p {} {}'.format(threads, noadap_bs2_params)
     bsseeker.align_bs2(bs2_path, noadap_bs2_params, fasta, bs2_index, noadap_fq,
                        noadap_bam)
-    logging.info('Aligning adaptrim contamination reads to {}'.format(genome))
+    logging.info('Aligning reads that had adapter contamination trimmed out '
+                 'to {}'.format(genome))
     adaptrim_bs2_params = '--bt-p {} {}'.format(threads, adaptrim_bs2_params)
     bsseeker.align_bs2(bs2_path, adaptrim_bs2_params, fasta, bs2_index,
                        adaptrim_fq, adaptrim_bam)
