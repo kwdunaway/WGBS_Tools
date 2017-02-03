@@ -9,6 +9,8 @@ setuptools.setup(
     py_modules=['wgbs_tools'],
     install_requires=[
         'Click',
+        'pysam',
+        'pyyaml',
     ],
     entry_points='''
         [console_scripts]

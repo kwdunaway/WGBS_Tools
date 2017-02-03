@@ -1,5 +1,5 @@
 adapter: AGATCGGAAG
-bs2_path: /share/lasallelab/programs/tuxedo/BSseeker2-master_v2.0.8/bs_seeker2-align.py
+bs2_path: /Users/kdunaway1/Programming/github/BSseeker2/bs_seeker2-align.py
 hg38:
   bs2_index: /share/lasallelab/genomes/hg38/BSseek2_refgen/
   fasta: /share/lasallelab/genomes/hg38/hg38.fa

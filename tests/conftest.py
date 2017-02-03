@@ -28,10 +28,10 @@ def temp_dir():
     shutil.rmtree(tmpdir)
 
 
-# @pytest.fixture
-# def working_dir():
-#     """Get a working directory for all files"""
-#     return working_directory
+@pytest.fixture
+def working_dir():
+    """Get a working directory for all files"""
+    return working_directory
 
 
 @pytest.fixture
@@ -46,16 +46,19 @@ def bs2_index():
     return resource_filename(wgbs_tools.__name__,
                              '../tests/data/small_genome/genome')
 
+@pytest.fixture
 def fasta():
     """Fasta file for fake genome for test_align_bs2"""
     return resource_filename(wgbs_tools.__name__,
                              '../tests/data/small_genome/genome.fa')
 
+@pytest.fixture
 def chroms():
     """Chromosomes of fake genome as a dict with key=name and value=size for
     test_align_bs2"""
     chroms = {'chr1': 1000, 'chr2': 500}
 
+@pytest.fixture
 def bs2_path():
     """Gets information from info.yaml in root directory of package and returns
     the path to BS Seeker 2 for test_align_bs2"""
@@ -64,17 +67,48 @@ def bs2_path():
     info_dict = yaml.safe_load(stream)
     return info_dict['bs2_path']
 
-def bs2_fastq():
+@pytest.fixture
+def bs2_index():
+    """BSSeeker2 index for small genome"""
+    return resource_filename(wgbs_tools.__name__, '../tests/data/small_genome/')
+
+@pytest.fixture
+def noadap_fastq():
     """FASTQ file for test_align_bs2"""
     return resource_filename(wgbs_tools.__name__,
-                             '../tests/data/small_genome/test.fq')
+                             '../tests/data/small_genome/noadap.fq')
 
-def noadap_bam():
-    """Output of bam file created through test_align_bs2"""
-    return os.path.join(working_directory, 'noadap_test_out.bam')
+@pytest.fixture
+def correct_noadapsam():
+    """Correct output for test_align_bs2_noadap in test_align_bs2"""
+    path = resource_filename(wgbs_tools.__name__,
+                             '../tests/data/small_genome/noadap.sam')
+    with open(path, 'r') as content_file:
+        content = content_file.read()
+    return content
 
-def adaptrim_bam():
-    """Output of bam file created through test_align_bs2"""
-    return os.path.join(working_directory, 'adaptrim_test_out.bam')
+@pytest.fixture
+def trimmed_fastq():
+    """FASTQ file for test_align_bs2"""
+    return resource_filename(wgbs_tools.__name__,
+                             '../tests/data/small_genome/trimmed.fq')
+
+@pytest.fixture
+def correct_trimmedsam():
+    """Correct output for test_align_bs2_adaptrim in test_align_bs2"""
+    path = resource_filename(wgbs_tools.__name__,
+                             '../tests/data/small_genome/trimmed.sam')
+    # return path
+    with open(path, 'r') as content_file:
+        content = content_file.read()
+    return content
+
+@pytest.fixture
+def qual_fastq():
+    return resource_filename(wgbs_tools.__name__, '../tests/data/qual.fq')
+
+@pytest.fixture
+def correct_qualfil_fastq():
+    return resource_filename(wgbs_tools.__name__, '../tests/data/correctfil.fq')
 
 

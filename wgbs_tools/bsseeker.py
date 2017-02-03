@@ -30,6 +30,7 @@ def align_bs2(bs2_path, params, fasta, bs2_index, fastq, bam):
     command = '{} {} -g {} -d {} -i {} -o {}'\
         .format(bs2_path, params, fasta, bs2_index, fastq, bam)
     logging.info(command)
+    print(command)
     subprocess.check_call(command, shell=True)
 
 

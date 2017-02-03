@@ -16,6 +16,9 @@ def qual_filter_fastq(in_fastq, out_fastq):
     resulting file. Otherwise, it is left unzipped.
     :return:
     """
+    with open(in_fastq, 'r') as infq:
+        first_line = infq.readline()
+    if
     if in_fastq.endswith(".gz"):
         if out_fastq.endswith(".gz"):
             command = 'gunzip -c {} | grep -A 3 \'^@.* [^:]*:N:[^:]*:\' |   ' \
