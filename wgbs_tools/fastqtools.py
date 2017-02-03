@@ -4,6 +4,7 @@ Module containing all scripts that process and manipulate fastq files.
 
 import subprocess
 import logging
+import gzip
 
 
 def qual_filter_fastq(in_fastq, out_fastq):
@@ -14,11 +15,22 @@ def qual_filter_fastq(in_fastq, out_fastq):
     Otherwise, it is assumed unzipped.
     :param out_fastq: Output fastq file name. If ends in .gz, it will zip the
     resulting file. Otherwise, it is left unzipped.
-    :return:
+    :return: String denoting completion of function or if the fastq file did
+    not have a field for Illumina quality calls in the header lines.
     """
-    with open(in_fastq, 'r') as infq:
-        first_line = infq.readline()
-    if
+
+    # Checks to see if the fastq file has Illumina quality calls
+    if out_fastq.endswith('.gz'):
+        with gzip.open(in_fastq, 'r') as infq:
+            first_line = infq.readline()
+    else:
+        with open(in_fastq, 'r') as infq:
+            first_line = infq.readline()
+    if (':Y:' not in first_line and ':N:' not in first_line):
+        logging.info('no_qual_field')
+        return
+
+    # Filters fastq file
     if in_fastq.endswith(".gz"):
         if out_fastq.endswith(".gz"):
             command = 'gunzip -c {} | grep -A 3 \'^@.* [^:]*:N:[^:]*:\' |   ' \
