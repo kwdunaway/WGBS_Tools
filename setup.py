@@ -11,6 +11,7 @@ setuptools.setup(
         'Click',
         'pysam',
         'pyyaml',
+        'pytest',
     ],
     entry_points='''
         [console_scripts]
