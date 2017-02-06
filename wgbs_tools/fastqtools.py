@@ -90,7 +90,7 @@ def adapter_remove(in_fastq, noadap_fq, adaptrim_fq, adap_seq, chew_length = 10,
                 noadap_outfile.write('{}\n'.format(qual_line[:-chew_length]))
             else:
                 trimmed_seq_line = seq_trimmed[0][:-chew_length]
-                if trimmed_seq_line >= min_seqlength:
+                if len(trimmed_seq_line) >= min_seqlength:
                     qline_len = len(trimmed_seq_line)
                     trimmed_outfile.write(header_line)
                     trimmed_outfile.write('{}\n'.format(trimmed_seq_line))
@@ -98,6 +98,3 @@ def adapter_remove(in_fastq, noadap_fq, adaptrim_fq, adap_seq, chew_length = 10,
                     trimmed_outfile.write('{}\n'.format(qual_line[:qline_len]))
     noadap_outfile.close()
     trimmed_outfile.close()
-
-
-

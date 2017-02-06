@@ -1,0 +1,4 @@
+"""
+Tests permethbed module
+"""
+

@@ -33,7 +33,6 @@ def working_dir():
     """Get a working directory for all files"""
     return working_directory
 
-
 @pytest.fixture
 def bs2_index():
     """
@@ -105,10 +104,38 @@ def correct_trimmedsam():
 
 @pytest.fixture
 def qual_fastq():
+    """Input FASTQ for test_qual_filter_fastq"""
     return resource_filename(wgbs_tools.__name__, '../tests/data/qual.fq')
 
 @pytest.fixture
 def correct_qualfil_fastq():
-    return resource_filename(wgbs_tools.__name__, '../tests/data/correctfil.fq')
+    """Correct outpur for test_qual_filter_fastq"""
+    path = resource_filename(wgbs_tools.__name__, '../tests/data/correctfil.fq')
+    # return path
+    with open(path, 'r') as content_file:
+        content = content_file.read()
+    return content
 
+@pytest.fixture
+def adap_fastq():
+    """Input FASTQ for test_adapter_remove"""
+    return resource_filename(wgbs_tools.__name__,
+                             '../tests/data/adapterreads.fq')
 
+@pytest.fixture
+def correct_noadap_fastq():
+    """Correct no adapter contamination file output for test_adapter_remove"""
+    path = resource_filename(wgbs_tools.__name__,
+                             '../tests/data/correctnoadap.fq')
+    with open(path, 'r') as content_file:
+        content = content_file.read()
+    return content
+
+@pytest.fixture
+def correct_adap_fastq():
+    """Correct adapter contamination trim file output for test_adapter_remove"""
+    path = resource_filename(wgbs_tools.__name__,
+                             '../tests/data/correctadap.fq')
+    with open(path, 'r') as content_file:
+        content = content_file.read()
+    return content
