@@ -1,0 +1,4 @@
+*.pyc
+.cache/
+wgbs_tools.egg-info/
+
