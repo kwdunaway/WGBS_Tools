@@ -26,12 +26,11 @@ def align_bs2(bs2_path, params, fasta, bs2_index, fastq, bam):
     :param bam: BAM file to output results of BS-Seeker2
     :return:
     """
-    #python /share/lasallelab/programs/tuxedo/BSseeker2-master_v2.0.8/bs_seeker2-align.py --bt-p 12 -e 90 -m 3 -f bam -g /share/lasallelab/genomes/hg38/hg38.fa -d /share/lasallelab/genomes/hg38/BSseek2_refgen/ -i raw_sequences/JLCM007A_noadap.fq.gz -o JLCM007A/JLCM007A_noadap.bam
+    #python BSseeker2-master_v2.0.8/bs_seeker2-align.py --bt-p 12 -e 90 -m 3
+    # -f bam -g /share/lasallelab/genomes/hg38/hg38.fa
+    # -d /share/lasallelab/genomes/hg38/BSseek2_refgen/
+    # -i raw_sequences/JLCM007A_noadap.fq.gz -o JLCM007A/JLCM007A_noadap.bam
     command = '{} {} -g {} -d {} -i {} -o {}'\
         .format(bs2_path, params, fasta, bs2_index, fastq, bam)
     logging.info(command)
-    print(command)
     subprocess.check_call(command, shell=True)
-
-
-

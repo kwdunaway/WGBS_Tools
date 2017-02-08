@@ -9,10 +9,13 @@ https://github.com/BSSeeker/BSseeker2#output-format
 import subprocess
 import logging
 import re
+from multiprocessing import Pool
+import itertools
+import pysam
 
-
-def samsorted_to_permeth(in_sam, meth_type, out_prefix, bed_prefix, genome, 
-                         meth_type, strand_type, max_dup_reads, chroms):
+def bam_to_permeth(in_bam, meth_type, out_prefix, bed_prefix, genome,
+                         meth_type, strand_type, max_dup_reads, chroms,
+                         threads):
     #Load search_chars with chars based on meth_type
     if meth_type == 'CG':
         search_chars = ['X', 'x']
@@ -23,31 +26,44 @@ def samsorted_to_permeth(in_sam, meth_type, out_prefix, bed_prefix, genome,
     elif meth_type == 'CHH':
         search_chars = ['Z', 'z']
     else:
-        print('ERROR! meth_type = {}'.format(meth_type))
+        print('ERROR! Methylation type needs to be CG, CH, CHG, or CHH. '
+              'Methylation was set to: {}'.format(meth_type))
     if strand_type != 'positive' or strand_type != 'negative' or  \
             strand_type != 'combined':
-        print('ERROR! strand_type = {}'.format(strand_type))
+        print('ERROR! Strand needs to be positive, negative, or combined. '
+              'Strand was set to: {}'.format(strand_type))
 
     # Initialize variables
     currentchrom = "Not Set Yet"
     methylation = {}
     positions = {}
     count = 0
+    pool = Pool(threads)
 
     # Previous read info
     prevstart = 0
-    prevstrand = "+"
-    prevmethstring = ""
+    prevstrand = '+'
+    prevmethstring = ''
     dupcount = 1
+    nlines = 1000
 
-    # Columns for formatting SAM files
+    # Columns for formatting BAM files
     chrc = 2
     startc = 3
     methc = 14
     strandc = 11
 
-    with open(in_sam, 'r') as sam_in_file:
-        for line in sam_in_file:
+    samfile = pysam.AlignmentFile("ex1.bam", "rb")
+
+    with open(in_bam, 'r') as bam_in_file:
+        while True:
+            next_n_lines = list(itertools.islice(bam_in_file, nlines))
+            if not next_n_lines:
+                break
+
+        for line in bam_in_file:
+
+
             #TODO: Multiprocess this.
 
             #If header, skips
@@ -109,6 +125,7 @@ def samsorted_to_permeth(in_sam, meth_type, out_prefix, bed_prefix, genome,
         #Print_MethylationHash(\ % methylation, $outprefix,
             # $currentchrom, $bedprefix)
 
-
+def bam_to_permeth_chr(inbamfile, outbedfile, chr, ...):
+    """Convert bam to bed based on chr"""
 
 

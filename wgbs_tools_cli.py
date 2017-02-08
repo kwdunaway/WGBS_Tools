@@ -45,12 +45,12 @@ def cli():
               default=False,
               help='Input fastq file is already trimmed for adapter sequence.'
                    'Default: --not-trimmed')
-@click.option('--cgibed/--no-cgibed',
-              default=True,
-              help='For each PerMeth bed file, creates a separate one without '
-                   'CPG island information in it. This is useful for looking '
-                   'at windows without CGI bias. Default: --cgibed (creates '
-                   'the separate permeth bed files)')
+# @click.option('--cgibed/--no-cgibed',
+#               default=True,
+#               help='For each PerMeth bed file, creates a separate one without '
+#                    'CPG island information in it. This is useful for looking '
+#                    'at windows without CGI bias. Default: --cgibed (creates '
+#                    'the separate permeth bed files)')
 @click.option('--threads', type=click.INT,
               default=NUM_CPUS,
               help='Number of threads used when multiprocessing. '
@@ -68,7 +68,7 @@ def cli():
 @click.argument('input', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
 def main_pipeline(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
-                  adaptrim_bs2_params, trimmed, cgibed, threads, working_dir,
+                  adaptrim_bs2_params, trimmed, threads, working_dir,
                   infoyaml):
     """
     Main fastq to permeth bed pipeline.
@@ -106,31 +106,6 @@ mkdir JLCM007A/PerMeth_JLCM007A
 rm -r JLCM007A/tmp
 mkdir JLCM007A/NoCGI_Permeth_JLCM007A
 bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr1.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chr1.bed
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr2.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chr2.bed
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr3.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chr3.bed
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr4.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chr4.bed
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr5.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chr5.bed
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr6.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chr6.bed
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr7.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chr7.bed
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr8.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chr8.bed
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr9.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chr9.bed
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr10.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chr10.bed
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr11.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chr11.bed
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr12.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chr12.bed
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr13.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chr13.bed
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr14.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chr14.bed
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr15.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chr15.bed
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr16.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chr16.bed
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr17.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chr17.bed
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr18.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chr18.bed
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr19.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chr19.bed
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr20.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chr20.bed
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr21.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chr21.bed
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr22.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chr22.bed
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chrX.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chrX.bed
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chrY.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chrY.bed
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chrM.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chrM.bed
-
     """
     if working_dir == '':
         workingdir = tempfile.mkdtemp()
@@ -202,15 +177,14 @@ bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chrM.bed -b /sha
     subprocess.check_call(command, shell=True)
 
     #Convert to sam format
-    command = 'samtools view {} > {}'.format(full_bam, full_sam)
-    logging.info(command)
-    subprocess.check_call(command, shell=True)
+    #(made unnecessary due to pysam directly parsing bam file)
+    # command = 'samtools view {} > {}'.format(full_bam, full_sam)
+    # logging.info(command)
+    # subprocess.check_call(command, shell=True)
 
     #Convert sam to permeth bed files (percent methylation bed files)
     #This also only prints CpGs on chromosomes in ranges defined in the yaml
 
-    #Creates no CGI permeth bed files (if applicable)
-#    if cgibed:
 
 
 

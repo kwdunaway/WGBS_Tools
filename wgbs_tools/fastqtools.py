@@ -26,7 +26,7 @@ def qual_filter_fastq(in_fastq, out_fastq):
     else:
         with open(in_fastq, 'r') as infq:
             first_line = infq.readline()
-    if (':Y:' not in first_line and ':N:' not in first_line):
+    if ':Y:' not in first_line and ':N:' not in first_line:
         logging.info('no_qual_field')
         return
 
@@ -49,8 +49,8 @@ def qual_filter_fastq(in_fastq, out_fastq):
     subprocess.check_call(command, shell=True)
 
 
-def adapter_remove(in_fastq, noadap_fq, adaptrim_fq, adap_seq, chew_length = 10,
-                  min_seqlength = 35):
+def adapter_remove(in_fastq, noadap_fq, adaptrim_fq, adap_seq, chew_length=10,
+                   min_seqlength=35):
     """
     Separates fastq files for those with and without adapter sequence.
 
