@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 from wgbs_tools import fastqtools
 from wgbs_tools import bsseeker
+from wgbs_tools import utilities
 
 NUM_CPUS = multiprocessing.cpu_count()
 
@@ -61,7 +62,7 @@ def cli():
                    'Default: <EMPTY> (Uses tempfile.mkdtemp() to define a '
                    'temperary working directory)')
 @click.option('--infoyaml', type=click.STRING,
-              default='',
+              default='info.yaml',
               help='Yaml file which contains information which could change '
                    'based on experiment. Read README.md to modify the '
                    'default or create your own. Default: info.yaml')
@@ -173,6 +174,11 @@ bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr1.bed -b /sha
     #Merge bam files
     command = 'samtools merge -@ {} {} {}.bam {}.bam'\
         .format(threads, full_bam, noadap_sorted, adaptrim_sorted)
+    logging.info(command)
+    subprocess.check_call(command, shell=True)
+
+    #Index full bam file
+    command = 'samtools index {}'.format(full_bam)
     logging.info(command)
     subprocess.check_call(command, shell=True)
 

@@ -1,4 +1,4 @@
 """
-Tests permethbed module
+Tests permethbed module(s)
 """
 

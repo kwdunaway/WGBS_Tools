@@ -139,3 +139,38 @@ def correct_adap_fastq():
     with open(path, 'r') as content_file:
         content = content_file.read()
     return content
+
+@pytest.fixture
+def test_bam():
+    """Bam file for testing samutils"""
+    return resource_filename(wgbs_tools.__name__, '../tests/data/bam/test.bam')
+
+@pytest.fixture
+def correct_chr1bed():
+    """Correct chr1 percent methylation bed file content for tests in
+    test_samtutils"""
+    path = resource_filename(wgbs_tools.__name__,
+                             '../tests/data/bam/correct_chr1.bed')
+    with open(path, 'r') as content_file:
+        content = content_file.read()
+    return content
+
+@pytest.fixture
+def correct_chr2bed():
+    """Correct chr2 percent methylation bed file content for tests in
+    test_samtutils"""
+    path = resource_filename(wgbs_tools.__name__,
+                             '../tests/data/bam/correct_chr2.bed')
+    with open(path, 'r') as content_file:
+        content = content_file.read()
+    return content
+
+@pytest.fixture
+def correct_chrNHbed():
+    """Correct chrNH percent methylation bed file content for tests in
+    test_samtutils"""
+    path = resource_filename(wgbs_tools.__name__,
+                             '../tests/data/bam/correct_chrNH.bed')
+    with open(path, 'r') as content_file:
+        content = content_file.read()
+    return content

@@ -29,3 +29,14 @@ def which(program):
             if is_exe(exe_file):
                 return exe_file
     return None
+
+
+def find_occurences(string, char):
+    """
+    Copied from: http://stackoverflow.com/questions/13009675/
+        find-all-the-occurrences-of-a-character-in-a-string
+    :param string: string to be searched
+    :param char: character to search
+    :return: list of positions of ocurrences of character in string
+    """
+    return [it for it, letter in enumerate(string) if letter == char]

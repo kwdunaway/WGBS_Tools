@@ -12,12 +12,42 @@ import re
 from multiprocessing import Pool
 import itertools
 import pysam
+from wgbs_tools import utilities
+from multiprocessing import Process
+import multiprocessing
+import time
 
-def bam_to_permeth(in_bam, meth_type, out_prefix, bed_prefix, genome,
-                         meth_type, strand_type, max_dup_reads, chroms,
-                         threads):
-    #Load search_chars with chars based on meth_type
-    if meth_type == 'CG':
+def bam_to_permeth(in_bam, out_prefix, bed_prefix, genome,
+                   meth_type, strand_type, max_dup_reads, chroms, threads):
+    """"""
+    # Assert inputs are correct before starting everything
+    assert meth_type in ['C', 'CG', 'CH', 'CHG', 'CHH'], \
+        'ERROR! Methylation type needs to be C, CG, CH, CHG, or CHH. ' \
+        'Methylation was set to: {}'.format(meth_type)
+    assert strand_type in ['positive', 'negative' ,'combined'], \
+        'ERROR! Strand needs to be positive, negative, or combined. ' \
+        'Strand was set to: {}'.format(strand_type)
+    # Multithread the processes
+    processes = []
+    pool = multiprocessing.Pool(threads)
+    for chrom in chroms:
+        chrom_length = chroms[chrom]
+        out_bed = '{}_{}.bed'.format(out_prefix, chrom)
+        pool.apply_async(chr_bam_to_permeth,
+                         args=(in_bam, out_bed, bed_prefix, genome, meth_type,
+                               strand_type, max_dup_reads, chrom, chrom_length))
+    pool.close()
+    pool.join()
+    # for pool in processes:
+    #     pool.close()
+    #     pool.join()
+
+
+def chr_bam_to_permeth(in_bam, out_bed, bed_prefix, genome, meth_type,
+                       strand_type, max_dup_reads, chrom, chrom_length):
+    if meth_type == 'C':
+        search_chars = ['Z', 'z', 'Y', 'y', 'X', 'x']
+    elif meth_type == 'CG':
         search_chars = ['X', 'x']
     elif meth_type == 'CH':
         search_chars = ['Z', 'z', 'Y', 'y']
@@ -26,26 +56,29 @@ def bam_to_permeth(in_bam, meth_type, out_prefix, bed_prefix, genome,
     elif meth_type == 'CHH':
         search_chars = ['Z', 'z']
     else:
-        print('ERROR! Methylation type needs to be CG, CH, CHG, or CHH. '
-              'Methylation was set to: {}'.format(meth_type))
-    if strand_type != 'positive' or strand_type != 'negative' or  \
-            strand_type != 'combined':
-        print('ERROR! Strand needs to be positive, negative, or combined. '
-              'Strand was set to: {}'.format(strand_type))
+        raise ValueError('ERROR! Methylation type needs to be C, CG, CH, CHG, '
+                         'or CHH. Methylation was set to: {}'.format(meth_type))
+    if strand_type == 'positive':
+        analyzed_strands = ['+']
+    elif strand_type == 'negative':
+        analyzed_strands = ['-']
+    elif strand_type == 'combined':
+        analyzed_strands = ['+', '-']
+    else:
+        raise ValueError('ERROR! Strand needs to be positive, negative, or '
+                         'combined. Strand was set to: {}'.format(strand_type))
 
     # Initialize variables
-    currentchrom = "Not Set Yet"
+    # currentchrom = "Not Set Yet"
     methylation = {}
     positions = {}
     count = 0
-    pool = Pool(threads)
 
     # Previous read info
     prevstart = 0
     prevstrand = '+'
-    prevmethstring = ''
+    # prevmethstring = ''
     dupcount = 1
-    nlines = 1000
 
     # Columns for formatting BAM files
     chrc = 2
@@ -53,71 +86,118 @@ def bam_to_permeth(in_bam, meth_type, out_prefix, bed_prefix, genome,
     methc = 14
     strandc = 11
 
-    samfile = pysam.AlignmentFile("ex1.bam", "rb")
+    #Create outfile and write header line
+    outfile = open(out_bed, 'w')
+    header_line = 'track name={}{} description={}_{} useScore=0 itemRgb=On ' \
+                  'db={}\n'.format(bed_prefix, chrom, bed_prefix, chrom, genome)
+    outfile.write(header_line)
 
-    with open(in_bam, 'r') as bam_in_file:
-        while True:
-            next_n_lines = list(itertools.islice(bam_in_file, nlines))
-            if not next_n_lines:
-                break
+    #Open bam file and process each read, one at a time
+    samfile = pysam.AlignmentFile(in_bam, 'rb')
+    for read in samfile.fetch(chrom):
+        start = read.reference_start
+        methstring = read.get_tag('XM')
+        strand = read.get_tag('XO')[0]
+        if strand == '+':
+            strandmult = 1
+        elif strand == '-':
+            strandmult = -1
+        else:
+            raise ValueError('ERROR! Strand from bam file was {}, not the '
+                             'expected + or -'.format(strand))
 
-        for line in bam_in_file:
-
-
-            #TODO: Multiprocess this.
-
-            #If header, skips
-            if re.match(r'^@', line):
+        # Skips if read is not on correct strand
+        if strand not in analyzed_strands:
+            continue
+        # If duplicate line, take information until max_dup_reads passed
+        if prevstart == start and prevstrand == strand:
+            dupcount += 1
+            if dupcount > max_dup_reads:
                 continue
-
-            #Splits line and defines variables
-            #TODO: Confirm correct parsing of these variables
-            line = line[:-1]
-            line_list = line.split('\t')
-            chrom = line_list[chrc]
-            start = line_list[startc]
-            methstring = line_list[methc][:5]
-            strand = line_list[strandc][5:6]
-
-            #Skips if read is not used with given parameters
-            if chrom not in chroms:
-                continue
-            if strand == '-' and strand_type == 'positive':
-                continue
-            if strand == '+' and strand_type == 'negative':
-                continue
-
-            #If duplicate line, take information until max_dup_reads passed
-            if prevstart == start and prevstrand == strand:
-                dupcount += 1
-                if dupcount > max_dup_reads:
-                    continue
-            else:
-                dupcount = 1
-
-            #If found search_chars, add to the methylation dict
-            for searchchar in search_chars:
-                if searchchar in prevmethstring:
-                    #TODO: Create Addto_MethylationHash subroutine
-                    # Addto_MethylationHash(\ % Methylation, $searchchars[0],
-                        # $prevmethstring, $prevstart, $prevstrand)
-
-            #On next chromosome, so print current one if not set yet
-            if chrom != currentchrom:
-                if currentchrom != 'Not Set Yet':
-                    #TODO: Create Print_MethylationHash subroutine
-                    #Print_MethylationHash(\ % methylation, $outprefix,
-                        # $currentchrom, $bedprefix)
-                # Reset variables
-                methylation = {}
-                currentchrom = chrom
-                dupcount = 1
-                logging.info('Starting {}'.format(chrom))
-
-            # Increment
-            prevmethstring = methstring
+        else:
+            dupcount = 1
             prevstart = start
             prevstrand = strand
+
+        # Pulls out methylation information and adds it to methylation dict
+        for search_char in search_chars:
+            print(methstring, search_char)
+            offsets = utilities.find_occurences(methstring, search_char)
+            for pos in offsets:
+                basepos = start + pos * strandmult
+                if basepos in methylation:
+                    methylation[basepos] = \
+                        '{}{}'.format(methylation[basepos], search_char)
+                else:
+                    methylation[basepos] = search_char
+    # print('Yep')
+    for start in sorted(methylation.iterkeys()):
+        print(start)
+        methstring = methylation[start]
+        end = start + 1
+        meth = sum(1 for c in methstring if c.isupper())
+        total = len(methstring)
+        meth_perc = float(meth)/float(total)
+        meth_field = '{0:.2f}-{1}'.format(meth_perc, total)
+        if meth_perc == 0:
+            color = '0,0,0'  # black (if meth = 0)
+        elif meth_perc <= .6:
+            color = '27,74,210'  # blue (if 0 < meth <= .6)
+        elif meth_perc <= .8:
+            color = '27,210,57'  # green (if .6 < meth <= .8)
+        else:
+            color = '210,27,27'  # red (if meth > .8)
+        bed_line = '{}\t{}\t{}\t{}\t0\t+\t0\t0\t{}\n'\
+            .format(chrom, start, end, meth_field, color)
+        outfile.write(bed_line)
+    outfile.close()
+    # time.sleep(5)
+    # print(chrom)
+
+
+
+
+
+            #Pull out methylation information
+        # TODO: Create Addto_MethylationHash subroutine
+        # Addto_MethylationHash(\ % Methylation, $searchchars[0],
+        # $prevmethstring, $prevstart, $prevstrand)
+
+        # Increment
+        # prevmethstring = methstring
+
+
+        # # On next chromosome, so print current one if not set yet
+        # if chrom != currentchrom:
+        #     if currentchrom != 'Not Set Yet':
+        #     # TODO: Create Print_MethylationHash subroutine
+        #     # Print_MethylationHash(\ % methylation, $outprefix,
+        #     # $currentchrom, $bedprefix)
+        #     # Reset variables
+        #     methylation = {}
+        #     currentchrom = chrom
+        #     dupcount = 1
+        #     logging.info('Starting {}'.format(chrom))
+        #
+
+        #     print read
+    #
+    # with open(in_bam, 'r') as bam_in_file:
+    #     while True:
+    #         next_n_lines = list(itertools.islice(bam_in_file, nlines))
+    #         if not next_n_lines:
+    #             break
+    #
+    #     for line in bam_in_file:
+    #
+    #
+    #         #TODO: Multiprocess this.
+    #
+    #         #If header, skips
+    #         if re.match(r'^@', line):
+    #             continue
+    #
+            #Splits line and defines variables
 
         # Finish last line/chromosome
         #Addto_MethylationHash(\ % Methylation, $searchchars[0],
@@ -125,7 +205,6 @@ def bam_to_permeth(in_bam, meth_type, out_prefix, bed_prefix, genome,
         #Print_MethylationHash(\ % methylation, $outprefix,
             # $currentchrom, $bedprefix)
 
-def bam_to_permeth_chr(inbamfile, outbedfile, chr, ...):
-    """Convert bam to bed based on chr"""
+
 
 
