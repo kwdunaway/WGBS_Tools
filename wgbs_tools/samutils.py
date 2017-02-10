@@ -15,7 +15,8 @@ import pysam
 from wgbs_tools import utilities
 from multiprocessing import Process
 import multiprocessing
-import time
+import gzip
+
 
 def bam_to_permeth(in_bam, out_prefix, bed_prefix, genome,
                    meth_type, strand_type, max_dup_reads, chroms, threads):
@@ -32,7 +33,7 @@ def bam_to_permeth(in_bam, out_prefix, bed_prefix, genome,
     pool = multiprocessing.Pool(threads)
     for chrom in chroms:
         chrom_length = chroms[chrom]
-        out_bed = '{}_{}.bed'.format(out_prefix, chrom)
+        out_bed = '{}_{}.bed.gz'.format(out_prefix, chrom)
         pool.apply_async(chr_bam_to_permeth,
                          args=(in_bam, out_bed, bed_prefix, genome, meth_type,
                                strand_type, max_dup_reads, chrom, chrom_length))
@@ -86,8 +87,8 @@ def chr_bam_to_permeth(in_bam, out_bed, bed_prefix, genome, meth_type,
     methc = 14
     strandc = 11
 
-    #Create outfile and write header line
-    outfile = open(out_bed, 'w')
+    #Create compressed outfile and write header line
+    outfile = gzip.open(out_bed, 'wb')
     header_line = 'track name={}{} description={}_{} useScore=0 itemRgb=On ' \
                   'db={}\n'.format(bed_prefix, chrom, bed_prefix, chrom, genome)
     outfile.write(header_line)
@@ -151,60 +152,4 @@ def chr_bam_to_permeth(in_bam, out_bed, bed_prefix, genome, meth_type,
             .format(chrom, start, end, meth_field, color)
         outfile.write(bed_line)
     outfile.close()
-    # time.sleep(5)
-    # print(chrom)
-
-
-
-
-
-            #Pull out methylation information
-        # TODO: Create Addto_MethylationHash subroutine
-        # Addto_MethylationHash(\ % Methylation, $searchchars[0],
-        # $prevmethstring, $prevstart, $prevstrand)
-
-        # Increment
-        # prevmethstring = methstring
-
-
-        # # On next chromosome, so print current one if not set yet
-        # if chrom != currentchrom:
-        #     if currentchrom != 'Not Set Yet':
-        #     # TODO: Create Print_MethylationHash subroutine
-        #     # Print_MethylationHash(\ % methylation, $outprefix,
-        #     # $currentchrom, $bedprefix)
-        #     # Reset variables
-        #     methylation = {}
-        #     currentchrom = chrom
-        #     dupcount = 1
-        #     logging.info('Starting {}'.format(chrom))
-        #
-
-        #     print read
-    #
-    # with open(in_bam, 'r') as bam_in_file:
-    #     while True:
-    #         next_n_lines = list(itertools.islice(bam_in_file, nlines))
-    #         if not next_n_lines:
-    #             break
-    #
-    #     for line in bam_in_file:
-    #
-    #
-    #         #TODO: Multiprocess this.
-    #
-    #         #If header, skips
-    #         if re.match(r'^@', line):
-    #             continue
-    #
-            #Splits line and defines variables
-
-        # Finish last line/chromosome
-        #Addto_MethylationHash(\ % Methylation, $searchchars[0],
-            # $prevmethstring, $prevstart, $prevstrand)
-        #Print_MethylationHash(\ % methylation, $outprefix,
-            # $currentchrom, $bedprefix)
-
-
-
 
