@@ -3,6 +3,7 @@ Click wrapper to run all of the wgbs_tools much easier and user friendly.
 """
 
 import os
+import glob
 import subprocess
 import tempfile
 import shutil
@@ -16,6 +17,7 @@ logger = logging.getLogger(__name__)
 from wgbs_tools import fastqtools
 from wgbs_tools import bsseeker
 from wgbs_tools import utilities
+from wgbs_tools import permethbed
 
 NUM_CPUS = multiprocessing.cpu_count()
 
@@ -192,8 +194,68 @@ bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr1.bed -b /sha
     #This also only prints CpGs on chromosomes in ranges defined in the yaml
 
 
+@cli.command()
+@click.option('--mask_file', type=click.STRING,
+              default='',
+              help='GTF or BED file indicating regions to be masked out of '
+                   'analysis. Default is set to not mask any regions.')
+@click.option('--out_2col_name', type=click.STRING,
+              default='',
+              help='')
+@click.option('--threads', type=click.INT,
+              default=NUM_CPUS,
+              help='Number of threads used when multiprocessing. '
+                   'Default: Number of system CPUs')
+@click.option('--min_read_count', type=click.INT,
+              default=1,
+              help="Minimum read count for a sample over a given region of "
+                   "interest. If this threshold is not met, NA is reported "
+                   "for the given sample's ROI. Default: 1")
+@click.option('--min_sample_coverage', type=click.INT,
+              default=1,
+              help="Minimum number of samples required to report a ROI. For "
+                   "example, if this is set to the number of samples input "
+                   "and at least one of those samples does not meet the "
+                   "minimum read count for the ROI, that ROI is not reported. "
+                   "Default: 1")
+@click.argument('input_tsv', type=click.STRING)
+@click.argument('out_table', type=click.STRING)
+@click.argument('roi_file', type=click.STRING)
+def roi(input_tsv, out_table, roi_file, mask_file, min_read_count,
+        min_sample_coverage, out_2col_name, threads):
+    """"""
+    in_bed_prefixes = []
+    in_sample_list = []
+    with open(input_tsv, 'r') as infile:
+        for line in infile:
+            line = line[:-1]
+            in_bed_prefixes.append(line.split('\t')[1])
+            in_sample_list.append(line.split('\t')[0])
+    permethbed.roi_meth(in_bed_prefixes, in_sample_list, out_table,
+                        mask_file, roi_file, min_read_count,
+                        min_sample_coverage, out_2col_name, threads)
 
 
-
-
+@cli.command()
+@click.option('--col', type=click.INT,
+              default=2,
+              help='Column number to be changed (0-based). Ex. If set to 2, '
+                   'the third column of a file will be changed. If this is a '
+                   'bed file, the end location will be changed. Default: 2')
+@click.option('--adjust', type=click.INT,
+              default=2,
+              help='Amount to adjust each number in the column. Ex: If set to '
+                   '1, each number in the column will increase by 1. If set '
+                   'to -5000, each number will be subtracted by 5000. '
+                   'Default: 1')
+@click.option('--header/--no-header',
+              default=False,
+              help='Boolean which indicates if there is a header in the input '
+                   'files. Default: --no-header')
+@click.argument('in_prefix', type=click.STRING)
+@click.argument('out_prefix', type=click.STRING)
+def roi(in_prefix, out_prefix, col, adjust, header):
+    """"""
+    for file in glob.glob(in_prefix):
+        print(file)
 

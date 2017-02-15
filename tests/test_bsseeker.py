@@ -58,5 +58,3 @@ def test_align_bs2_adaptrim(bs2_path, fasta, bs2_index, trimmed_fastq,
     with open(out_sam, 'r') as content_file:
         testcontent = content_file.read()
         assert testcontent == correct_trimmedsam, 'Trimmed alignment error.'
-
-

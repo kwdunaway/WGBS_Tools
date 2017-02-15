@@ -12,6 +12,7 @@ setuptools.setup(
         'pysam',
         'pyyaml',
         'pytest',
+        'pybedtools',
     ],
     entry_points='''
         [console_scripts]

@@ -29,7 +29,6 @@ def bam_to_permeth(in_bam, out_prefix, bed_prefix, genome,
         'ERROR! Strand needs to be positive, negative, or combined. ' \
         'Strand was set to: {}'.format(strand_type)
     # Multithread the processes
-    processes = []
     pool = multiprocessing.Pool(threads)
     for chrom in chroms:
         chrom_length = chroms[chrom]
@@ -39,9 +38,6 @@ def bam_to_permeth(in_bam, out_prefix, bed_prefix, genome,
                                strand_type, max_dup_reads, chrom, chrom_length))
     pool.close()
     pool.join()
-    # for pool in processes:
-    #     pool.close()
-    #     pool.join()
 
 
 def chr_bam_to_permeth(in_bam, out_bed, bed_prefix, genome, meth_type,
@@ -70,7 +66,6 @@ def chr_bam_to_permeth(in_bam, out_bed, bed_prefix, genome, meth_type,
                          'combined. Strand was set to: {}'.format(strand_type))
 
     # Initialize variables
-    # currentchrom = "Not Set Yet"
     methylation = {}
     positions = {}
     count = 0
@@ -78,22 +73,15 @@ def chr_bam_to_permeth(in_bam, out_bed, bed_prefix, genome, meth_type,
     # Previous read info
     prevstart = 0
     prevstrand = '+'
-    # prevmethstring = ''
     dupcount = 1
 
-    # Columns for formatting BAM files
-    chrc = 2
-    startc = 3
-    methc = 14
-    strandc = 11
-
-    #Create compressed outfile and write header line
+    # Create compressed outfile and write header line
     outfile = gzip.open(out_bed, 'wb')
     header_line = 'track name={}{} description={}_{} useScore=0 itemRgb=On ' \
                   'db={}\n'.format(bed_prefix, chrom, bed_prefix, chrom, genome)
     outfile.write(header_line)
 
-    #Open bam file and process each read, one at a time
+    # Open bam file and process each read, one at a time
     samfile = pysam.AlignmentFile(in_bam, 'rb')
     for read in samfile.fetch(chrom):
         start = read.reference_start
@@ -131,9 +119,7 @@ def chr_bam_to_permeth(in_bam, out_bed, bed_prefix, genome, meth_type,
                         '{}{}'.format(methylation[basepos], search_char)
                 else:
                     methylation[basepos] = search_char
-    # print('Yep')
     for start in sorted(methylation.iterkeys()):
-        print(start)
         methstring = methylation[start]
         end = start + 1
         meth = sum(1 for c in methstring if c.isupper())
@@ -152,4 +138,3 @@ def chr_bam_to_permeth(in_bam, out_bed, bed_prefix, genome, meth_type,
             .format(chrom, start, end, meth_field, color)
         outfile.write(bed_line)
     outfile.close()
-

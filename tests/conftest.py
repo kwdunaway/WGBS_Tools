@@ -10,6 +10,8 @@ import gzip
 import shutil
 from pkg_resources import resource_filename
 import yaml
+from pybedtools import BedTool
+import sys
 
 working_directory = tempfile.mkdtemp()
 
@@ -32,6 +34,11 @@ def temp_dir():
 def working_dir():
     """Get a working directory for all files"""
     return working_directory
+
+@pytest.fixture
+def sys_version():
+    """Returns system major number for test_utilities"""
+    return sys.version_info.major
 
 @pytest.fixture
 def bs2_index():
@@ -105,12 +112,13 @@ def correct_trimmedsam():
 @pytest.fixture
 def qual_fastq():
     """Input FASTQ for test_qual_filter_fastq"""
-    return resource_filename(wgbs_tools.__name__, '../tests/data/qual.fq')
+    return resource_filename(wgbs_tools.__name__, '../tests/data/fastq/qual.fq')
 
 @pytest.fixture
 def correct_qualfil_fastq():
     """Correct outpur for test_qual_filter_fastq"""
-    path = resource_filename(wgbs_tools.__name__, '../tests/data/correctfil.fq')
+    path = resource_filename(wgbs_tools.__name__,
+                             '../tests/data/fastq/correctfil.fq')
     # return path
     with open(path, 'r') as content_file:
         content = content_file.read()
@@ -120,13 +128,13 @@ def correct_qualfil_fastq():
 def adap_fastq():
     """Input FASTQ for test_adapter_remove"""
     return resource_filename(wgbs_tools.__name__,
-                             '../tests/data/adapterreads.fq')
+                             '../tests/data/fastq/adapterreads.fq')
 
 @pytest.fixture
 def correct_noadap_fastq():
     """Correct no adapter contamination file output for test_adapter_remove"""
     path = resource_filename(wgbs_tools.__name__,
-                             '../tests/data/correctnoadap.fq')
+                             '../tests/data/fastq/correctnoadap.fq')
     with open(path, 'r') as content_file:
         content = content_file.read()
     return content
@@ -135,7 +143,7 @@ def correct_noadap_fastq():
 def correct_adap_fastq():
     """Correct adapter contamination trim file output for test_adapter_remove"""
     path = resource_filename(wgbs_tools.__name__,
-                             '../tests/data/correctadap.fq')
+                             '../tests/data/fastq/correctadap.fq')
     with open(path, 'r') as content_file:
         content = content_file.read()
     return content
@@ -174,3 +182,14 @@ def correct_chrNHbed():
     with open(path, 'r') as content_file:
         content = content_file.read()
     return content
+
+@pytest.fixture
+def feature():
+    """Represents a single line of a bed file. Used in test_permethbed"""
+    return BedTool([('chrF', 0, 1, '0.5-10')])[0]
+
+@pytest.fixture
+def bed_folder():
+    """Folder containing all bedfiles"""
+    path = resource_filename(wgbs_tools.__name__, '../tests/data/bed/')
+    return path
