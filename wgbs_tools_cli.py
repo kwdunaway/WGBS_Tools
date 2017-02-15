@@ -270,17 +270,18 @@ def adjustcol(in_prefix, out_prefix, suffix, col, adjust, header):
         headerin = header
         with open(in_file_name, 'r') as in_file:
             for line in in_file:
-                line = line[:-1]
                 if headerin:
                     outfile.write(line)
                     headerin = False
                 else:
+                    line = line[:-1]
                     cells = line.split('\t')
                     if len(cells) > col:
                         cells[col] = int(cells[col]) + adjust
                         printline = str(cells[0])
                         for cell in cells:
                             printline = '{}\t{}'.format(printline, cell)
+                        printline = '{}\n'.format(printline)
                         outfile.write(printline)
                     else:
                         print('Warning, col {} does not exist in line:\n{}'
