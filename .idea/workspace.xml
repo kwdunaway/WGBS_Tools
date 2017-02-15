@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="35a12349-c6f4-4309-a927-5306669c3846" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/wgbs_tools/fastqtools.py" afterPath="$PROJECT_DIR$/wgbs_tools/fastqtools.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/wgbs_tools_cli.py" afterPath="$PROJECT_DIR$/wgbs_tools_cli.py" />
     </list>
     <ignored path="WGBS_Tools.iws" />
@@ -36,8 +36,8 @@
       <file leaf-file-name="wgbs_tools_cli.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/wgbs_tools_cli.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="421">
-              <caret line="276" column="23" selection-start-line="276" selection-start-column="23" selection-end-line="276" selection-end-column="23" />
+            <state relative-caret-position="361">
+              <caret line="260" column="0" selection-start-line="260" selection-start-column="0" selection-end-line="260" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -46,8 +46,8 @@
       <file leaf-file-name="fastqtools.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/wgbs_tools/fastqtools.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="301">
-              <caret line="80" column="0" selection-start-line="77" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
+            <state relative-caret-position="31">
+              <caret line="76" column="45" selection-start-line="76" selection-start-column="4" selection-end-line="76" selection-end-column="45" />
               <folding />
             </state>
           </provider>
@@ -87,7 +87,6 @@
         <option value="$PROJECT_DIR$/wgbs_tools/bsseeker.py" />
         <option value="$PROJECT_DIR$/tests/data/test2.sam" />
         <option value="$PROJECT_DIR$/tests/data/test.sam" />
-        <option value="$PROJECT_DIR$/wgbs_tools/fastqtools.py" />
         <option value="$PROJECT_DIR$/info.yaml" />
         <option value="$PROJECT_DIR$/tests/test_samutils.py" />
         <option value="$PROJECT_DIR$/wgbs_tools/samutils.py" />
@@ -105,6 +104,7 @@
         <option value="$PROJECT_DIR$/tests/test_permethbed.py" />
         <option value="$PROJECT_DIR$/tests/data/bed/roi1.bed" />
         <option value="$PROJECT_DIR$/wgbs_tools/permethbed.py" />
+        <option value="$PROJECT_DIR$/wgbs_tools/fastqtools.py" />
         <option value="$PROJECT_DIR$/wgbs_tools_cli.py" />
       </list>
     </option>
@@ -738,16 +738,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/wgbs_tools/fastqtools.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="301">
-          <caret line="80" column="0" selection-start-line="77" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
+        <state relative-caret-position="31">
+          <caret line="76" column="45" selection-start-line="76" selection-start-column="4" selection-end-line="76" selection-end-column="45" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/wgbs_tools_cli.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="421">
-          <caret line="276" column="23" selection-start-line="276" selection-start-column="23" selection-end-line="276" selection-end-column="23" />
+        <state relative-caret-position="361">
+          <caret line="260" column="0" selection-start-line="260" selection-start-column="0" selection-end-line="260" selection-end-column="0" />
           <folding />
         </state>
       </provider>

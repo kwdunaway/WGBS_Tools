@@ -73,8 +73,8 @@ def adapter_remove(in_fastq, noadap_fq, adaptrim_fq, adap_seq, chew_length=10,
     writing to the adaptrim_fq file.
     :return:
     """
-    noadap_outfile = open(noadap_fq, 'w')
-    trimmed_outfile = open(adaptrim_fq, 'w')
+    noadap_outfile = open(noadap_fq, 'wb')
+    trimmed_outfile = open(adaptrim_fq, 'wb')
     with open(in_fastq, 'r') as fastq_in_file:
         for header_line in fastq_in_file:
             seq_line = next(fastq_in_file)

@@ -258,7 +258,6 @@ def roi(input_tsv, out_table, roi_file, mask_file, min_read_count,
               help='Boolean which indicates if there is a header in the input '
                    'files. Default: --header')
 @click.argument('in_prefix', type=click.STRING)
-@click.argument('suffix', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
 def adjustcol(in_prefix, out_prefix, suffix, col, adjust, header):
     """"""
@@ -267,21 +266,24 @@ def adjustcol(in_prefix, out_prefix, suffix, col, adjust, header):
         out_file_name = '{}{}'.format(out_prefix, suffix)
         print('Processing: {}'.format(in_file_name))
         print('Output to:  {}'.format(out_file_name))
+        outfile = open(out_file_name, 'wb')
         with open(in_file_name, 'r') as in_file:
             for line in in_file:
+                line = line[:-1]
                 if header:
+                    outfile.write(line)
                     header = False
                 else:
-                    line = line[:-1]
                     cells = line.split('\t')
                     if len(cells) > col:
                         cells[col] = int(cells[col]) + adjust
                         printline = str(cells[0])
                         for cell in cells:
                             printline = '{}\t{}'.format(printline, cell)
-                        print(printline)
+                        outfile.write(printline)
                     else:
                         print('Warning, col {} does not exist in line:\n{}'
                               .format(col, line))
+        outfile.close()
 
 
