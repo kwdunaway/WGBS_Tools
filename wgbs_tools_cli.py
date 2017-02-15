@@ -237,6 +237,11 @@ def roi(input_tsv, out_table, roi_file, mask_file, min_read_count,
 
 
 @cli.command()
+@click.option('--suffix', type=click.STRING,
+              default='',
+              help='Requires all in files end in a particular string. Useful '
+                   'if you have multiple file types in a folder but only want '
+                   'to adjust one kind at a time. Default: None')
 @click.option('--col', type=click.INT,
               default=2,
               help='Column number to be changed (0-based). Ex. If set to 2, '
@@ -249,17 +254,34 @@ def roi(input_tsv, out_table, roi_file, mask_file, min_read_count,
                    'to -5000, each number will be subtracted by 5000. '
                    'Default: 1')
 @click.option('--header/--no-header',
-              default=False,
+              default=True,
               help='Boolean which indicates if there is a header in the input '
-                   'files. Default: --no-header')
+                   'files. Default: --header')
 @click.argument('in_prefix', type=click.STRING)
 @click.argument('suffix', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
-def adjustcol(in_prefix, suffix, out_prefix, col, adjust, header):
+def adjustcol(in_prefix, out_prefix, suffix, col, adjust, header):
     """"""
     for in_file_name in glob.glob('{}*{}'.format(in_prefix, suffix)):
         suffix = in_file_name.split(in_prefix)[1]
         out_file_name = '{}{}'.format(out_prefix, suffix)
-        print(in_file_name)
-        print(out_file_name)
+        print('Processing: {}'.format(in_file_name))
+        print('Output to:  {}'.format(out_file_name))
+        with open(in_file_name, 'r') as in_file:
+            for line in in_file:
+                if header:
+                    header = False
+                else:
+                    line = line[:-1]
+                    cells = line.split('\t')
+                    if len(cells) > col:
+                        cells[col] = int(cells[col]) + adjust
+                        printline = str(cells[0])
+                        for cell in cells:
+                            printline = '{}\t{}'.format(printline, cell)
+                        print(printline)
+                    else:
+                        print('Warning, col {} does not exist in line:\n{}'
+                              .format(col, line))
+
 
