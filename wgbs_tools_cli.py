@@ -257,6 +257,9 @@ def roi(input_tsv, out_table, roi_file, mask_file, min_read_count,
 @click.argument('out_prefix', type=click.STRING)
 def adjustcol(in_prefix, suffix, out_prefix, col, adjust, header):
     """"""
-    for file in glob.glob('{}*{}'.format(in_prefix, suffix)):
-        print(file)
+    for in_file_name in glob.glob('{}*{}'.format(in_prefix, suffix)):
+        suffix = in_file_name.split(in_prefix)[1]
+        out_file_name = '{}{}'.format(out_prefix, suffix)
+        print(in_file_name)
+        print(out_file_name)
 
