@@ -267,12 +267,13 @@ def adjustcol(in_prefix, out_prefix, suffix, col, adjust, header):
         print('Processing: {}'.format(in_file_name))
         print('Output to:  {}'.format(out_file_name))
         outfile = open(out_file_name, 'wb')
+        headerin = header
         with open(in_file_name, 'r') as in_file:
             for line in in_file:
                 line = line[:-1]
-                if header:
+                if headerin:
                     outfile.write(line)
-                    header = False
+                    headerin = False
                 else:
                     cells = line.split('\t')
                     if len(cells) > col:
