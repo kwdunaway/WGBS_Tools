@@ -253,11 +253,10 @@ def roi(input_tsv, out_table, roi_file, mask_file, min_read_count,
               help='Boolean which indicates if there is a header in the input '
                    'files. Default: --no-header')
 @click.argument('in_prefix', type=click.STRING)
-@click.argument('in_suffix', type=click.STRING)
+@click.argument('suffix', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
-@click.argument('out_suffix', type=click.STRING)
-def fixit(in_prefix, in_suffix, out_prefix, out_suffix, col, adjust, header):
+def adjustcol(in_prefix, suffix, out_prefix, col, adjust, header):
     """"""
-    for file in glob.glob('{}*{}'.format(in_prefix, in_suffix)):
+    for file in glob.glob('{}*{}'.format(in_prefix, suffix)):
         print(file)
 
