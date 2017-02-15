@@ -248,7 +248,7 @@ def roi(input_tsv, out_table, roi_file, mask_file, min_read_count,
                    'the third column of a file will be changed. If this is a '
                    'bed file, the end location will be changed. Default: 2')
 @click.option('--adjust', type=click.INT,
-              default=2,
+              default=1,
               help='Amount to adjust each number in the column. Ex: If set to '
                    '1, each number in the column will increase by 1. If set '
                    'to -5000, each number will be subtracted by 5000. '
@@ -260,7 +260,15 @@ def roi(input_tsv, out_table, roi_file, mask_file, min_read_count,
 @click.argument('in_prefix', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
 def adjustcol(in_prefix, out_prefix, suffix, col, adjust, header):
-    """"""
+    """
+    Adjusts numerical column of files.
+
+    Takes all files matching the prefix of in_prefix and outputs
+
+    Required arguments:
+    IN_PREFIX    Prefix of all files input into the
+    OUT_PREFIX   Prefix of all output files
+    """
     for in_file_name in glob.glob('{}*{}'.format(in_prefix, suffix)):
         suffix = in_file_name.split(in_prefix)[1]
         out_file_name = '{}{}'.format(out_prefix, suffix)
