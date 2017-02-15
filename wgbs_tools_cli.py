@@ -265,6 +265,7 @@ def adjustcol(in_prefix, out_prefix, suffix, col, adjust, header):
 
     Takes all files matching the prefix of in_prefix and outputs
 
+    \b
     Required arguments:
     IN_PREFIX    Prefix of all files input into the
     OUT_PREFIX   Prefix of all output files
