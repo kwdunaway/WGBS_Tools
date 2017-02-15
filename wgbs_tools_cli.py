@@ -278,7 +278,7 @@ def adjustcol(in_prefix, out_prefix, suffix, col, adjust, header):
                     cells = line.split('\t')
                     if len(cells) > col:
                         cells[col] = int(cells[col]) + adjust
-                        printline = str(cells[0])
+                        printline = str(cells.pop())
                         for cell in cells:
                             printline = '{}\t{}'.format(printline, cell)
                         printline = '{}\n'.format(printline)
