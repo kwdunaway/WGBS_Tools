@@ -1,0 +1,2 @@
+chrom	start	end	name	pm01_methylated	pm01_total	pm02_methylated	pm02_total	pm03_methylated	pm03_total	pm04_methylated	pm04_total	pm05_methylated	pm05_total	pm06_methylated	pm06_total
+chrF	1	100	roi1	110	240	110	240	110	240	110	240	110	240	110	240

@@ -26,7 +26,7 @@ def meth_count(feature):
     :param feature: feature line of a BedTools object line
     :return: int as the number of methylated reads
     """
-    print(feature.name)
+    # print(feature.name)
     [perc, total] = utilities.show_value(feature.name).split('-')
     return int(float(perc)*float(total)+.5)
 
@@ -50,8 +50,8 @@ def chrom_meth(pm_sample, chrom, roi_chrom, mask, meth_dict):
     pm_masked = pm_full - mask
     pm = pm_masked.intersect(roi_chrom, u=True)
     for roi_line in roi_chrom:
-        start = int(roi_line.start())
-        end = int(roi_line.end())
+        start = int(roi_line.start)
+        end = int(roi_line.end)
         meth = 0
         total = 0
         for pm_line in pm.all_hits(roi_line):
@@ -73,6 +73,9 @@ def roi_meth(in_bed_prefixes, in_sample_list, out_table, mask_file, roi_file,
     6,8+) Input Percent Methylation Folder Prefix (exclude \"chr\" from the path)
     7,9+) Input Sample Name (for header of output file)
     """
+    # Reduces thread count if there aren't enough tasks to fill all threads
+    if len(in_bed_prefixes) < thread_count:
+        thread_count = len(in_bed_prefixes)
     outfile = open(out_table, 'wb')
     header_line = 'chrom\tstart\tend\tname'
     for samp in in_sample_list:
@@ -115,14 +118,13 @@ def roi_meth(in_bed_prefixes, in_sample_list, out_table, mask_file, roi_file,
             chrom_names.append(chrom)
 
     # Loop through, gather information, and print each chrom info
-    import ipdb; ipdb.set_trace()
     for chrom in chrom_names:
         # Create methylation dictionary for chromosomal ROI
-        roi_chrom = roi.all_hits(BedTool([(chrom, 0, 999999999)])[0])
+        roi_chrom = roi.all_hits(BedTool([(chrom, 0, 9999999)])[0])
         meth_dict =  utilities.nested_dict(4, str)
         for feature in roi_chrom:
             meth_dict[feature.start][feature.end]['name'] = feature.name
-        proc_list = in_bed_prefixes
+        proc_list = list(in_bed_prefixes)
         def worker():
             while proc_list:
                 pm_prefix = proc_list.pop()
@@ -153,5 +155,3 @@ def roi_meth(in_bed_prefixes, in_sample_list, out_table, mask_file, roi_file,
                     outfile.write(print_line)
                     if out_2col_name != "":
                         out_2col.write(out2_col_line)
-
-

@@ -195,11 +195,11 @@ bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr1.bed -b /sha
 
 
 @cli.command()
-@click.option('--mask_file', type=click.STRING,
+@click.option('--mask', type=click.STRING,
               default='',
               help='GTF or BED file indicating regions to be masked out of '
                    'analysis. Default is set to not mask any regions.')
-@click.option('--out_2col_name', type=click.STRING,
+@click.option('--out_2col', type=click.STRING,
               default='',
               help='')
 @click.option('--threads', type=click.INT,
@@ -221,8 +221,8 @@ bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr1.bed -b /sha
 @click.argument('input_tsv', type=click.STRING)
 @click.argument('out_table', type=click.STRING)
 @click.argument('roi_file', type=click.STRING)
-def roi(input_tsv, out_table, roi_file, mask_file, min_read_count,
-        min_sample_coverage, out_2col_name, threads):
+def roi(input_tsv, out_table, roi_file, mask, min_read_count,
+        min_sample_coverage, out_2col, threads):
     """"""
     in_bed_prefixes = []
     in_sample_list = []
@@ -232,8 +232,8 @@ def roi(input_tsv, out_table, roi_file, mask_file, min_read_count,
             in_bed_prefixes.append(line.split('\t')[1])
             in_sample_list.append(line.split('\t')[0])
     permethbed.roi_meth(in_bed_prefixes, in_sample_list, out_table,
-                        mask_file, roi_file, min_read_count,
-                        min_sample_coverage, out_2col_name, threads)
+                        mask, roi_file, min_read_count,
+                        min_sample_coverage, out_2col, threads)
 
 
 @cli.command()

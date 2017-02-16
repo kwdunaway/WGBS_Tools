@@ -193,3 +193,43 @@ def bed_folder():
     """Folder containing all bedfiles"""
     path = resource_filename(wgbs_tools.__name__, '../tests/data/bed/')
     return path
+
+@pytest.fixture
+def correct_meth_table1():
+    """Correct chrNH percent methylation bed file content for tests in
+    test_samtutils"""
+    path = resource_filename(wgbs_tools.__name__,
+                             '../tests/data/bed/roi_meth_table1.txt')
+    with open(path, 'r') as content_file:
+        content = content_file.read()
+    return content
+
+@pytest.fixture
+def correct_meth_2col1():
+    """Correct chrNH percent methylation bed file content for tests in
+    test_samtutils"""
+    path = resource_filename(wgbs_tools.__name__,
+                             '../tests/data/bed/roi_meth_table1.2col.txt')
+    with open(path, 'r') as content_file:
+        content = content_file.read()
+    return content
+
+@pytest.fixture
+def correct_meth_table2():
+    """Correct chrNH percent methylation bed file content for tests in
+    test_samtutils"""
+    path = resource_filename(wgbs_tools.__name__,
+                             '../tests/data/bed/roi_meth_table2.txt')
+    with open(path, 'r') as content_file:
+        content = content_file.read()
+    return content
+
+@pytest.fixture
+def correct_meth_2col2():
+    """Correct chrNH percent methylation bed file content for tests in
+    test_samtutils"""
+    path = resource_filename(wgbs_tools.__name__,
+                             '../tests/data/bed/roi_meth_table2.2col.txt')
+    with open(path, 'r') as content_file:
+        content = content_file.read()
+    return content
