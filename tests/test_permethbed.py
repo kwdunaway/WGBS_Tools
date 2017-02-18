@@ -116,3 +116,16 @@ def test_roi_meth3(bed_folder, working_dir, correct_meth_table3):
         testcontent = content_file.read()
         assert testcontent == correct_meth_table3, \
             'Error in creating correct methylation table from roi.'
+
+
+def test_convert_pm2dss(bed_folder, working_dir, correct_out_dss):
+    """Tests the converter of pm to dss formats"""
+    in_pmbed = os.path.join(bed_folder, 'pm01_chrF.bed')
+    out_dss = os.path.join(working_dir, 'pm01_chrF.dss')
+    permethbed.convert_pm2dss(in_pmbed, out_dss)
+    with open(out_dss, 'r') as content_file:
+        testcontent = content_file.read()
+        assert testcontent == correct_out_dss, \
+            'Error in converting permeth to DSS format.'
+
+

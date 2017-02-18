@@ -17,6 +17,7 @@ import logging
 import os
 from wgbs_tools import utilities
 from threading import Thread
+import gzip
 
 
 def meth_count(feature):
@@ -184,6 +185,22 @@ def roi_meth(in_bed_prefixes, in_sample_list, out_table, mask_file, roi_file,
                         raw_data.write(raw_col_line)
 
 
-def convert_pm2dss():
+def convert_pm2dss(in_pmbed, out_dss):
     """"""
-
+    # Creates output DSS file and writes header line
+    if out_dss.endswith('.gz'):
+        dss = gzip.open(out_dss, 'wb')
+    else:
+        dss = open(out_dss, 'wb')
+    print_line = 'chr\tpos\tN\tX\n'
+    dss.write(print_line)
+    # Open percent methylated bed file, process info, and prints to DSS file
+    pm = BedTool(in_pmbed)
+    for pm_line in pm:
+        chrom = utilities.show_value(pm_line.chrom)
+        start = int(pm_line.start)
+        meth = int(meth_count(pm_line))
+        total = int(total_count(pm_line))
+        print_line = '{}\t{}\t{}\t{}\n'.format(chrom, start, total, meth)
+        dss.write(print_line)
+    dss.close()

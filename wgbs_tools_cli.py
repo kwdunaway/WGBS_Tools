@@ -113,9 +113,10 @@ def align(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
     chroms = info_dict[genome]['chroms']
 
     #Name temp files
-    qualfil_fastq = os.path.join(workingdir, '_filtered.fq'.format(out_prefix))
-    noadap_fq = os.path.join(workingdir, '_noadap.fq'.format(out_prefix))
-    adaptrim_fq = os.path.join(workingdir, '_trimmed.fq'.format(out_prefix))
+    qualfil_fastq = os.path.join(workingdir, '_filtered.fq.gz'
+                                 .format(out_prefix))
+    noadap_fq = os.path.join(workingdir, '_noadap.fq.gz'.format(out_prefix))
+    adaptrim_fq = os.path.join(workingdir, '_trimmed.fq.gz'.format(out_prefix))
     noadap_bam = os.path.join(workingdir, '_noadap.bam'.format(out_prefix))
     adaptrim_bam = os.path.join(workingdir, '_adaptrim.bam'.format(out_prefix))
     noadap_sorted = os.path.join(workingdir, '_noadap_sorted'
@@ -404,14 +405,28 @@ def window(input_tsv, out_table, windowsize, mask, raw_data, threads,
 
 
 @cli.command()
-@click.argument('input_pm_prefix', type=click.STRING)
-@click.argument('out_dss_prefix', type=click.STRING)
-def pm2dss(in_prefix, out_prefix):
+@click.option('--gz/--no-gz',
+              default=True,
+              help='Boolean which indicates if the output files will be '
+                   'compressed (.gz format) or not. Default: --gz (compressed)')
+@click.argument('in_prefix', type=click.STRING)
+@click.argument('out_prefix', type=click.STRING)
+def pm2dss(in_prefix, out_prefix, gz):
     """"""
-    bed_files = []
-    for file_name in glob.glob('{}*.bed'.format(in_prefix)):
-        bed_files.append(file_name)
-    gz_bed_files = []
-    for file_name in glob.glob('{}*.bed.gz'.format(in_prefix)):
-        gz_bed_files.append(file_name)
+    if gz:
+        suffix = '.dss.gz'
+    else:
+        suffix = '.dss'
+    for bed_name in glob.glob('{}*.bed'.format(in_prefix)):
+        uniqname = bed_name.split(in_prefix)[1].split('.bed')[0]
+        dss_name = '{}{}{}'.format(out_prefix, uniqname, suffix)
+        logging.info('Processing {}'.format(bed_name))
+        logging.info('Creating {}'.format(dss_name))
+        permethbed.convert_pm2dss(bed_name, dss_name)
+    for bed_name in glob.glob('{}*.bed.gz'.format(in_prefix)):
+        uniqname = bed_name.split(in_prefix)[1].split('.bed.gz')[0]
+        dss_name = '{}{}{}'.format(out_prefix, uniqname, suffix)
+        logging.info('Processing {}'.format(bed_name))
+        logging.info('Creating {}'.format(dss_name))
+        permethbed.convert_pm2dss(bed_name, dss_name)
 
