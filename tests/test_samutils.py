@@ -14,7 +14,7 @@ def test_chr_bam_to_permeth(test_bam, working_dir, correct_chr1bed):
     out_bed = '{}{}_{}.bed.gz'.format(working_dir, bed_prefix, chrom)
     genome = 'mm10'
     meth_type = 'CG'
-    strand_type = 'combined'
+    strand_type = 'both'
     max_dup_reads = 1
     chrom_length = 99999999
     samutils.chr_bam_to_permeth(test_bam, out_bed, bed_prefix, genome,
@@ -34,7 +34,7 @@ def test_bam_to_permeth(test_bam, working_dir, correct_chr1bed,
     out_prefix = os.path.join(working_dir, bed_prefix)
     genome = 'mm10'
     meth_type = 'CG'
-    strand_type = 'combined'
+    strand_type = 'both'
     max_dup_reads = 1
     threads = 1
     samutils.bam_to_permeth(test_bam, out_prefix, bed_prefix, genome,

@@ -45,6 +45,8 @@ def total_count(feature):
 def chrom_meth(pm_sample, chrom, roi_chrom, mask, meth_dict):
     """"""
     permeth_name = '{}{}.bed'.format(pm_sample, chrom)
+    if not os.path.exists(permeth_name):
+        permeth_name = '{}{}.bed.gz'.format(pm_sample, chrom)
     logging.info('Processing {}.'.format(permeth_name))
     pm_full = BedTool(permeth_name)
     pm_masked = pm_full - mask
@@ -54,15 +56,33 @@ def chrom_meth(pm_sample, chrom, roi_chrom, mask, meth_dict):
         end = int(roi_line.end)
         meth = 0
         total = 0
+        cpg = 0
         for pm_line in pm.all_hits(roi_line):
             meth = meth + int(meth_count(pm_line))
             total = total + int(total_count(pm_line))
+            cpg += 1
         meth_dict[start][end][pm_sample]['meth'] = int(meth)
         meth_dict[start][end][pm_sample]['total'] = int(total)
+        meth_dict[start][end][pm_sample]['cpg'] = int(cpg)
+
+
+def create_window_roi(window_roi, windowsize, chroms):
+    """"""
+    windows = []
+    for chrom in chroms:
+        length = chroms[chrom]
+        start = 1
+        while start < length:
+            end = start + windowsize - 1
+            windows.append((chrom, start, end))
+            start += windowsize
+    bed_windows = BedTool(windows)
+    bed_windows.saveas(window_roi)
 
 
 def roi_meth(in_bed_prefixes, in_sample_list, out_table, mask_file, roi_file,
-             min_read_count, min_file_count, out_2col_name, thread_count):
+             min_read_count, min_cpg_count, min_file_count, raw_data_name, 
+             thread_count):
     """Creates a table with the methylation across desired Regions of
     Interest (ROI)
     1) Output file
@@ -82,14 +102,14 @@ def roi_meth(in_bed_prefixes, in_sample_list, out_table, mask_file, roi_file,
         header_line = '{}\t{}'.format(header_line, samp)
     header_line = '{}\n'.format(header_line)
     outfile.write(header_line)
-    if out_2col_name != "":
-        out_2col = open(out_2col_name, 'wb')
+    if raw_data_name != "":
+        raw_data = open(raw_data_name, 'wb')
         header_line = 'chrom\tstart\tend\tname'
         for samp in in_sample_list:
-            header_line = '{}\t{}_methylated\t{}_total'\
-                .format(header_line, samp, samp)
+            header_line = '{0}\t{1}_methylated\t{1}_total\t{1}_cpgs'\
+                .format(header_line, samp)
         header_line = '{}\n'.format(header_line)
-        out_2col.write(header_line)
+        raw_data.write(header_line)
 
     roi = BedTool(roi_file)
     if mask_file != "":
@@ -110,10 +130,14 @@ def roi_meth(in_bed_prefixes, in_sample_list, out_table, mask_file, roi_file,
         keepchrom = True
         for pm_sample in in_bed_prefixes:
             permeth_name = '{}{}.bed'.format(pm_sample, chrom)
-        if not os.path.exists(permeth_name):
-            logging.warning('Cannot access {}, skipping {}!'
-                            .format(permeth_name, chrom))
-            keepchrom = False
+            if not os.path.exists(permeth_name):
+                logging.info('Cannot access {}, trying {}.gz'
+                             .format(permeth_name, chrom))
+                permeth_name = '{}{}.bed.gz'.format(pm_sample, chrom)
+                if not os.path.exists(permeth_name):
+                    logging.warning('Cannot access {}, skipping {}!'
+                                    .format(permeth_name, chrom))
+                    keepchrom = False
         if keepchrom:
             chrom_names.append(chrom)
 
@@ -138,20 +162,28 @@ def roi_meth(in_bed_prefixes, in_sample_list, out_table, mask_file, roi_file,
             for end in sorted(meth_dict[start]):
                 name = meth_dict[start][end]['name']
                 print_line = '{}\t{}\t{}\t{}'.format(chrom, start, end, name)
-                out2_col_line = print_line
+                raw_col_line = print_line
                 file_print_count = 0
                 for pm_sample in in_bed_prefixes:
                     meth = meth_dict[start][end][pm_sample]['meth']
                     total = meth_dict[start][end][pm_sample]['total']
-                    if total >= min_read_count:
+                    cpg = meth_dict[start][end][pm_sample]['cpg']
+                    if total >= min_read_count and cpg >= min_cpg_count:
                         meth_perc = float(meth)/float(total)
                         print_line = '{0}\t{1:.3f}'.format(print_line, meth_perc)
                         file_print_count+=1
                     else:
                         print_line = '{0}\tNA'.format(print_line)
-                    out2_col_line = '{}\t{}\t{}'\
-                        .format(out2_col_line, meth, total)
+                    raw_col_line = '{}\t{}\t{}\t{}'\
+                        .format(raw_col_line, meth, total, cpg)
+                print_line = '{}\n'.format(print_line)
+                raw_col_line = '{}\n'.format(raw_col_line)
                 if file_print_count >= min_file_count:
                     outfile.write(print_line)
-                    if out_2col_name != "":
-                        out_2col.write(out2_col_line)
+                    if raw_data_name != "":
+                        raw_data.write(raw_col_line)
+
+
+def convert_pm2dss():
+    """"""
+

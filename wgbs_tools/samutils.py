@@ -25,8 +25,8 @@ def bam_to_permeth(in_bam, out_prefix, bed_prefix, genome,
     assert meth_type in ['C', 'CG', 'CH', 'CHG', 'CHH'], \
         'ERROR! Methylation type needs to be C, CG, CH, CHG, or CHH. ' \
         'Methylation was set to: {}'.format(meth_type)
-    assert strand_type in ['positive', 'negative' ,'combined'], \
-        'ERROR! Strand needs to be positive, negative, or combined. ' \
+    assert strand_type in ['positive', 'negative' , 'both'], \
+        'ERROR! Strand needs to be positive, negative, or both. ' \
         'Strand was set to: {}'.format(strand_type)
     # Multithread the processes
     pool = multiprocessing.Pool(threads)
@@ -59,11 +59,11 @@ def chr_bam_to_permeth(in_bam, out_bed, bed_prefix, genome, meth_type,
         analyzed_strands = ['+']
     elif strand_type == 'negative':
         analyzed_strands = ['-']
-    elif strand_type == 'combined':
+    elif strand_type == 'both':
         analyzed_strands = ['+', '-']
     else:
         raise ValueError('ERROR! Strand needs to be positive, negative, or '
-                         'combined. Strand was set to: {}'.format(strand_type))
+                         'both. Strand was set to: {}'.format(strand_type))
 
     # Initialize variables
     methylation = {}

@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 from wgbs_tools import fastqtools
 from wgbs_tools import bsseeker
 from wgbs_tools import utilities
+from wgbs_tools import samutils
 from wgbs_tools import permethbed
 
 NUM_CPUS = multiprocessing.cpu_count()
@@ -30,30 +31,39 @@ def cli():
 @cli.command()
 @click.option('--out_dir', type=click.STRING,
               default='',
-              help='Directory to put all outfiles. Default <EMPTY> (Creates '
-                   'directory with same name as out_prefix)')
+              help='Directory to put all outfiles. '
+                   'Default: <current working directory>')
 @click.option('--genome', type=click.STRING,
               default='hg38',
-              help='Genome used for alignment and analysis. Default: hg38')
+              help='Genome used for alignment and analysis. '
+                   'Default: hg38')
 @click.option('--noadap-bs2params', 'noadap_bs2_params', type=click.STRING,
               default='-m 3 -f bam',
               help='Parameters passed to BS Seeker 2 for alignment of reads '
-                   'without adapter contamination. Default: -m 3 -f bam')
+                   'without adapter contamination. '
+                   'Default: -m 3 -f bam')
 @click.option('--adaptrim-bs2params', 'adaptrim_bs2_params', type=click.STRING,
               default='-m 2 -f bam',
               help='Parameters passed to BS Seeker 2 for alignment of reads '
-                   'with adapter contamination trimmed out. Default: -m 2 -f '
-                   'bam')
+                   'with adapter contamination trimmed out. '
+                   'Default: -m 2 -f bam')
 @click.option('--trimmed/--not-trimmed',
               default=False,
-              help='Input fastq file is already trimmed for adapter sequence.'
+              help='Input fastq file is already trimmed for adapter sequence. '
                    'Default: --not-trimmed')
-# @click.option('--cgibed/--no-cgibed',
-#               default=True,
-#               help='For each PerMeth bed file, creates a separate one without '
-#                    'CPG island information in it. This is useful for looking '
-#                    'at windows without CGI bias. Default: --cgibed (creates '
-#                    'the separate permeth bed files)')
+@click.option('--methtype', type=click.STRING,
+              default='CG',
+              help='Type of methylation that the Percent Methylation bed files '
+                   'contain. Choices are: C, CG, CH, CHG, or CHH. Default: CG')
+@click.option('--strand', type=click.STRING,
+              default='both',
+              help='Strand that the Percent Methylation bed files contain '
+                   'information about. Choices are: positive, negative, or '
+                   'both. Default: both')
+@click.option('--max_dup_reads', type=click.INT,
+              default=1,
+              help='Maximum number of duplicate reads allowed to inform each '
+                   'C in the Percent Methylation bed files. Default: 1')
 @click.option('--threads', type=click.INT,
               default=NUM_CPUS,
               help='Number of threads used when multiprocessing. '
@@ -67,48 +77,28 @@ def cli():
               default='info.yaml',
               help='Yaml file which contains information which could change '
                    'based on experiment. Read README.md to modify the '
-                   'default or create your own. Default: info.yaml')
+                   'default or create your own. '
+                   'Default: info.yaml')
 @click.argument('input', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
-def main_pipeline(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
-                  adaptrim_bs2_params, trimmed, threads, working_dir,
-                  infoyaml):
+def align(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
+          adaptrim_bs2_params, trimmed, methtype, strand, max_dup_reads,
+          threads, working_dir, infoyaml):
     """
-    Main fastq to permeth bed pipeline.
+    Aligns FASTQ to create BAM permeth BED files.
 
-    #!/bin/bash
-#
-#SBATCH --workdir /share/lasallelab/CM_WGBS_CordBlood_Batch2/
-#SBATCH -c 12                               # number of processors
-#SBATCH -N 1                                # number of nodes
+    Main pipeline for converting raw FASTQ files (from Illumina sequenced
+    WGBS samples) into SAM and Percentage Methylation BED format (PerMeth).
 
-PATH=$PATH:/share/lasallelab/programs/tuxedo/BSseeker2-master_v2.0.8/
-module load bowtie/1.1.1
-module load samtools/0.1.19
-module load sratoolkit/2.4.2-3
-module load bedtools2/2.25.0
-export PYTHONPATH=/share/lasallelab/pysam/lib/python2.7/site-packages/
-
-#Complete Run in hg38 for JLCM007A
-gunzip -c raw_sequences/JLCM007A*fastq.gz | grep -A 3 '^@.* [^:]*:N:[^:]*:' |   grep -v "^--$" > raw_sequences/JLCM007A_filtered.fq
-gzip raw_sequences/JLCM007A_filtered.fq
-perl /share/lasallelab/programs/perl_script/adapter_split.pl raw_sequences/JLCM007A_filtered.fq.gz raw_sequences/JLCM007A_noadap.fq.gz raw_sequences/JLCM007A_withadap.fq.gz
-perl /share/lasallelab/programs/perl_script/adapter_trimmer.pl raw_sequences/JLCM007A_withadap.fq.gz raw_sequences/JLCM007A_trimmed.fq.gz 45 10
-mkdir JLCM007A
-python /share/lasallelab/programs/tuxedo/BSseeker2-master_v2.0.8/bs_seeker2-align.py --bt-p 12 -e 90 -m 3 -f bam -g /share/lasallelab/genomes/hg38/hg38.fa -d /share/lasallelab/genomes/hg38/BSseek2_refgen/ -i raw_sequences/JLCM007A_noadap.fq.gz -o JLCM007A/JLCM007A_noadap.bam
-python /share/lasallelab/programs/tuxedo/BSseeker2-master_v2.0.8/bs_seeker2-align.py --bt-p 12 -e 80 -m 2 -f bam -g /share/lasallelab/genomes/hg38/hg38.fa -d /share/lasallelab/genomes/hg38/BSseek2_refgen/ -i raw_sequences/JLCM007A_trimmed.fq.gz -o JLCM007A/JLCM007A_trimmed.bam
-samtools sort JLCM007A/JLCM007A_noadap.bam JLCM007A/JLCM007A_noadap_sorted
-samtools sort JLCM007A/JLCM007A_trimmed.bam JLCM007A/JLCM007A_trimmed_sorted
-samtools merge JLCM007A/JLCM007A.bam JLCM007A/JLCM007A_noadap_sorted.bam JLCM007A/JLCM007A_trimmed_sorted.bam
-samtools view JLCM007A/JLCM007A.bam > JLCM007A/JLCM007A.sam
-mkdir JLCM007A/tmp
-perl /share/lasallelab/programs/perl_script/SAMsorted_to_permeth.pl JLCM007A/JLCM007A.sam JLCM007A/tmp/PerMeth_JLCM007A JLCM007A hg38 CG combined 1
-mkdir JLCM007A/PerMeth_JLCM007A
-# Unnecessary because incorporated into previous script
-#perl /share/lasallelab/programs/perl_script/gbcompliance.pl hg38 JLCM007A/tmp/PerMeth_JLCM007A_ JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_ JLCM007A JLCM007A
-rm -r JLCM007A/tmp
-mkdir JLCM007A/NoCGI_Permeth_JLCM007A
-bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr1.bed -b /share/lasallelab/genomes/hg38/GTF/hg38_genome_CGI.bed > JLCM007A/NoCGI_Permeth_JLCM007A/NoCGI_Permeth_JLCM007A_chr1.bed
+    \b
+    Required arguments:
+    INPUT        Input FASTQ file which will be processed by the pipeline
+    OUT_PREFIX   Prefix of all output files
+                 This should be short string, not a full path.
+                      Ex:  test
+                      NOT: test/test
+                 If you want to output in a directory other than the current
+                 working directory, use Option: out_dir.
     """
     if working_dir == '':
         workingdir = tempfile.mkdtemp()
@@ -133,13 +123,14 @@ bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr1.bed -b /sha
     adaptrim_sorted = os.path.join(workingdir, '_adaptrim_sorted'
                                    .format(out_prefix))
     full_bam = os.path.join(workingdir, '.bam'.format(out_prefix))
-    full_sam = os.path.join(workingdir, '.sam'.format(out_prefix))
-
     #Create output directory
-    if out_dir == '':
-        out_dir = out_prefix
-    if not os.path.exists(out_dir):
-        os.makedirs(out_dir)
+    if out_dir != '':
+        if not os.path.exists(out_dir):
+            os.makedirs(out_dir)
+    bed_dir = os.path.join(out_dir, 'permethbed_{0}'.format(out_prefix))
+    if not os.path.exists(bed_dir):
+        os.makedirs(bed_dir)
+    bed_prefix = os.path.join(bed_dir, '{}_'.format(out_prefix))
 
     #Filter fastq file
     logging.info('Filtering out quality failed reads from fastq file')
@@ -184,46 +175,70 @@ bedtools subtract -a JLCM007A/PerMeth_JLCM007A/PerMeth_JLCM007A_chr1.bed -b /sha
     logging.info(command)
     subprocess.check_call(command, shell=True)
 
-    #Convert to sam format
-    #(made unnecessary due to pysam directly parsing bam file)
-    # command = 'samtools view {} > {}'.format(full_bam, full_sam)
-    # logging.info(command)
-    # subprocess.check_call(command, shell=True)
-
     #Convert sam to permeth bed files (percent methylation bed files)
     #This also only prints CpGs on chromosomes in ranges defined in the yaml
+    samutils.bam_to_permeth(full_bam, out_prefix, bed_prefix, genome,
+                            methtype, strand, max_dup_reads, chroms, threads)
+
+    #Determine conversion efficiency of the experiment
 
 
 @cli.command()
 @click.option('--mask', type=click.STRING,
               default='',
-              help='GTF or BED file indicating regions to be masked out of '
-                   'analysis. Default is set to not mask any regions.')
-@click.option('--out_2col', type=click.STRING,
+              help='GTF or BED file indicating regions to be masked out of analysis. '
+                   'Default: Does not mask any regions.')
+@click.option('--raw-data', 'raw_data', type=click.STRING,
               default='',
-              help='')
+              help='File name to print raw data for each ROI. This includes '
+                   'counts of methylated reads, total reads, and CpGs covered '
+                   'in ROI. Default: <Does not produce this file>')
 @click.option('--threads', type=click.INT,
               default=NUM_CPUS,
               help='Number of threads used when multiprocessing. '
                    'Default: Number of system CPUs')
-@click.option('--min_read_count', type=click.INT,
+@click.option('--min-reads', 'min_read_count', type=click.INT,
               default=1,
               help="Minimum read count for a sample over a given region of "
                    "interest. If this threshold is not met, NA is reported "
                    "for the given sample's ROI. Default: 1")
-@click.option('--min_sample_coverage', type=click.INT,
-              default=1,
+@click.option('--min-cpgs', 'min_cpg_count', type=click.INT,
+              default=10,
+              help="Minimum CpG count for a sample over a given region of "
+                   "interest. If this threshold is not met, NA is reported "
+                   "for the given sample's ROI. Default: 10")
+@click.option('--min-samples', 'min_sample_coverage', type=click.INT,
+              default=-1,
               help="Minimum number of samples required to report a ROI. For "
                    "example, if this is set to the number of samples input "
                    "and at least one of those samples does not meet the "
                    "minimum read count for the ROI, that ROI is not reported. "
-                   "Default: 1")
+                   "Default: <all samples>")
 @click.argument('input_tsv', type=click.STRING)
 @click.argument('out_table', type=click.STRING)
 @click.argument('roi_file', type=click.STRING)
-def roi(input_tsv, out_table, roi_file, mask, min_read_count,
-        min_sample_coverage, out_2col, threads):
-    """"""
+def roi(input_tsv, out_table, roi_file, mask, min_read_count, min_cpg_count,
+        min_sample_coverage, raw_data, threads):
+    """
+    Calls methylation over ROIs.
+
+    Creates a table that contains the methylation percentage over all Regions of
+    Interest (ROIs). Allows creation of an optional 2col table which contains
+    the number of methylated and total reads per sample per ROI.
+
+    \b
+    Required arguments:
+    INPUT_TSV    Input tab separated file indicating sample names and locations.
+                 The first tab should be sample name
+                 The second tab should be the path to the prefix of bed file
+                 Ex file format:
+                 pm01   tests/data/bed/pm01_
+                 pm02   tests/data/bed/pm02_
+    OUT_TABLE    Name of the table which contains all of the ROI methylation
+                 information
+    ROI_FILE     GTF or BED file indicating the ROI (Regions of Interest).
+                 Each ROI will be output as a single line in the OUT_TABLE.
+    """
     in_bed_prefixes = []
     in_sample_list = []
     with open(input_tsv, 'r') as infile:
@@ -231,9 +246,11 @@ def roi(input_tsv, out_table, roi_file, mask, min_read_count,
             line = line[:-1]
             in_bed_prefixes.append(line.split('\t')[1])
             in_sample_list.append(line.split('\t')[0])
+    if min_sample_coverage == -1:
+        min_sample_coverage = len(in_sample_list)
     permethbed.roi_meth(in_bed_prefixes, in_sample_list, out_table,
-                        mask, roi_file, min_read_count,
-                        min_sample_coverage, out_2col, threads)
+                        mask, roi_file, min_read_count, min_cpg_count,
+                        min_sample_coverage, raw_data, threads)
 
 
 @cli.command()
@@ -297,4 +314,104 @@ def adjustcol(in_prefix, out_prefix, suffix, col, adjust, header):
                               .format(col, line))
         outfile.close()
 
+
+@cli.command()
+@click.option('--window-size', 'windowsize', type=click.INT,
+              default=20000,
+              help='Size of windows in bp. Default: 20000')
+@click.option('--mask', type=click.STRING,
+              default='',
+              help='GTF or BED file indicating regions to be masked out of analysis. '
+                   'Default: Does not mask any regions.')
+@click.option('--raw-data', 'raw_data', type=click.STRING,
+              default='',
+              help='File name to print raw data for each window. This includes '
+                   'counts of methylated reads, total reads, and CpGs covered '
+                   'in each window. Default: <Does not produce this file>')
+@click.option('--threads', type=click.INT,
+              default=NUM_CPUS,
+              help='Number of threads used when multiprocessing. '
+                   'Default: Number of system CPUs')
+@click.option('--min-reads', 'min_read_count', type=click.INT,
+              default=1,
+              help="Minimum read count for a sample over a given region of "
+                   "interest. If this threshold is not met, NA is reported "
+                   "for the given sample's window. Default: 1")
+@click.option('--min-cpgs', 'min_cpg_count', type=click.INT,
+              default=20,
+              help="Minimum CpG count for a sample over a given region of "
+                   "interest. If this threshold is not met, NA is reported "
+                   "for the given sample's window. Default: 20")
+@click.option('--min-samples', 'min_sample_coverage', type=click.INT,
+              default=-1,
+              help="Minimum number of samples required to report a window. For "
+                   "example, if this is set to the number of samples input "
+                   "and at least one of those samples does not meet the "
+                   "minimum read count for the window, that window is not "
+                   "reported. Default: <all samples>")
+@click.option('--genome', type=click.STRING,
+              default='hg38',
+              help='Genome used for alignment and analysis. '
+                   'Default: hg38')
+@click.option('--infoyaml', type=click.STRING,
+              default='info.yaml',
+              help='Yaml file which contains information which could change '
+                   'based on experiment. Read README.md to modify the '
+                   'default or create your own. '
+                   'Default: info.yaml')
+@click.argument('input_tsv', type=click.STRING)
+@click.argument('out_table', type=click.STRING)
+def window(input_tsv, out_table, windowsize, mask, raw_data, threads,
+           min_read_count, min_cpg_count, min_sample_coverage, genome,
+           infoyaml):
+    """
+    Calls methylation over windows.
+
+    Creates a table that contains windows of methylation percentage over
+    all areas/chromosomes of the genome. Allows creation of an optional 2col
+    table which contains the number of methylated and total reads per sample
+    per window.
+
+    \b
+    Required arguments:
+    INPUT_TSV    Input tab separated file indicating sample names and locations.
+                 The first tab should be sample name
+                 The second tab should be the path to the prefix of bed file
+                 Ex file format:
+                 pm01   tests/data/bed/pm01_
+                 pm02   tests/data/bed/pm02_
+    OUT_TABLE    Name of the table which contains all of the window methylation
+                 information
+    """
+    workingdir = tempfile.mkdtemp()
+    window_roi = os.path.join(workingdir, 'windows.bed')
+    in_bed_prefixes = []
+    in_sample_list = []
+    with open(input_tsv, 'r') as infile:
+        for line in infile:
+            line = line[:-1]
+            in_bed_prefixes.append(line.split('\t')[1])
+            in_sample_list.append(line.split('\t')[0])
+    if min_sample_coverage == -1:
+        min_sample_coverage = len(in_sample_list)
+    stream = file(infoyaml, 'r')
+    info_dict = yaml.safe_load(stream)
+    chroms = info_dict[genome]['chroms']
+    permethbed.create_window_roi(window_roi, windowsize, chroms)
+    permethbed.roi_meth(in_bed_prefixes, in_sample_list, out_table,
+                        mask, window_roi, min_read_count, min_cpg_count,
+                        min_sample_coverage, raw_data, threads)
+
+
+@cli.command()
+@click.argument('input_pm_prefix', type=click.STRING)
+@click.argument('out_dss_prefix', type=click.STRING)
+def pm2dss(in_prefix, out_prefix):
+    """"""
+    bed_files = []
+    for file_name in glob.glob('{}*.bed'.format(in_prefix)):
+        bed_files.append(file_name)
+    gz_bed_files = []
+    for file_name in glob.glob('{}*.bed.gz'.format(in_prefix)):
+        gz_bed_files.append(file_name)
 
