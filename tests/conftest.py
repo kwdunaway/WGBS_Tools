@@ -262,3 +262,11 @@ def correct_out_dss():
         content = content_file.read()
     return content
 
+@pytest.fixture
+def correct_out_bg():
+    """Correct output for bedgraph conversion"""
+    path = resource_filename(wgbs_tools.__name__,
+                             '../tests/data/bed/pm01_chrF.bg')
+    with open(path, 'r') as content_file:
+        content = content_file.read()
+    return content

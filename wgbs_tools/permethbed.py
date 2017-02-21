@@ -186,7 +186,13 @@ def roi_meth(in_bed_prefixes, in_sample_list, out_table, mask_file, roi_file,
 
 
 def convert_pm2dss(in_pmbed, out_dss):
-    """"""
+    """
+    Converts a single percent methylation bed file to DSS format.
+
+    :param in_pmbed: percent methylation bed file name
+    :param out_dss: DSS file name
+    :return: None
+    """
     # Creates output DSS file and writes header line
     if out_dss.endswith('.gz'):
         dss = gzip.open(out_dss, 'wb')
@@ -194,6 +200,7 @@ def convert_pm2dss(in_pmbed, out_dss):
         dss = open(out_dss, 'wb')
     print_line = 'chr\tpos\tN\tX\n'
     dss.write(print_line)
+
     # Open percent methylated bed file, process info, and prints to DSS file
     pm = BedTool(in_pmbed)
     for pm_line in pm:
@@ -204,3 +211,29 @@ def convert_pm2dss(in_pmbed, out_dss):
         print_line = '{}\t{}\t{}\t{}\n'.format(chrom, start, total, meth)
         dss.write(print_line)
     dss.close()
+
+
+def convert_pm2bg(in_pmbed, out_bg):
+    """
+    Converts a single percent methylation bed file to bedgraph format.
+
+    :param in_pmbed: percent methylation bed file name
+    :param out_bg: bedgraph file name
+    :return: None
+    """
+    # Creates output bedgraph file and writes header line
+    if out_bg.endswith('.gz'):
+        bg = gzip.open(out_bg, 'wb')
+    else:
+        bg = open(out_bg, 'wb')
+
+    # Open percent methylated bed file, process info, and prints to bg file
+    pm = BedTool(in_pmbed)
+    for pm_line in pm:
+        chrom = utilities.show_value(pm_line.chrom)
+        start = int(pm_line.start)
+        end = start + 1
+        perc = utilities.show_value(pm_line.name).split('-')[0]
+        print_line = '{}\t{}\t{}\t{}\n'.format(chrom, start, end, perc)
+        bg.write(print_line)
+    bg.close()

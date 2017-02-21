@@ -412,7 +412,31 @@ def window(input_tsv, out_table, windowsize, mask, raw_data, threads,
 @click.argument('in_prefix', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
 def pm2dss(in_prefix, out_prefix, gz):
-    """"""
+    """
+    Converts pm_bed to dss format.
+
+    The percent methylation bed files (pm_bed) are used to create DSS files,
+    which are used in multiple R packages, including DSSfinder. The output
+    can be either regular or gzipped files (for space conservation).
+
+    \b
+    Required arguments:
+    IN_PREFIX      Prefix for all percent methlyated bed files (can be
+                   compressed and/or uncompressed)
+    OUT_PREFIX     Prefix for all outfiles (in DSS format). The full name of
+                   each outfile is [out_prefix][uniq_id].dss
+
+    \b
+    Example run: wgbs_tools pm2dss pm01_bed/pm01 pm01_dss/pm01_
+    If there were three files in the folder:
+        pm01_bed/pm01_chr1.bed
+        pm01_bed/pm01_chr2.bed
+        pm01_bed/pm01_chr3.bed.gz
+    The output would be put in these three files:
+        pm01_dss/pm01_chr1.dss
+        pm01_dss/pm01_chr2.dss
+        pm01_dss/pm01_chr3.dss
+    """
     if gz:
         suffix = '.dss.gz'
     else:
@@ -429,4 +453,118 @@ def pm2dss(in_prefix, out_prefix, gz):
         logging.info('Processing {}'.format(bed_name))
         logging.info('Creating {}'.format(dss_name))
         permethbed.convert_pm2dss(bed_name, dss_name)
+
+
+@cli.command()
+@click.option('--gz/--no-gz',
+              default=True,
+              help='Boolean which indicates if the output files will be '
+                   'compressed (.gz format) or not. Default: --gz (compressed)')
+@click.argument('in_prefix', type=click.STRING)
+@click.argument('out_prefix', type=click.STRING)
+def pm2bg(in_prefix, out_prefix, gz):
+    """
+    Converts pm_bed to bedgraph format.
+
+    The percent methylation bed files (pm_bed) are used to create bedgraph
+    files, which can be used for various reasons, including creating genome
+    browser tracks.
+
+    \b
+    Required arguments:
+    IN_PREFIX      Prefix for all percent methlyated bed files (can be
+                   compressed and/or uncompressed)
+    OUT_PREFIX     Prefix for all outfiles (in bedgraph format). The full
+                   name of each outfile is [out_prefix][uniq_id].bg
+
+    \b
+    Example run: wgbs_tools pm2bg pm01_bed/pm01 pm01_bg/pm01_
+    If there were three files in the folder:
+        pm01_bed/pm01_chr1.bed
+        pm01_bed/pm01_chr3.bed.gz
+    The output would be put in these three files:
+        pm01_bg/pm01_chr1.bg
+        pm01_bg/pm01_chr3.bg
+    """
+    if gz:
+        suffix = '.bg.gz'
+    else:
+        suffix = '.bg'
+    for bed_name in glob.glob('{}*.bed'.format(in_prefix)):
+        uniqname = bed_name.split(in_prefix)[1].split('.bed')[0]
+        bg_name = '{}{}{}'.format(out_prefix, uniqname, suffix)
+        logging.info('Processing {}'.format(bed_name))
+        logging.info('Creating {}'.format(bg_name))
+        permethbed.convert_pm2bg(bed_name, bg_name)
+    for bed_name in glob.glob('{}*.bed.gz'.format(in_prefix)):
+        uniqname = bed_name.split(in_prefix)[1].split('.bed.gz')[0]
+        bg_name = '{}{}{}'.format(out_prefix, uniqname, suffix)
+        logging.info('Processing {}'.format(bed_name))
+        logging.info('Creating {}'.format(bg_name))
+        permethbed.convert_pm2bg(bed_name, bg_name)
+
+@cli.command()
+@click.option('--gz/--no-gz',
+              default=True,
+              help='Boolean which indicates if the output files will be '
+                   'compressed (.gz format) or not. Default: --gz (compressed)')
+@click.argument('in_prefix', type=click.STRING)
+@click.argument('out_prefix', type=click.STRING)
+def conv_eff():
+    """
+    Conv Eff and PCR dup (in main pipeline and as a separate standalone)
+
+    :return:
+    """
+
+@cli.command()
+@click.option('--suffix', type=click.STRING,
+              default='',
+              help='Requires all in files end in a particular string. Useful '
+                   'if you have multiple file types in a folder but only want '
+                   'to adjust one kind at a time. Default: None')
+@click.argument('in_prefix', type=click.STRING)
+def fixdmrs(in_prefix, suffix):
+    """
+    Fixes all single line DMR files in a folder.
+
+    Takes all files matching the prefix of in_prefix and searches for lines
+    with a single column in the second line. If that is the case, it takes
+    all of the lines in the file (after the header) and combines them into a
+    single line that is tab separated. This overwrites the previous file.
+
+    \b
+    Required arguments:
+    IN_PREFIX    Prefix of all files input into the
+    """
+    workingdir = tempfile.mkdtemp()
+    for in_file_name in glob.glob('{}*{}'.format(in_prefix, suffix)):
+        suffix = in_file_name.split(in_prefix)[1]
+        out_file_name = os.path.join(workingdir, 'temp_{}'.format(suffix))
+        processed = 'no'
+        with open(in_file_name, 'r') as in_file:
+            header = next(in_file)
+            firstline = next(in_file)
+            if len(firstline.split('\t')) == 1:
+                print('Processing: {}'.format(in_file_name))
+                firstline = firstline[:-1]
+                for line in in_file:
+                    line = line[:-1]
+                    firstline = '{}\t{}'.format(firstline, line)
+                firstline = '{}\n'.format(firstline)
+                outfile = open(out_file_name, 'wb')
+                outfile.write(header)
+                outfile.write(firstline)
+                outfile.close()
+                processed = 'yes'
+        if processed == 'yes':
+            command = 'rm {}'.format(in_file_name)
+            subprocess.check_call(command, shell=True)
+            command = 'mv {} {}'.format(out_file_name, in_file_name)
+            subprocess.check_call(command, shell=True)
+
+
+
+
+
 

@@ -129,3 +129,14 @@ def test_convert_pm2dss(bed_folder, working_dir, correct_out_dss):
             'Error in converting permeth to DSS format.'
 
 
+def test_convert_pm2bg(bed_folder, working_dir, correct_out_bg):
+    """Tests the converter of pm to bg formats"""
+    in_pmbed = os.path.join(bed_folder, 'pm01_chrF.bed')
+    out_dss = os.path.join(working_dir, 'pm01_chrF.bg')
+    permethbed.convert_pm2bg(in_pmbed, out_dss)
+    with open(out_dss, 'r') as content_file:
+        testcontent = content_file.read()
+        assert testcontent == correct_out_bg, \
+            'Error in converting permeth to DSS format.'
+
+
