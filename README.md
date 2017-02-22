@@ -48,6 +48,9 @@ Also, the following python packages:
    pytest tests
    ```
 
+## <a name="Commands"> Commands </a>
+
+
 ## <a name="VersionHistory"> Version History </a>
 __0.1__:
 Initial conversion of scripts to python. Improvements in multiprocessing, installation, and readability were implimented as well.
