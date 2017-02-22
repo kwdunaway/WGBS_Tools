@@ -5,30 +5,44 @@ WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfi
 ### Table of Contents
 
 1. [Installation](#Installation)
-
-1. [Pipelines](#Pipelines)
-
 1. [Commands](#Commands)
-
 1. [Version History](#VersionHistory)
 
 ## <a name="Installation"> Installation </a>
 
-The following programs need to be installed before you can use WGBS_Tools:
+**Note:** It is recommended that you set up a virtual environment prior
+to installing wgbs_tools. The author uses *venv* and will assume the user
+does the same. Using another virtual environment will most likely not make
+a difference. However, other virtual environments are not supported.
 
+### Prerequisites:
+
+Before installation, essure that he following programs are installed:
   [Bowtie](http://bowtie-bio.sourceforge.net/manual.shtml)
   [BS-Seeker2](https://github.com/BSSeeker/BSseeker2)
   [Pysam](https://github.com/pysam-developers/pysam)
   [Bedtools2](https://github.com/arq5x/bedtools2)
   [SRA Toolkit](http://www.ncbi.nlm.nih.gov/books/NBK158900/)
 
-### python packages:
+Also, the following python packages:
+click
+pybedtools
+pysam
+pytest
 pyyaml
 
-### path changes:
-Since every system has a different path, you need to edit the paths in the following files:
+### Instructions:
+1. Change directory to WGBS_tools and type the following:
+```
+python setup.py develop
+```
+1. Since every system has a different path, you need to edit the paths in the following file:
+**WGBS_Tools/info.yaml** = change line after bs2_path: with BS-Seeker2 path
+1. Test to ensure everything installed correctly:
+```
+pytest tests
+```
 
-1. **WGBS_Tools/info.yaml** = change line after bs2_path: with BS-Seeker2 path
 
 
 ## <a name="VersionHistory"> Version History </a>

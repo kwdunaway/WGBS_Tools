@@ -8,7 +8,7 @@ setuptools.setup(
     include_package_data=True,
     py_modules=['wgbs_tools'],
     install_requires=[
-        'Click',
+        'click',
         'pysam',
         'pyyaml',
         'pytest',

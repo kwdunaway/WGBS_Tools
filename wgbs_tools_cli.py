@@ -153,7 +153,6 @@ def align(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
     adaptrim_bs2_params = '--bt-p {} {}'.format(threads, adaptrim_bs2_params)
     bsseeker.align_bs2(bs2_path, adaptrim_bs2_params, fasta, bs2_index,
                        adaptrim_fq, adaptrim_bam)
-    #TODO: Combine alignment logs
 
     #Sort bam files
     command = 'samtools sort -@ {} {} {}'\
@@ -517,19 +516,6 @@ def pm2bg(in_prefix, out_prefix, gz):
         logging.info('Creating {}'.format(bg_name))
         permethbed.convert_pm2bg(bed_name, bg_name)
 
-@cli.command()
-@click.option('--gz/--no-gz',
-              default=True,
-              help='Boolean which indicates if the output files will be '
-                   'compressed (.gz format) or not. Default: --gz (compressed)')
-@click.argument('in_prefix', type=click.STRING)
-@click.argument('out_prefix', type=click.STRING)
-def conv_eff():
-    """
-    Conv Eff and PCR dup (in main pipeline and as a separate standalone)
-
-    :return:
-    """
 
 @cli.command()
 @click.option('--suffix', type=click.STRING,
@@ -579,6 +565,54 @@ def fixdmrs(in_prefix, suffix):
 
 
 
+@cli.command()
+@click.option('--suffix', type=click.STRING,
+              default='.bed.gz',
+              help='Requires all in files end in a particular string. '
+                   'Default: .bed.gz')
+@click.argument('in_prefix', type=click.STRING)
+@click.argument('out_file', type=click.STRING)
+def pm_stats(in_prefix, out_file, suffix):
+    """
+    Gets stats of multiple pm_bed files.
 
+    Prints 5 columns:
+    [0] name: Unique name of file (string between prefix and suffix)
+    [1] percentage: Percentage methylation of file
+    [2] methylated_reads: Amount of methylated reads in pm file
+    [3] total_reads: Amount of total reads in pm file
+    [4] cpg_count: Number of CpGs the pm file has information for
 
+    \b
+    This can also be used to determine conversion efficiency by running it on
+    the conv_eff chromosome (see below for explanation). Then subtract the
+    percentage from 1 (ie: 1 - percentage). There are 3 possible conv_eff
+    chromosomes:
+      1.  If you spiked your samples with lamda DNA (known to be 100%
+          unmethylated) prior to bisulfite conversion, run this on that
+          chromosome. Note, you will need to ensure you added the lamda
+          sequence to info.yaml and the BS_Seeker index prior to alignment.
+      2.  chrM. This is the most likely choice if you didn't spike your samples.
+      3.  CH pm_bed files. Create pm_bed files looking at CH methylation and
+          then run this command on all of those files. This assumes there is
+          no CH methylation (which is known to exist in plants and certain
+          mammalian tissues).
+
+    \b
+    Required arguments:
+    IN_PREFIX      Prefix for all percent methlyated bed files (can be
+                   compressed and/or uncompressed)
+    OUT_FILE       Tab separated table containing statistical information
+    """
+    out = open(out_file, 'wb')
+    outline = 'name\tpercentage\tmethylated_reads\ttotal_reads\tcpg_count\n'
+    out.write(outline)
+    for in_file_name in glob.glob('{}*{}'.format(in_prefix, suffix)):
+        uniqname = in_file_name.split(in_prefix)[1].split(suffix)[0]
+        meth_dict = permethbed.bed_meth_stats(in_file_name)
+        outline = '{}\t{}\t{}\t{}\t{}\n' \
+            .format(uniqname, meth_dict['perc'], meth_dict['meth'],
+                    meth_dict['total'], meth_dict['cpg'])
+        out.write(outline)
+    out.close()
 
