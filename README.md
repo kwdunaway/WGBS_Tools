@@ -6,6 +6,13 @@ WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfi
 
 1. [Installation](#Installation)
 1. [Commands](#Commands)
+  1. [align](#align)
+  1. [roi](#roi)
+  1. [window](#window)
+  1. [pm_stats](#pm_stats)
+  1. [pm2bg](#pm2bg)
+  1. [pm2dss](#pm2dss)
+  
 1. [Version History](#VersionHistory)
 
 ## <a name="Installation"> Installation </a>
@@ -49,6 +56,24 @@ Also, the following python packages:
    ```
 
 ## <a name="Commands"> Commands </a>
+
+### <a name="align"> align </a>
+  align      Aligns FASTQ to create BAM permeth BED files.
+
+### <a name="roi"> roi </a>
+  roi        Calls methylation over ROIs.
+
+### <a name="window"> window </a>
+  window     Calls methylation over windows.
+
+### <a name="pm_stats"> pm_stats </a>
+  pm_stats   Gets stats of multiple pm_bed files.
+
+### <a name="pm2bg"> pm2bg </a>
+  pm2bg      Converts pm_bed to bedgraph format.
+
+### <a name="pm2dss"> pm2dss </a>
+  pm2dss     Converts pm_bed to dss format.
 
 
 ## <a name="VersionHistory"> Version History </a>
