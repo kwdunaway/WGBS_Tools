@@ -35,17 +35,17 @@ Also, the following python packages:
 
 ### Instructions:
 1. Change directory to WGBS_tools and type the following:
-```
-python setup.py develop
-```
+
+   ```
+   python setup.py develop
+   ```
 1. Since every system has a different path, you need to edit the paths in the following file:
 **WGBS_Tools/info.yaml** = change line after bs2_path: with BS-Seeker2 path
 1. Test to ensure everything installed correctly:
-```
-pytest tests
-```
 
-
+   ```
+   pytest tests
+   ```
 
 ## <a name="VersionHistory"> Version History </a>
 __0.1__:
