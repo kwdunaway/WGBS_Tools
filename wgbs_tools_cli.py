@@ -113,25 +113,25 @@ def align(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
     chroms = info_dict[genome]['chroms']
 
     #Name temp files
-    qualfil_fastq = os.path.join(workingdir, '_filtered.fq.gz'
-                                 .format(out_prefix))
-    noadap_fq = os.path.join(workingdir, '_noadap.fq.gz'.format(out_prefix))
-    adaptrim_fq = os.path.join(workingdir, '_trimmed.fq.gz'.format(out_prefix))
-    noadap_bam = os.path.join(workingdir, '_noadap.bam'.format(out_prefix))
-    adaptrim_bam = os.path.join(workingdir, '_adaptrim.bam'.format(out_prefix))
-    noadap_sorted = os.path.join(workingdir, '_noadap_sorted'
-                                 .format(out_prefix))
-    adaptrim_sorted = os.path.join(workingdir, '_adaptrim_sorted'
-                                   .format(out_prefix))
-    full_bam = os.path.join(workingdir, '.bam'.format(out_prefix))
-    #Create output directory
+    temp_prefix = os.path.join(workingdir, out_prefix)
+    qualfil_fastq = '{}_filtered.fq.gz'.format(temp_prefix)
+    noadap_fq = '{}_noadap.fq.gz'.format(temp_prefix)
+    adaptrim_fq = '{}_trimmed.fq.gz'.format(temp_prefix)
+    noadap_bam = '{}_noadap.bam'.format(temp_prefix)
+    adaptrim_bam = '{}_adaptrim.bam'.format(temp_prefix)
+    noadap_sorted = '{}_noadap_sorted'.format(temp_prefix)
+    adaptrim_sorted = '{}_adaptrim_sorted'.format(temp_prefix)
+
+    #Create output directory and file names that go there
     if out_dir != '':
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
-    bed_dir = os.path.join(out_dir, 'permethbed_{0}'.format(out_prefix))
+    full_bam = os.path.join(out_dir, '{}.bam'.format(out_prefix))
+    bed_dir = os.path.join(out_dir, 'permethbed_{}'.format(out_prefix))
     if not os.path.exists(bed_dir):
         os.makedirs(bed_dir)
     bed_prefix = os.path.join(bed_dir, '{}_'.format(out_prefix))
+    conv_eff = os.path.join(out_dir, '{}.bam'.format(out_prefix))
 
     #Filter fastq file
     logging.info('Filtering out quality failed reads from fastq file')
@@ -181,7 +181,21 @@ def align(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
     samutils.bam_to_permeth(full_bam, out_prefix, bed_prefix, genome,
                             methtype, strand, max_dup_reads, chroms, threads)
 
-    #Determine conversion efficiency of the experiment
+    #Determine conversion efficiency of the experiment if chrM is in chroms
+    if 'chrM' in chroms:
+        chrM_bed = 'chrM.bed.gz'.format(bed_prefix)
+        conv_eff_dict = permethbed.bed_meth_stats(chrM_bed)
+        ce = open(conv_eff, 'wb')
+        header_line = 'conv_eff\tmeth\ttotal\tcpg_count\n'
+        ce.write(header_line)
+        eff = 1 - conv_eff_dict['perc']
+        info_line = '{}\t{}\t{}\t{}\n'\
+            .format(eff, conv_eff_dict['meth'], conv_eff_dict['total'],
+                    conv_eff_dict['cpg'])
+        ce.write(info_line)
+    else:
+        logging.warning('Conversion efficency was not calculated because '
+                        'chrM is not one of the designated chromosomes.')
 
 
 @cli.command()

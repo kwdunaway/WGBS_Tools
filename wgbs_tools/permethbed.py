@@ -237,3 +237,26 @@ def convert_pm2bg(in_pmbed, out_bg):
         print_line = '{}\t{}\t{}\t{}\n'.format(chrom, start, end, perc)
         bg.write(print_line)
     bg.close()
+
+
+def bed_meth_stats(in_bed):
+    """
+    Takes in a percent methylation bed file and returns the total CpG count
+    as well as overall methylated read count and total read count. This is
+    useful for determing conversion efficency as well as getting an overall
+    methylation of a region or chromosome.
+
+    :param in_bed: name of bed file
+    :return: dictionary with methylation stats of the file
+    """
+    pm = BedTool(in_bed)
+    meth = 0
+    total = 0
+    cpg = 0
+    for pm_line in pm:
+        meth = meth + int(meth_count(pm_line))
+        total = total + int(total_count(pm_line))
+        cpg += 1
+    perc = float(meth) / float(total)
+    meth_dict = {'perc': perc, 'meth': meth, 'total': total, 'cpgs': cpg}
+    return(meth_dict)

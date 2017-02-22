@@ -1,4 +1,6 @@
 *.pyc
 .cache/
 wgbs_tools.egg-info/
+.idea/workspace.xml
+.idea
 

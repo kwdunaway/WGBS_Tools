@@ -140,3 +140,9 @@ def test_convert_pm2bg(bed_folder, working_dir, correct_out_bg):
             'Error in converting permeth to DSS format.'
 
 
+def test_bed_meth_stats(bed_folder):
+    """Tests bed_meth_stats"""
+    in_pmbed = os.path.join(bed_folder, 'pm01_chrF.bed')
+    results_dict = permethbed.bed_meth_stats(in_pmbed)
+    correct_dict = {'perc': 0.5, 'meth': 130, 'total': 260, 'cpgs': 5}
+    assert results_dict == correct_dict, 'Error in getting bed meth stats.'
