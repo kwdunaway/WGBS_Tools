@@ -19,19 +19,15 @@ a difference. However, other virtual environments are not supported.
 
 Before installation, essure that he following programs are installed:
 
-  [Bowtie](http://bowtie-bio.sourceforge.net/manual.shtml)
-  [BS-Seeker2](https://github.com/BSSeeker/BSseeker2)
-  [Pysam](https://github.com/pysam-developers/pysam)
-  [Bedtools2](https://github.com/arq5x/bedtools2)
+  [Bowtie](http://bowtie-bio.sourceforge.net/manual.shtml), 
+  [BS-Seeker2](https://github.com/BSSeeker/BSseeker2), 
+  [Pysam](https://github.com/pysam-developers/pysam), 
+  [Bedtools2](https://github.com/arq5x/bedtools2), 
   [SRA Toolkit](http://www.ncbi.nlm.nih.gov/books/NBK158900/)
 
 Also, the following python packages:
 
-click
-pybedtools
-pysam
-pytest
-pyyaml
+click, pybedtools, pysam, pytest, pyyaml
 
 ### Instructions:
 1. Change directory to WGBS_tools and type the following:
