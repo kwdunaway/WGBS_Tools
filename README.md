@@ -5,6 +5,7 @@ WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfi
 ### Table of Contents
 
 1. [Installation](#Installation)
+1. [File Formats](#FileFormats)
 1. [Commands](#Commands)
   1. [align](#align)
   1. [roi](#roi)
@@ -12,7 +13,6 @@ WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfi
   1. [pm_stats](#pm_stats)
   1. [pm2bg](#pm2bg)
   1. [pm2dss](#pm2dss)
-  
 1. [Version History](#VersionHistory)
 
 ## <a name="Installation"> Installation </a>
@@ -67,10 +67,25 @@ Also, the following python packages:
    ```
 
 
+## <a name="FileFormats"> File Formats </a>
+
+
 ## <a name="Commands"> Commands </a>
 
 ### <a name="align"> align </a>
-  align      Aligns FASTQ to create BAM permeth BED files.
+The main alignment pipeline. It takes in a fastq file and outputs the following:
+1. Bam containing all of the aligned reads in BS_Seeker format. See [BS-Seeker2](https://github.com/BSSeeker/BSseeker2) for more details.
+1. Log of BS_Seeker2 run which has useful overall information about the sequencing run.
+1. Folder containing a single Percent Methylated Bed (pm_bed) file for every chromosome. The pm_bed has 7 columns with the format:
+  1. chromosome
+  1. start of C
+  1. end of C (1 base away)
+  1. percent methylation and number of reads contributing to the permeth call (separate by a *-*)
+  1. 0
+  1. strand (if CpG then it says + but is really a combination of both strands)
+  1. 0
+  1. 0
+  1. color (in RRR,GGG,BBB format)
 
 ### <a name="roi"> roi </a>
   roi        Calls methylation over ROIs.
