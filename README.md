@@ -41,7 +41,7 @@ Also, the following python packages:
    ```
 1. Since every system has a different path, you need to edit the paths in the following file:
 
-   **WGBS_Tools/info.yaml** = change line after bs2_path: with BS-Seeker2 path
+   **WGBS_Tools/info.yaml** = change line after *bs2_path:* with BS-Seeker2 path
 1. Test to ensure everything installed correctly:
 
    ```
