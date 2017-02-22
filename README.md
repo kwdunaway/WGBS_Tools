@@ -54,6 +54,18 @@ Also, the following python packages:
    ```
    pytest tests
    ```
+1. Instructions for how to use the commands are below as well as accessible by typing:
+
+   ```
+   wgbs_tools --help
+   ```
+   
+1. You can also get instructions for a specific command by typing the command name with --help. For instance:
+
+   ```
+   wgbs_tools align --help
+   ```
+
 
 ## <a name="Commands"> Commands </a>
 
