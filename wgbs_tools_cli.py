@@ -307,6 +307,11 @@ def adjustcols(in_prefix, out_prefix, suffix, cols, adjusts, header):
     IN_PREFIX    Prefix of all files input into the
     OUT_PREFIX   Prefix of all output files
     """
+    col_list = cols.split(',')
+    adjust_list = adjusts.split(',')
+    assert len(col_list) == len(adjust_list), \
+        "Error: You are trying to adjust {} columns with {} adjustments"\
+            .format(len(col_list), len(adjust_list))
     for in_file_name in glob.glob('{}*{}'.format(in_prefix, suffix)):
         suffix = in_file_name.split(in_prefix)[1]
         out_file_name = '{}{}'.format(out_prefix, suffix)
@@ -322,16 +327,19 @@ def adjustcols(in_prefix, out_prefix, suffix, cols, adjusts, header):
                 else:
                     line = line[:-1]
                     cells = line.split('\t')
-                    if len(cells) > col:
-                        cells[col] = int(cells[col]) + adjust
-                        printline = str(cells.pop(0))
-                        for cell in cells:
-                            printline = '{}\t{}'.format(printline, cell)
-                        printline = '{}\n'.format(printline)
-                        outfile.write(printline)
-                    else:
-                        print('Warning, col {} does not exist in line:\n{}'
-                              .format(col, line))
+                    for num in range(col_list):
+                        col = col_list[num]
+                        adjust = adjust_list[num]
+                        if len(cells) > col:
+                            cells[col] = int(cells[col]) + adjust
+                        else:
+                            print('Warning, col {} does not exist in line:\n{}'
+                                  .format(col, line))
+                    printline = str(cells.pop(0))
+                    for cell in cells:
+                        printline = '{}\t{}'.format(printline, cell)
+                    printline = '{}\n'.format(printline)
+                    outfile.write(printline)
         outfile.close()
 
 
