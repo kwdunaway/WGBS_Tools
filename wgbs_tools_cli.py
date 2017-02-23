@@ -277,24 +277,26 @@ def roi(input_tsv, out_table, roi_file, mask, min_read_count, min_cpg_count,
               help='Requires all in files end in a particular string. Useful '
                    'if you have multiple file types in a folder but only want '
                    'to adjust one kind at a time. Default: None')
-@click.option('--col', type=click.INT,
+@click.option('--cols', type=click.INT,
               default=2,
-              help='Column number to be changed (0-based). Ex. If set to 2, '
-                   'the third column of a file will be changed. If this is a '
-                   'bed file, the end location will be changed. Default: 2')
-@click.option('--adjust', type=click.INT,
+              help='Column number(s) to be changed (0-based). Ex. If set to 2, '
+                   'the third column of a file will be changed. If this is set '
+                   'to 1,2 then the second and third columns are changed. '
+                   'Default: 2')
+@click.option('--adjusts', type=click.INT,
               default=1,
               help='Amount to adjust each number in the column. Ex: If set to '
                    '1, each number in the column will increase by 1. If set '
-                   'to -5000, each number will be subtracted by 5000. '
-                   'Default: 1')
+                   'to 1,-5000, each number in the first designated column '
+                   'will increase by 1 and the second designated column will '
+                   'have 5000 subtracted from it. Default: 1')
 @click.option('--header/--no-header',
               default=True,
               help='Boolean which indicates if there is a header in the input '
                    'files. Default: --header')
 @click.argument('in_prefix', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
-def adjustcol(in_prefix, out_prefix, suffix, col, adjust, header):
+def adjustcols(in_prefix, out_prefix, suffix, cols, adjusts, header):
     """
     Adjusts numerical column of files.
 
