@@ -7,6 +7,8 @@ WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfi
 1. [Installation](#Installation)
 1. [File Formats](#FileFormats)
   1. [pm_bed](#pm_bed)
+  1. [meth_table](#meth_table)
+  1. [infoyaml](#info.yaml)
 1. [Commands](#Commands)
   1. [align](#align)
   1. [roi](#roi)
@@ -86,7 +88,7 @@ The pm_bed has 7 columns:
 1. 0 (placeholder for bed format)
 1. color (in RRR,GGG,BBB format)
 
-### <a name="pm_bed"> meth_table </a>
+### <a name="meth_table"> meth_table </a>
 
 Methylation tables are created as a way to determine the average methylation over a given area. They
 are produced by both the [roi](#roi) and [window](#window) commands. The format for these files are:
@@ -99,6 +101,7 @@ The pm_bed has 7 columns:
 1. start
 1. end
 
+### <a name="infoyaml"> info.yaml </a>
 
 ## <a name="Commands"> Commands </a>
 
@@ -106,6 +109,8 @@ The pm_bed has 7 columns:
 The main alignment pipeline. It takes in a fastq file and outputs the following:
 1. Bam containing all of the aligned reads in BS_Seeker format. See [BS-Seeker2](https://github.com/BSSeeker/BSseeker2) for more details.
 1. Log of BS_Seeker2 run which has useful overall information about the sequencing run.
+1. You need to edit the info.yaml with your genome information (see info.yaml)
+
 
 ### <a name="roi"> roi </a>
   roi        Calls methylation over ROIs.

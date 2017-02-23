@@ -13,6 +13,8 @@ from multiprocessing import Process
 import yaml
 import logging
 logger = logging.getLogger(__name__)
+from pkg_resources import resource_filename
+import wgbs_tools
 
 from wgbs_tools import fastqtools
 from wgbs_tools import bsseeker
@@ -105,6 +107,8 @@ def align(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
     else:
         workingdir = working_dir
     #Load data
+    if infoyaml == 'info.yaml':
+        infoyaml = resource_filename(wgbs_tools.__name__, '../info.yaml')
     stream = file(infoyaml, 'r')
     info_dict = yaml.safe_load(stream)
     bs2_path = info_dict['bs2_path']
