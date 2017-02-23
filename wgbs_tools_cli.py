@@ -325,7 +325,8 @@ def adjustcols(in_prefix, out_prefix, suffix, cols, adjusts, header):
                     outfile.write(line)
                     headerin = False
                 else:
-                    line = line[:-1]
+                    if line.endswith('\n') or line.endswith('\r'):
+                        line = line[:-1]
                     cells = line.split('\t')
                     for num in range(col_list):
                         col = col_list[num]
