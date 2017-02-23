@@ -277,13 +277,13 @@ def roi(input_tsv, out_table, roi_file, mask, min_read_count, min_cpg_count,
               help='Requires all in files end in a particular string. Useful '
                    'if you have multiple file types in a folder but only want '
                    'to adjust one kind at a time. Default: None')
-@click.option('--cols', type=click.INT,
+@click.option('--cols', type=click.STRING,
               default=2,
               help='Column number(s) to be changed (0-based). Ex. If set to 2, '
                    'the third column of a file will be changed. If this is set '
                    'to 1,2 then the second and third columns are changed. '
                    'Default: 2')
-@click.option('--adjusts', type=click.INT,
+@click.option('--adjusts', type=click.STRING,
               default=1,
               help='Amount to adjust each number in the column. Ex: If set to '
                    '1, each number in the column will increase by 1. If set '
@@ -329,8 +329,8 @@ def adjustcols(in_prefix, out_prefix, suffix, cols, adjusts, header):
                         line = line[:-1]
                     cells = line.split('\t')
                     for num in range(col_list):
-                        col = col_list[num]
-                        adjust = adjust_list[num]
+                        col = int(col_list[num])
+                        adjust = int(adjust_list[num])
                         if len(cells) > col:
                             cells[col] = int(cells[col]) + adjust
                         else:
