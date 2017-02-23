@@ -328,7 +328,7 @@ def adjustcols(in_prefix, out_prefix, suffix, cols, adjusts, header):
                     if line.endswith('\n') or line.endswith('\r'):
                         line = line[:-1]
                     cells = line.split('\t')
-                    for num in range(col_list):
+                    for num in range(len(col_list)):
                         col = int(col_list[num])
                         adjust = int(adjust_list[num])
                         if len(cells) > col:
