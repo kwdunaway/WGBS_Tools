@@ -81,7 +81,7 @@ def cli():
                    'based on experiment. Read README.md to modify the '
                    'default or create your own. '
                    'Default: info.yaml')
-@click.argument('input', type=click.STRING)
+@click.argument('in_fastq', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
 def align(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
           adaptrim_bs2_params, trimmed, methtype, strand, max_dup_reads,
@@ -94,7 +94,7 @@ def align(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
 
     \b
     Required arguments:
-    INPUT        Input FASTQ file which will be processed by the pipeline
+    IN_FASTQ        Input FASTQ file which will be processed by the pipeline
     OUT_PREFIX   Prefix of all output files
                  This should be short string, not a full path.
                       Ex:  test
