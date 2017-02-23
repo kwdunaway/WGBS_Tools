@@ -24,7 +24,7 @@ NUM_CPUS = multiprocessing.cpu_count()
 
 @click.group()
 def cli():
-    """A versatile toolkit to manipulate and analyze WGBS data"""
+    """A versatile toolkit to manipulate and analyze WGBS data."""
     pass
 
 

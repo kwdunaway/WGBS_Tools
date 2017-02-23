@@ -6,6 +6,7 @@ WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfi
 
 1. [Installation](#Installation)
 1. [File Formats](#FileFormats)
+  1. [pm_bed](#pm_bed)
 1. [Commands](#Commands)
   1. [align](#align)
   1. [roi](#roi)
@@ -69,6 +70,35 @@ Also, the following python packages:
 
 ## <a name="FileFormats"> File Formats </a>
 
+### <a name="pm_bed"> pm_bed </a>
+
+Percent Methylation bed (pm_bed) format is a custome format to hold base specific methylation information.
+It is based on a 9 column bed format and can be loaded into most genome browsers (like the UCSC browser).
+The pm_bed has 7 columns:
+
+1. chromosome
+1. start of C
+1. end of C (1 base away)
+1. percent methylation and number of reads contributing to the permeth call (separate by a *-*)
+1. 0 (placeholder for bed format)
+1. strand (if CpG then it says + but is really a combination of both strands)
+1. 0 (placeholder for bed format)
+1. 0 (placeholder for bed format)
+1. color (in RRR,GGG,BBB format)
+
+### <a name="pm_bed"> meth_table </a>
+
+Methylation tables are created as a way to determine the average methylation over a given area. They
+are produced by both the [roi](#roi) and [window](#window) commands. The format for these files are:
+
+bed (pm_bed) format is a custome format to hold base specific methylation information.
+It is based on a 9 column bed format and can be loaded into most genome browsers (like the UCSC browser).
+The pm_bed has 7 columns:
+
+1. chromosome
+1. start
+1. end
+
 
 ## <a name="Commands"> Commands </a>
 
@@ -76,16 +106,6 @@ Also, the following python packages:
 The main alignment pipeline. It takes in a fastq file and outputs the following:
 1. Bam containing all of the aligned reads in BS_Seeker format. See [BS-Seeker2](https://github.com/BSSeeker/BSseeker2) for more details.
 1. Log of BS_Seeker2 run which has useful overall information about the sequencing run.
-1. Folder containing a single Percent Methylated Bed (pm_bed) file for every chromosome. The pm_bed has 7 columns with the format:
-  1. chromosome
-  1. start of C
-  1. end of C (1 base away)
-  1. percent methylation and number of reads contributing to the permeth call (separate by a *-*)
-  1. 0
-  1. strand (if CpG then it says + but is really a combination of both strands)
-  1. 0
-  1. 0
-  1. color (in RRR,GGG,BBB format)
 
 ### <a name="roi"> roi </a>
   roi        Calls methylation over ROIs.
