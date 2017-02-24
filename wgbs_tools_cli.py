@@ -199,7 +199,7 @@ def align(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
     else:
         logging.warning('Conversion efficency was not calculated because '
                         'chrM is not one of the designated chromosomes.')
-    shutil.rmtree(working_dir)
+    shutil.rmtree(workingdir)
 
 
 @cli.command()
