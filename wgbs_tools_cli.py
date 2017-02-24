@@ -105,6 +105,8 @@ def align(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
     if working_dir == '':
         workingdir = tempfile.mkdtemp()
     else:
+        if not os.path.exists(working_dir):
+            os.makedirs(working_dir)
         workingdir = working_dir
     #Load data
     if infoyaml == 'info.yaml':
@@ -112,7 +114,7 @@ def align(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
     stream = file(infoyaml, 'r')
     info_dict = yaml.safe_load(stream)
     bs2_path = info_dict['bs2_path']
-    bs2_index = info_dict[genome]['bs2_index']
+    index = info_dict[genome]['index']
     fasta = info_dict[genome]['fasta']
     chroms = info_dict[genome]['chroms']
 
@@ -150,12 +152,12 @@ def align(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
     logging.info('Aligning reads without adapter contamination to {}'
                  .format(genome))
     noadap_bs2_params = '--bt-p {} {}'.format(threads, noadap_bs2_params)
-    bsseeker.align_bs2(bs2_path, noadap_bs2_params, fasta, bs2_index, noadap_fq,
+    bsseeker.align_bs2(bs2_path, noadap_bs2_params, fasta, index, noadap_fq,
                        noadap_bam)
     logging.info('Aligning reads that had adapter contamination trimmed out '
                  'to {}'.format(genome))
     adaptrim_bs2_params = '--bt-p {} {}'.format(threads, adaptrim_bs2_params)
-    bsseeker.align_bs2(bs2_path, adaptrim_bs2_params, fasta, bs2_index,
+    bsseeker.align_bs2(bs2_path, adaptrim_bs2_params, fasta, index,
                        adaptrim_fq, adaptrim_bam)
 
     #Sort bam files

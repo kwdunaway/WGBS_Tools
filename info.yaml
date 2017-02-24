@@ -1,7 +1,7 @@
 adapter: AGATCGGAAG
 bs2_path: bs_seeker2-align.py
 hg38:
-  bs2_index: /share/lasallelab/genomes/hg38/BSseek2_refgen/
+  index: /share/lasallelab/genomes/hg38/BSseek2_refgen/
   fasta: /share/lasallelab/genomes/hg38/hg38.fa
   chroms:
       chr1: 247249719
@@ -30,7 +30,7 @@ hg38:
       chrX: 154913754
       chrY: 57772954
 mm10:
-  bs2_index: /share/lasallelab/genomes/hg38/BSseek2_refgen/
+  index: /share/lasallelab/genomes/hg38/BSseek2_refgen/
   fasta: /share/lasallelab/genomes/hg38/hg38.fa
   chroms:
       chr1: 247249719
@@ -59,7 +59,7 @@ mm10:
       chrX: 154913754
       chrY: 57772954
 bosTau6:
-  bs2_index: /share/tamu/Analysis/Whole_Genome_Bisulfite/Cow/bosTau6_index/Bos_taurus.UMD3.1.dna.toplevel.fa_bowtie2/
+  index: /share/tamu/Analysis/Whole_Genome_Bisulfite/Cow/bosTau6_index/Bos_taurus.UMD3.1.dna.toplevel.fa_bowtie2/
   fasta: /share/tamu/Data/Genomes/Cow/bosTau6/Ensembl-78-genome/Bos_taurus.UMD3.1.dna.toplevel.fa
   chroms:
       chr1: 158337067

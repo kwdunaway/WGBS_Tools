@@ -6,9 +6,9 @@ WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfi
 
 1. [Installation](#Installation)
 1. [File Formats](#FileFormats)
+  1. [infoyaml](#info.yaml)
   1. [pm_bed](#pm_bed)
   1. [meth_table](#meth_table)
-  1. [infoyaml](#info.yaml)
 1. [Commands](#Commands)
   1. [align](#align)
   1. [roi](#roi)
@@ -69,8 +69,16 @@ Also, the following python packages:
    wgbs_tools align --help
    ```
 
+1. The final step is to edit (or create your own) *info.yaml* file. You must add your own genomic information.
+Chromosome lengths for genomes hg38, mm10, and bosTau6 are provided. However, you will still need to edit the
+*index* and *fasta* locations to point to where those files are on your system. See [infoyaml](#info.yaml) for more details.
+
 
 ## <a name="FileFormats"> File Formats </a>
+
+### <a name="infoyaml"> info.yaml </a>
+
+
 
 ### <a name="pm_bed"> pm_bed </a>
 
@@ -100,8 +108,6 @@ The pm_bed has 7 columns:
 1. chromosome
 1. start
 1. end
-
-### <a name="infoyaml"> info.yaml </a>
 
 ## <a name="Commands"> Commands </a>
 
