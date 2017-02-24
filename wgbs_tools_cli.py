@@ -279,13 +279,13 @@ def roi(input_tsv, out_table, roi_file, mask, min_read_count, min_cpg_count,
                    'if you have multiple file types in a folder but only want '
                    'to adjust one kind at a time. Default: None')
 @click.option('--cols', type=click.STRING,
-              default=2,
+              default='2',
               help='Column number(s) to be changed (0-based). Ex. If set to 2, '
                    'the third column of a file will be changed. If this is set '
                    'to 1,2 then the second and third columns are changed. '
                    'Default: 2')
 @click.option('--adjusts', type=click.STRING,
-              default=1,
+              default='1',
               help='Amount to adjust each number in the column. Ex: If set to '
                    '1, each number in the column will increase by 1. If set '
                    'to 1,-5000, each number in the first designated column '
