@@ -49,10 +49,6 @@ def cli():
               help='Parameters passed to BS Seeker 2 for alignment of reads '
                    'with adapter contamination trimmed out. '
                    'Default: -m 2 -f bam')
-@click.option('--trimmed/--not-trimmed',
-              default=False,
-              help='Input fastq file is already trimmed for adapter sequence. '
-                   'Default: --not-trimmed')
 @click.option('--methtype', type=click.STRING,
               default='CG',
               help='Type of methylation that the Percent Methylation bed files '
@@ -84,8 +80,8 @@ def cli():
 @click.argument('in_fastq', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
 def align(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
-          adaptrim_bs2_params, trimmed, methtype, strand, max_dup_reads,
-          threads, working_dir, infoyaml):
+          adaptrim_bs2_params, methtype, strand, max_dup_reads, threads,
+          working_dir, infoyaml):
     """
     Aligns FASTQ to create BAM permeth BED files.
 
@@ -117,6 +113,7 @@ def align(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
     index = info_dict[genome]['index']
     fasta = info_dict[genome]['fasta']
     chroms = info_dict[genome]['chroms']
+    adapter = info_dict['adapter']
 
     #Name temp files
     temp_prefix = os.path.join(workingdir, out_prefix)
@@ -145,8 +142,7 @@ def align(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
 
     #Remove adapter contamination from reads
     logging.info('Removing adapter contamination and split fastq files')
-    fastqtools.adapter_remove(qualfil_fastq, noadap_fq, adaptrim_fq,
-                             info_dict['adapter'])
+    fastqtools.adapter_remove(qualfil_fastq, noadap_fq, adaptrim_fq, adapter)
 
     #Align to genome
     logging.info('Aligning reads without adapter contamination to {}'
@@ -633,4 +629,251 @@ def pm_stats(in_prefix, out_file, suffix):
                     meth_dict['total'], meth_dict['cpg'])
         out.write(outline)
     out.close()
+
+
+@cli.command()
+@click.option('--out_dir', type=click.STRING,
+              default='',
+              help='Directory to put all outfiles. '
+                   'Default: <current working directory>')
+@click.option('--genome', type=click.STRING,
+              default='hg38',
+              help='Genome used for alignment and analysis. '
+                   'Default: hg38')
+@click.option('--noadap-bs2params', 'noadap_bs2_params', type=click.STRING,
+              default='-m 3 -f bam',
+              help='Parameters passed to BS Seeker 2 for alignment of reads '
+                   'without adapter contamination. '
+                   'Default: -m 3 -f bam')
+@click.option('--adaptrim-bs2params', 'adaptrim_bs2_params', type=click.STRING,
+              default='-m 2 -f bam',
+              help='Parameters passed to BS Seeker 2 for alignment of reads '
+                   'with adapter contamination trimmed out. '
+                   'Default: -m 2 -f bam')
+@click.option('--methtype', type=click.STRING,
+              default='CG',
+              help='Type of methylation that the Percent Methylation bed files '
+                   'contain. Choices are: C, CG, CH, CHG, or CHH. Default: CG')
+@click.option('--strand', type=click.STRING,
+              default='both',
+              help='Strand that the Percent Methylation bed files contain '
+                   'information about. Choices are: positive, negative, or '
+                   'both. Default: both')
+@click.option('--max_dup_reads', type=click.INT,
+              default=1,
+              help='Maximum number of duplicate reads allowed to inform each '
+                   'C in the Percent Methylation bed files. Default: 1')
+@click.option('--threads', type=click.INT,
+              default=NUM_CPUS,
+              help='Number of threads used when multiprocessing. '
+                   'Default: Number of system CPUs')
+@click.option('--working_dir', type=click.STRING,
+              default='',
+              help='Working directory where temp files are written and read. '
+                   'Default: <EMPTY> (Uses tempfile.mkdtemp() to define a '
+                   'temperary working directory)')
+@click.option('--infoyaml', type=click.STRING,
+              default='info.yaml',
+              help='Yaml file which contains information which could change '
+                   'based on experiment. Read README.md to modify the '
+                   'default or create your own. '
+                   'Default: info.yaml')
+@click.argument('in_fastq', type=click.STRING)
+@click.argument('out_prefix', type=click.STRING)
+def alignpe(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
+            adaptrim_bs2_params, methtype, strand, max_dup_reads, threads,
+            working_dir, infoyaml):
+    """
+    Does NOTHING at the moment.
+
+    Aligns FASTQ to create BAM permeth BED files.
+
+    Main pipeline for converting raw FASTQ files (from Illumina sequenced
+    WGBS samples) into SAM and Percentage Methylation BED format (PerMeth).
+
+    \b
+    Required arguments:
+    IN_FASTQ        Input FASTQ file which will be processed by the pipeline
+    OUT_PREFIX   Prefix of all output files
+                 This should be short string, not a full path.
+                      Ex:  test
+                      NOT: test/test
+                 If you want to output in a directory other than the current
+                 working directory, use Option: out_dir.
+    """
+    # if working_dir == '':
+    #     workingdir = tempfile.mkdtemp()
+    # else:
+    #     if not os.path.exists(working_dir):
+    #         os.makedirs(working_dir)
+    #     workingdir = working_dir
+    # #Load data
+    # if infoyaml == 'info.yaml':
+    #     infoyaml = resource_filename(wgbs_tools.__name__, '../info.yaml')
+    # stream = file(infoyaml, 'r')
+    # info_dict = yaml.safe_load(stream)
+    # bs2_path = info_dict['bs2_path']
+    # index = info_dict[genome]['index']
+    # fasta = info_dict[genome]['fasta']
+    # chroms = info_dict[genome]['chroms']
+    # adapter = info_dict['adapter']
+    #
+    # #Name temp files
+    # temp_prefix = os.path.join(workingdir, out_prefix)
+    # qualfil_fastq = '{}_filtered.fq.gz'.format(temp_prefix)
+    # noadap_fq = '{}_noadap.fq.gz'.format(temp_prefix)
+    # adaptrim_fq = '{}_trimmed.fq.gz'.format(temp_prefix)
+    # noadap_bam = '{}_noadap.bam'.format(temp_prefix)
+    # adaptrim_bam = '{}_adaptrim.bam'.format(temp_prefix)
+    # noadap_sorted = '{}_noadap_sorted'.format(temp_prefix)
+    # adaptrim_sorted = '{}_adaptrim_sorted'.format(temp_prefix)
+    #
+    # #Create output directory and file names that go there
+    # if out_dir != '':
+    #     if not os.path.exists(out_dir):
+    #         os.makedirs(out_dir)
+    # full_bam = os.path.join(out_dir, '{}.bam'.format(out_prefix))
+    # bed_dir = os.path.join(out_dir, 'permethbed_{}'.format(out_prefix))
+    # if not os.path.exists(bed_dir):
+    #     os.makedirs(bed_dir)
+    # bed_prefix = os.path.join(bed_dir, '{}_'.format(out_prefix))
+    # conv_eff = os.path.join(out_dir, '{}.bam'.format(out_prefix))
+    #
+    # #Filter fastq file
+    # logging.info('Filtering out quality failed reads from fastq file')
+    # fastqtools.qual_filter_fastq(in_fastq, qualfil_fastq)
+    #
+    # #Remove adapter contamination from reads
+    # logging.info('Removing adapter contamination and split fastq files')
+    # fastqtools.adapter_remove(qualfil_fastq, noadap_fq, adaptrim_fq, adapter)
+    #
+    # #Align to genome
+    # logging.info('Aligning reads without adapter contamination to {}'
+    #              .format(genome))
+    # noadap_bs2_params = '--bt-p {} {}'.format(threads, noadap_bs2_params)
+    # bsseeker.align_bs2(bs2_path, noadap_bs2_params, fasta, index, noadap_fq,
+    #                    noadap_bam)
+    # logging.info('Aligning reads that had adapter contamination trimmed out '
+    #              'to {}'.format(genome))
+    # adaptrim_bs2_params = '--bt-p {} {}'.format(threads, adaptrim_bs2_params)
+    # bsseeker.align_bs2(bs2_path, adaptrim_bs2_params, fasta, index,
+    #                    adaptrim_fq, adaptrim_bam)
+    #
+    # #Sort bam files
+    # command = 'samtools sort -@ {} {} {}'\
+    #     .format(threads, noadap_bam, noadap_sorted)
+    # logging.info(command)
+    # subprocess.check_call(command, shell=True)
+    # command = 'samtools sort -@ {} {} {}'\
+    #     .format(threads, adaptrim_bam, adaptrim_sorted)
+    # logging.info(command)
+    # subprocess.check_call(command, shell=True)
+    #
+    # #Merge bam files
+    # command = 'samtools merge -@ {} {} {}.bam {}.bam'\
+    #     .format(threads, full_bam, noadap_sorted, adaptrim_sorted)
+    # logging.info(command)
+    # subprocess.check_call(command, shell=True)
+    #
+    # #Index full bam file
+    # command = 'samtools index {}'.format(full_bam)
+    # logging.info(command)
+    # subprocess.check_call(command, shell=True)
+    #
+    # #Convert sam to permeth bed files (percent methylation bed files)
+    # #This also only prints CpGs on chromosomes in ranges defined in the yaml
+    # samutils.bam_to_permeth(full_bam, out_prefix, bed_prefix, genome,
+    #                         methtype, strand, max_dup_reads, chroms, threads)
+    #
+    # #Determine conversion efficiency of the experiment if chrM is in chroms
+    # if 'chrM' in chroms:
+    #     chrM_bed = 'chrM.bed.gz'.format(bed_prefix)
+    #     conv_eff_dict = permethbed.bed_meth_stats(chrM_bed)
+    #     ce = open(conv_eff, 'wb')
+    #     header_line = 'conv_eff\tmeth\ttotal\tcpg_count\n'
+    #     ce.write(header_line)
+    #     eff = 1 - conv_eff_dict['perc']
+    #     info_line = '{}\t{}\t{}\t{}\n'\
+    #         .format(eff, conv_eff_dict['meth'], conv_eff_dict['total'],
+    #                 conv_eff_dict['cpg'])
+    #     ce.write(info_line)
+    # else:
+    #     logging.warning('Conversion efficency was not calculated because '
+    #                     'chrM is not one of the designated chromosomes.')
+    # shutil.rmtree(workingdir)
+
+
+@cli.command()
+@click.option('--out_dir', type=click.STRING,
+              default='',
+              help='Directory to put all outfiles. '
+                   'Default: <current working directory>')
+@click.option('--threads', type=click.INT,
+              default=NUM_CPUS,
+              help='Number of threads used when multiprocessing. '
+                   'Default: Number of system CPUs')
+@click.option('--infoyaml', type=click.STRING,
+              default='info.yaml',
+              help='Yaml file which contains information which could change '
+                   'based on experiment. Read README.md to modify the '
+                   'default or create your own. '
+                   'Default: info.yaml')
+@click.option('--chew', 'chew_length', type=click.INT,
+              default=10,
+              help='Number of bases to removed off of the end of each read. '
+                   'Default: 10')
+@click.option('--min-read', 'min_seqlength', type=click.INT,
+              default=35,
+              help='Minimum read length of reads after adapter trimming and '
+                   'chew. If the read is less than this lenght, it is not '
+                   'included in the output. Default: 35')
+@click.argument('in_fastq', type=click.STRING)
+@click.argument('out_prefix', type=click.STRING)
+def filter_fq(in_fastq, out_prefix, out_dir, infoyaml, chew_length,
+              min_seqlength):
+    """
+    Quality filters and adapter trims FASTQ file.
+
+    \b
+    Takes in a single FASTQ file and outputs two different FASTQ files:
+      1) *trimmed.fq.gz Contains reads that had adapter sequence detected and
+                        have been trimmed out. Then, the sequence was chewed
+                        back another 10 bp.
+      1) *noadap.fq.gz  Contains reads that had no adapter sequence detected.
+
+    \b
+    Required arguments:
+    IN_FASTQ        Input FASTQ file which will be processed by the pipeline
+    OUT_PREFIX   Prefix of all output files
+                 This should be short string, not a full path.
+                      Ex:  test
+                      NOT: test/test
+                 If you want to output in a directory other than the current
+                 working directory, use Option: out_dir.
+    """
+    #Load data
+    if infoyaml == 'info.yaml':
+        infoyaml = resource_filename(wgbs_tools.__name__, '../info.yaml')
+    stream = file(infoyaml, 'r')
+    info_dict = yaml.safe_load(stream)
+    adapter = info_dict['adapter']
+
+    #Name files
+    qualfil_fastq = '{}_filtered.fq.gz'.format(out_prefix)
+    noadap_fq = '{}_noadap.fq.gz'.format(out_prefix)
+    adaptrim_fq = '{}_trimmed.fq.gz'.format(out_prefix)
+
+    #Create output directory
+    if out_dir != '':
+        if not os.path.exists(out_dir):
+            os.makedirs(out_dir)
+
+    #Filter fastq file
+    logging.info('Filtering out quality failed reads from fastq file')
+    fastqtools.qual_filter_fastq(in_fastq, qualfil_fastq)
+
+    #Remove adapter contamination from reads
+    logging.info('Removing adapter contamination and split fastq files')
+    fastqtools.adapter_remove(qualfil_fastq, noadap_fq, adaptrim_fq, adapter,
+                              chew_length, min_seqlength)
 

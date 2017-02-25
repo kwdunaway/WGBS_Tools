@@ -13,12 +13,6 @@ def test_bowtie():
     assert utilities.which('bowtie'), 'Could not find bowtie in path.'
 
 
-# def test_bsseeker2(bs2_path):
-#     """Makes sure BS-Seeker2 is in path as defined by info.yaml"""
-#     assert os.path.isfile(bs2_path), \
-#         'Could not find BS-Seeker2 at {}. If this is an incorrect location, ' \
-#         'Please change info.yaml accordingly.'.format(bs2_path)
-
 def test_bsseeker2(bs2_path):
     """Makes sure BS-Seeker2 is in path as defined by info.yaml"""
     assert utilities.which(bs2_path), \
