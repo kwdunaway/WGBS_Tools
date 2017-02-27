@@ -15,6 +15,7 @@ import logging
 logger = logging.getLogger(__name__)
 from pkg_resources import resource_filename
 import wgbs_tools
+from pybedtools import BedTool
 
 from wgbs_tools import fastqtools
 from wgbs_tools import bsseeker
@@ -538,7 +539,7 @@ def pm2bg(in_prefix, out_prefix, gz):
                    'if you have multiple file types in a folder but only want '
                    'to adjust one kind at a time. Default: None')
 @click.argument('in_prefix', type=click.STRING)
-def fixdmrs(in_prefix, suffix):
+def ll_fixdmrs(in_prefix, suffix):
     """
     Fixes all single line DMR files in a folder.
 
@@ -576,7 +577,6 @@ def fixdmrs(in_prefix, suffix):
             subprocess.check_call(command, shell=True)
             command = 'mv {} {}'.format(out_file_name, in_file_name)
             subprocess.check_call(command, shell=True)
-
 
 
 @cli.command()
@@ -804,6 +804,14 @@ def alignpe(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
 
 
 @cli.command()
+@click.option('--for-adap', 'for_adap', type=click.STRING,
+              default='AGATCGGAAG',
+              help='Beginning sequence of forward adapters. Default: '
+                   'AGATCGGAAG')
+@click.option('--rev-adap', 'rev_adap', type=click.STRING,
+              default='AGATCGGAAG',
+              help='Beginning sequence of forward adapters. Default: '
+                   'AGATCGGAAG')
 @click.option('--out_dir', type=click.STRING,
               default='',
               help='Directory to put all outfiles. '
@@ -812,12 +820,6 @@ def alignpe(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
               default=NUM_CPUS,
               help='Number of threads used when multiprocessing. '
                    'Default: Number of system CPUs')
-@click.option('--infoyaml', type=click.STRING,
-              default='info.yaml',
-              help='Yaml file which contains information which could change '
-                   'based on experiment. Read README.md to modify the '
-                   'default or create your own. '
-                   'Default: info.yaml')
 @click.option('--chew', 'chew_length', type=click.INT,
               default=10,
               help='Number of bases to removed off of the end of each read. '
@@ -829,51 +831,87 @@ def alignpe(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
                    'included in the output. Default: 35')
 @click.argument('in_fastq', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
-def filter_fq(in_fastq, out_prefix, out_dir, infoyaml, chew_length,
-              min_seqlength):
+def filter_pefq(in_for_fq, in_rev_fq, out_prefix, for_adap, rev_adap, out_dir,
+                chew_length, min_seqlength):
     """
-    Quality filters and adapter trims FASTQ file.
+    Filters and trims PE FASTQ files.
 
     \b
-    Takes in a single FASTQ file and outputs two different FASTQ files:
-      1) *trimmed.fq.gz Contains reads that had adapter sequence detected and
-                        have been trimmed out. Then, the sequence was chewed
-                        back another 10 bp.
-      1) *noadap.fq.gz  Contains reads that had no adapter sequence detected.
+    Quality filters and adapter trims a pair of paired-end FASTQ files. Takes in
+    two FASTQ file and outputs four different FASTQ files:
+      1) *_F_trimmed.fq.gz Contains reads that had adapter sequence detected and
+                           have been trimmed out. Then, the sequence was chewed
+                           back another 10 bp. Forward reads.
+      2) *_F_noadap.fq.gz  Contains reads that had no adapter sequence detected.
+                           Forward reads.
+      3) *_R_trimmed.fq.gz Contains reads that had adapter sequence detected and
+                           have been trimmed out. Then, the sequence was chewed
+                           back another 10 bp. Reverse reads.
+      4) *_R_noadap.fq.gz  Contains reads that had no adapter sequence detected.
+                           Reverse reads.
 
     \b
     Required arguments:
-    IN_FASTQ        Input FASTQ file which will be processed by the pipeline
-    OUT_PREFIX   Prefix of all output files
-                 This should be short string, not a full path.
-                      Ex:  test
-                      NOT: test/test
-                 If you want to output in a directory other than the current
-                 working directory, use Option: out_dir.
+    IN_FOR_FQ        Input Forward orientation FASTQ file
+    IN_FOR_FQ        Input Reverse orientation FASTQ file
+    OUT_PREFIX       Prefix of the four output files
     """
-    #Load data
-    if infoyaml == 'info.yaml':
-        infoyaml = resource_filename(wgbs_tools.__name__, '../info.yaml')
-    stream = file(infoyaml, 'r')
-    info_dict = yaml.safe_load(stream)
-    adapter = info_dict['adapter']
-
     #Name files
-    qualfil_fastq = '{}_filtered.fq.gz'.format(out_prefix)
-    noadap_fq = '{}_noadap.fq.gz'.format(out_prefix)
-    adaptrim_fq = '{}_trimmed.fq.gz'.format(out_prefix)
+    fnoadap_fq = '{}_F_noadap.fq.gz'.format(out_prefix)
+    fadaptrim_fq = '{}_F_trimmed.fq.gz'.format(out_prefix)
+    rnoadap_fq = '{}_R_noadap.fq.gz'.format(out_prefix)
+    radaptrim_fq = '{}_R_trimmed.fq.gz'.format(out_prefix)
 
     #Create output directory
     if out_dir != '':
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
 
-    #Filter fastq file
-    logging.info('Filtering out quality failed reads from fastq file')
-    fastqtools.qual_filter_fastq(in_fastq, qualfil_fastq)
-
     #Remove adapter contamination from reads
     logging.info('Removing adapter contamination and split fastq files')
-    fastqtools.adapter_remove(qualfil_fastq, noadap_fq, adaptrim_fq, adapter,
-                              chew_length, min_seqlength)
+    fastqtools.pe_adapter_remove(in_for_fq, fnoadap_fq, fadaptrim_fq,
+                                 for_adap, in_rev_fq, rnoadap_fq, radaptrim_fq,
+                                 rev_adap, chew_length, min_seqlength)
 
+
+@cli.command()
+@click.argument('in_bed', type=click.STRING)
+@click.argument('out_table', type=click.STRING)
+def ll_chrcov(in_bed, out_table):
+    """
+    Gets chromosome coverage of bed file.
+
+    Takes in bed file(s) and outputs a table with the chromosome coverage.
+    This just yields the total bases covered. If you want a percentage of the
+    chromsome covered, you need to divide these numbers by the chromosome
+    length.
+
+    \b
+    Required arguments:
+    IN_BED     Bed file(s) that you want to get chromosome coverage for. If
+               you want to input multiple bed files, you must comma separate
+               them. For example:
+               samp1.bed,samp2.bed,samp3.bed
+    OUT_TABLE  File name of the output table. Every line will be a chromosome
+               while each column will represent a sample.
+    """
+    cov_table = {}
+    in_beds = in_bed.split(',')
+    outfile = open(out_table, 'wb')
+    outheader = 'chromosome'
+    for bed_file in in_beds:
+        cov_table[bed_file] = {}
+        bed = BedTool(bed_file)
+        outheader = '{}\t{}'.format(outheader, bed_file)
+        for feature in bed:
+            if feature.chrom in cov_table[bed_file]:
+                cov_table[bed_file][feature.chrom] += feature.end - feature.start
+            else:
+                cov_table[bed_file][feature.chrom] = feature.end - feature.start
+    outfile.write(outheader)
+    for chrom in cov_table[in_beds[0]]:
+        outline = chrom
+        for bed_file in in_beds:
+            outline = '{}\t{}'.format(outline, cov_table[bed_file][chrom])
+        outfile.write(outline)
+    outfile.close()
