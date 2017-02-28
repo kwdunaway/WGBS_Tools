@@ -52,7 +52,10 @@ def chrom_meth(pm_sample, chrom, roi_chrom, mask, meth_dict):
     pm_full = BedTool(permeth_name)
     print(mask)
     print(permeth_name)
-    pm_masked = pm_full - mask
+    if(mask[0].chrom == 'chrNONE'):
+        pm_masked = pm_full
+    else:
+        pm_masked = pm_full - mask
     pm = pm_masked.intersect(roi_chrom, u=True)
     for roi_line in roi_chrom:
         start = int(roi_line.start)
