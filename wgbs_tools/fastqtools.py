@@ -111,7 +111,7 @@ def adapter_remove(in_fastq, noadap_fq, adaptrim_fq, adap_seq, chew_length=10,
 
 def pe_adapter_remove(fin_fastq, fnoadap_fq, fadaptrim_fq, fadap_seq,
                       rin_fastq, rnoadap_fq, radaptrim_fq, radap_seq,
-                      chew_length=10, min_seqlength=35, threads):
+                      chew_length, min_seqlength, threads):
     """
     Separates fastq files for those with and without adapter sequence.
 
