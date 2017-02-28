@@ -189,7 +189,7 @@ def pe_adapter_remove(fin_fastq, fnoadap_fq, fadaptrim_fq, fadap_seq,
 
                 pattern = re.compile('^@.* [^:]*:Y:[^:]*:')
                 if pattern.match(for_header) or pattern.match(rev_header):
-                    # Nothing
+                    print('Bad read: {}'.format(for_header))
                 elif cutlength == len(for_seq):
                     fnoadap_outfile.write(for_header)
                     fnoadap_outfile.write('{}\n'.format(for_seq[:-chew_length]))
