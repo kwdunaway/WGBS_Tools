@@ -261,7 +261,8 @@ def roi(input_tsv, out_table, roi_file, mask, min_read_count, min_cpg_count,
     in_sample_list = []
     with open(input_tsv, 'r') as infile:
         for line in infile:
-            line = line[:-1]
+            if line.endswith('\n') or line.endswith('\r'):
+                line = line[:-1]
             in_bed_prefixes.append(line.split('\t')[1])
             in_sample_list.append(line.split('\t')[0])
     if min_sample_coverage == -1:
