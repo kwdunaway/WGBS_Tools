@@ -50,6 +50,8 @@ def chrom_meth(pm_sample, chrom, roi_chrom, mask, meth_dict):
         permeth_name = '{}{}.bed.gz'.format(pm_sample, chrom)
     logging.info('Processing {}.'.format(permeth_name))
     pm_full = BedTool(permeth_name)
+    print(pm_full)
+    print(mask)
     pm_masked = pm_full - mask
     pm = pm_masked.intersect(roi_chrom, u=True)
     for roi_line in roi_chrom:
