@@ -50,8 +50,8 @@ def chrom_meth(pm_sample, chrom, roi_chrom, mask, meth_dict):
         permeth_name = '{}{}.bed.gz'.format(pm_sample, chrom)
     logging.info('Processing {}.'.format(permeth_name))
     pm_full = BedTool(permeth_name)
-    print(pm_full)
     print(mask)
+    print(permeth_name)
     pm_masked = pm_full - mask
     pm = pm_masked.intersect(roi_chrom, u=True)
     for roi_line in roi_chrom:
@@ -172,7 +172,7 @@ def roi_meth(in_bed_prefixes, in_sample_list, out_table, mask_file, roi_file,
                     total = meth_dict[start][end][pm_sample]['total']
                     cpg = meth_dict[start][end][pm_sample]['cpg']
                     if total >= min_read_count and cpg >= min_cpg_count:
-                        print('meth:{}\ttotal:{}'.format(meth, total))
+                        # print('meth:{}\ttotal:{}'.format(meth, total))
                         meth_perc = float(meth)/float(total)
                         print_line = '{0}\t{1:.3f}'.format(print_line, meth_perc)
                         file_print_count+=1
