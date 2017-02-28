@@ -216,68 +216,68 @@ def pe_adapter_remove(fin_fastq, fnoadap_fq, fadaptrim_fq, fadap_seq,
     ftrimmed_outfile.close()
     rnoadap_outfile.close()
     rtrimmed_outfile.close()
-
-
-    import time
-
-    fn = 'c:/temp/temp.txt'
-
-    def worker(arg, q):
-        '''stupidly simulates long running process'''
-        start = time.clock()
-        s = 'this is a test'
-        txt = s
-        for i in xrange(200000):
-            txt += s
-        done = time.clock() - start
-        with open(fn, 'rb') as f:
-            size = len(f.read())
-        res = 'Process' + str(arg), str(size), done
-        q.put(res)
-        return res
-
-    def listener(q):
-        '''listens for messages on the q, writes to file. '''
-
-        f = open(fn, 'wb')
-        while 1:
-            m = q.get()
-            if m == 'kill':
-                f.write('killed')
-                break
-            f.write(str(m) + '\n')
-            f.flush()
-        f.close()
-
-    def main():
-        # must use Manager queue here, or will not work
-        manager = multiprocessing.Manager()
-        q = manager.Queue()
-        pool = multiprocessing.Pool(multiprocessing.cpu_count() + 2)
-
-        # put listener to work first
-        watcher = pool.apply_async(listener, (q,))
-
-        # fire off workers
-        jobs = []
-        for i in range(80):
-            job = pool.apply_async(worker, (i, q))
-            jobs.append(job)
-
-        # collect results from the workers through the pool result queue
-        for job in jobs:
-            job.get()
-
-        # now we are done, kill the listener
-        q.put('kill')
-        pool.close()
-
-        proc_list = list(in_bed_prefixes)
-        def worker():
-            while proc_list:
-                pm_prefix = proc_list.pop()
-                chrom_meth(pm_prefix, chrom, roi_chrom, mask, meth_dict)
-        threads = [Thread(target=worker) for i in range(thread_count)]
-        [t.start() for t in threads]
-        [t.join() for t in threads]
-
+    #
+    #
+    # import time
+    #
+    # fn = 'c:/temp/temp.txt'
+    #
+    # def worker(arg, q):
+    #     '''stupidly simulates long running process'''
+    #     start = time.clock()
+    #     s = 'this is a test'
+    #     txt = s
+    #     for i in xrange(200000):
+    #         txt += s
+    #     done = time.clock() - start
+    #     with open(fn, 'rb') as f:
+    #         size = len(f.read())
+    #     res = 'Process' + str(arg), str(size), done
+    #     q.put(res)
+    #     return res
+    #
+    # def listener(q):
+    #     '''listens for messages on the q, writes to file. '''
+    #
+    #     f = open(fn, 'wb')
+    #     while 1:
+    #         m = q.get()
+    #         if m == 'kill':
+    #             f.write('killed')
+    #             break
+    #         f.write(str(m) + '\n')
+    #         f.flush()
+    #     f.close()
+    #
+    # def main():
+    #     # must use Manager queue here, or will not work
+    #     manager = multiprocessing.Manager()
+    #     q = manager.Queue()
+    #     pool = multiprocessing.Pool(multiprocessing.cpu_count() + 2)
+    #
+    #     # put listener to work first
+    #     watcher = pool.apply_async(listener, (q,))
+    #
+    #     # fire off workers
+    #     jobs = []
+    #     for i in range(80):
+    #         job = pool.apply_async(worker, (i, q))
+    #         jobs.append(job)
+    #
+    #     # collect results from the workers through the pool result queue
+    #     for job in jobs:
+    #         job.get()
+    #
+    #     # now we are done, kill the listener
+    #     q.put('kill')
+    #     pool.close()
+    #
+    #     proc_list = list(in_bed_prefixes)
+    #     def worker():
+    #         while proc_list:
+    #             pm_prefix = proc_list.pop()
+    #             chrom_meth(pm_prefix, chrom, roi_chrom, mask, meth_dict)
+    #     threads = [Thread(target=worker) for i in range(thread_count)]
+    #     [t.start() for t in threads]
+    #     [t.join() for t in threads]
+    #
