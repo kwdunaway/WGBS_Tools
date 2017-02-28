@@ -560,10 +560,14 @@ def ll_fixdmrs(in_prefix, suffix):
         processed = 'no'
         with open(in_file_name, 'r') as in_file:
             try:
+                logging.warning('{} does not have header line. Skipping...'
+                                .format(in_file_name))
                 header = next(in_file)
             except:
                 continue
             try:
+                logging.warning('{} does not have a second line. Skipping...'
+                                .format(in_file_name))
                 firstline = next(in_file)
             except:
                 continue
