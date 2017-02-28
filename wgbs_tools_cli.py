@@ -840,7 +840,8 @@ def alignpe(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
               help='Minimum read length of reads after adapter trimming and '
                    'chew. If the read is less than this lenght, it is not '
                    'included in the output. Default: 35')
-@click.argument('in_fastq', type=click.STRING)
+@click.argument('in_for_fq', type=click.STRING)
+@click.argument('in_rev_fq', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
 def filter_pefq(in_for_fq, in_rev_fq, out_prefix, for_adap, rev_adap, out_dir,
                 chew_length, min_seqlength):
