@@ -50,8 +50,6 @@ def chrom_meth(pm_sample, chrom, roi_chrom, mask, meth_dict):
         permeth_name = '{}{}.bed.gz'.format(pm_sample, chrom)
     logging.info('Processing {}.'.format(permeth_name))
     pm_full = BedTool(permeth_name)
-    print(mask)
-    print(permeth_name)
     if(mask[0].chrom == 'chrNONE'):
         pm_masked = pm_full
     else:
