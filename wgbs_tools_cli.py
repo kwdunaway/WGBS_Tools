@@ -559,8 +559,14 @@ def ll_fixdmrs(in_prefix, suffix):
         out_file_name = os.path.join(workingdir, 'temp_{}'.format(suffix))
         processed = 'no'
         with open(in_file_name, 'r') as in_file:
-            header = next(in_file)
-            firstline = next(in_file)
+            try:
+                header = next(in_file)
+            except:
+                continue
+            try:
+                firstline = next(in_file)
+            except:
+                continue
             if len(firstline.split('\t')) == 1:
                 print('Processing: {}'.format(in_file_name))
                 firstline = firstline[:-1]
