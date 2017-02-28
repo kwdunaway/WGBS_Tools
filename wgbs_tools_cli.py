@@ -844,7 +844,7 @@ def alignpe(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
 @click.argument('in_rev_fq', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
 def filter_pefq(in_for_fq, in_rev_fq, out_prefix, for_adap, rev_adap, out_dir,
-                chew_length, min_seqlength):
+                threads, chew_length, min_seqlength):
     """
     Filters and trims PE FASTQ files.
 
@@ -883,7 +883,7 @@ def filter_pefq(in_for_fq, in_rev_fq, out_prefix, for_adap, rev_adap, out_dir,
     logging.info('Removing adapter contamination and split fastq files')
     fastqtools.pe_adapter_remove(in_for_fq, fnoadap_fq, fadaptrim_fq,
                                  for_adap, in_rev_fq, rnoadap_fq, radaptrim_fq,
-                                 rev_adap, chew_length, min_seqlength)
+                                 rev_adap, chew_length, min_seqlength, threads)
 
 
 @cli.command()
