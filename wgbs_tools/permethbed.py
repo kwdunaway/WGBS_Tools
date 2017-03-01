@@ -148,7 +148,7 @@ def roi_meth(in_bed_prefixes, in_sample_list, out_table, mask_file, roi_file,
     # Loop through, gather information, and print each chrom info
     for chrom in chrom_names:
         # Create methylation dictionary for chromosomal ROI
-        roi_chrom = roi.all_hits(BedTool([(chrom, 0, 9999999)])[0])
+        roi_chrom = roi.all_hits(BedTool([(chrom, 0, 999999999)])[0])
         meth_dict =  utilities.nested_dict(4, str)
         for feature in roi_chrom:
             meth_dict[feature.start][feature.end]['name'] = feature.name
