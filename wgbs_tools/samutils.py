@@ -74,6 +74,7 @@ def chr_bam_to_permeth(in_bam, out_bed, bed_prefix, genome, meth_type,
     prevstart = 0
     prevstrand = '+'
     dupcount = 1
+    prevmpos = 0
 
     # Create compressed outfile and write header line
     outfile = gzip.open(out_bed, 'wb')
@@ -86,6 +87,10 @@ def chr_bam_to_permeth(in_bam, out_bed, bed_prefix, genome, meth_type,
     for read in samfile.fetch(chrom):
         start = read.reference_start
         methstring = read.get_tag('XM')
+        mpos = read.mpos
+        if mpos > read.reference_start:
+            methlen = mpos - read.reference_start
+            methstring = methstring[:-methlen]
         strand = read.get_tag('XO')[0]
         if strand == '+':
             strandmult = 1
@@ -99,7 +104,7 @@ def chr_bam_to_permeth(in_bam, out_bed, bed_prefix, genome, meth_type,
         if strand not in analyzed_strands:
             continue
         # If duplicate line, take information until max_dup_reads passed
-        if prevstart == start and prevstrand == strand:
+        if prevstart == start and prevstrand == strand and prevmpos == mpos:
             dupcount += 1
             if dupcount > max_dup_reads:
                 continue
@@ -107,6 +112,7 @@ def chr_bam_to_permeth(in_bam, out_bed, bed_prefix, genome, meth_type,
             dupcount = 1
             prevstart = start
             prevstrand = strand
+            prevmpos = mpos
 
         # Pulls out methylation information and adds it to methylation dict
         for search_char in search_chars:
