@@ -220,8 +220,8 @@ def pe_adapter_remove(fin_fastq, fnoadap_fq, fadaptrim_fq, fadap_seq,
                 rtrimmed_outfile.write('{}\n'.format(rev_qual[:cutlength]))
     # with open(fin_fastq, 'r') as for_file:
     #     with open(rin_fastq, 'r') as rev_file:
-    fin_fastq.close()
-    rin_fastq.close()
+    for_file.close()
+    rev_file.close()
     fnoadap_outfile.close()
     ftrimmed_outfile.close()
     rnoadap_outfile.close()
