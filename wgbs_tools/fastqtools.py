@@ -161,57 +161,67 @@ def pe_adapter_remove(fin_fastq, fnoadap_fq, fadaptrim_fq, fadap_seq,
         rtrimmed_outfile = gzip.open(radaptrim_fq, 'wb')
     else:
         rtrimmed_outfile = open(radaptrim_fq, 'wb')
-    with open(fin_fastq, 'r') as for_file:
-        with open(rin_fastq, 'r') as rev_file:
-            for for_header in for_file:
-                # Get forward read information
-                for_seq = next(for_file)
-                for_seq = for_seq[:-1]
-                for_third = next(for_file)
-                for_qual = next(for_file)
-                for_qual = for_qual[:-1]
-                for_seq_trimmed = for_seq.split(fadap_seq)
 
-                # Get reverse read information
-                rev_header = next(rev_file)
-                rev_seq = next(rev_file)
-                rev_seq = rev_seq[:-1]
-                rev_third = next(rev_file)
-                rev_qual = next(rev_file)
-                rev_qual = rev_qual[:-1]
-                rev_seq_trimmed = rev_seq.split(radap_seq)
+    if fin_fastq.endswith('.gz'):
+        for_file = gzip.open(fin_fastq, 'r')
+    else:
+        for_file= open(fin_fastq, 'r')
+    if rin_fastq.endswith('.gz'):
+        rev_file = gzip.open(rin_fastq, 'r')
+    else:
+        rev_file= open(rin_fastq, 'r')
 
+    for for_header in for_file:
+        # Get forward read information
+        for_seq = next(for_file)
+        for_seq = for_seq[:-1]
+        for_third = next(for_file)
+        for_qual = next(for_file)
+        for_qual = for_qual[:-1]
+        for_seq_trimmed = for_seq.split(fadap_seq)
 
+        # Get reverse read information
+        rev_header = next(rev_file)
+        rev_seq = next(rev_file)
+        rev_seq = rev_seq[:-1]
+        rev_third = next(rev_file)
+        rev_qual = next(rev_file)
+        rev_qual = rev_qual[:-1]
+        rev_seq_trimmed = rev_seq.split(radap_seq)
 
-                cutlength = len(for_seq_trimmed[0])
-                if len(rev_seq_trimmed[0]) < cutlength:
-                    cutlength = len(rev_seq_trimmed[0])
+        cutlength = len(for_seq_trimmed[0])
+        if len(rev_seq_trimmed[0]) < cutlength:
+            cutlength = len(rev_seq_trimmed[0])
 
-                pattern = re.compile('^@.* [^:]*:Y:[^:]*:')
-                if pattern.match(for_header) or pattern.match(rev_header):
-                    print('Bad read: {}'.format(for_header))
-                elif cutlength == len(for_seq):
-                    fnoadap_outfile.write(for_header)
-                    fnoadap_outfile.write('{}\n'.format(for_seq[:-chew_length]))
-                    fnoadap_outfile.write(for_third)
-                    fnoadap_outfile.write('{}\n'.format(for_qual[:-chew_length]))
-                    rnoadap_outfile.write(rev_header)
-                    rnoadap_outfile.write('{}\n'.format(rev_seq[:-chew_length]))
-                    rnoadap_outfile.write(rev_third)
-                    rnoadap_outfile.write('{}\n'.format(rev_qual[:-chew_length]))
-                else:
-                    cutlength -= chew_length
-                    if cutlength >= min_seqlength:
-                        for_trimmed_seq = for_seq[:cutlength]
-                        ftrimmed_outfile.write(for_header)
-                        ftrimmed_outfile.write('{}\n'.format(for_trimmed_seq))
-                        ftrimmed_outfile.write(for_third)
-                        ftrimmed_outfile.write('{}\n'.format(for_qual[:cutlength]))
-                        rev_trimmed_seq = rev_seq[:cutlength]
-                        rtrimmed_outfile.write(rev_header)
-                        rtrimmed_outfile.write('{}\n'.format(rev_trimmed_seq))
-                        rtrimmed_outfile.write(rev_third)
-                        rtrimmed_outfile.write('{}\n'.format(rev_qual[:cutlength]))
+        pattern = re.compile('^@.* [^:]*:Y:[^:]*:')
+        if pattern.match(for_header) or pattern.match(rev_header):
+            print('Bad read: {}'.format(for_header))
+        elif cutlength == len(for_seq):
+            fnoadap_outfile.write(for_header)
+            fnoadap_outfile.write('{}\n'.format(for_seq[:-chew_length]))
+            fnoadap_outfile.write(for_third)
+            fnoadap_outfile.write('{}\n'.format(for_qual[:-chew_length]))
+            rnoadap_outfile.write(rev_header)
+            rnoadap_outfile.write('{}\n'.format(rev_seq[:-chew_length]))
+            rnoadap_outfile.write(rev_third)
+            rnoadap_outfile.write('{}\n'.format(rev_qual[:-chew_length]))
+        else:
+            cutlength -= chew_length
+            if cutlength >= min_seqlength:
+                for_trimmed_seq = for_seq[:cutlength]
+                ftrimmed_outfile.write(for_header)
+                ftrimmed_outfile.write('{}\n'.format(for_trimmed_seq))
+                ftrimmed_outfile.write(for_third)
+                ftrimmed_outfile.write('{}\n'.format(for_qual[:cutlength]))
+                rev_trimmed_seq = rev_seq[:cutlength]
+                rtrimmed_outfile.write(rev_header)
+                rtrimmed_outfile.write('{}\n'.format(rev_trimmed_seq))
+                rtrimmed_outfile.write(rev_third)
+                rtrimmed_outfile.write('{}\n'.format(rev_qual[:cutlength]))
+    # with open(fin_fastq, 'r') as for_file:
+    #     with open(rin_fastq, 'r') as rev_file:
+    fin_fastq.close()
+    rin_fastq.close()
     fnoadap_outfile.close()
     ftrimmed_outfile.close()
     rnoadap_outfile.close()
