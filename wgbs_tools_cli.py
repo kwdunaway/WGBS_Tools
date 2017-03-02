@@ -232,11 +232,14 @@ def align(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
                    "and at least one of those samples does not meet the "
                    "minimum read count for the ROI, that ROI is not reported. "
                    "Default: <all samples>")
+@click.option('--debug/--no-debug',
+              default=False,
+              help='Print debug messages. Default: --no-debug')
 @click.argument('input_tsv', type=click.STRING)
 @click.argument('out_table', type=click.STRING)
 @click.argument('roi_file', type=click.STRING)
 def roi(input_tsv, out_table, roi_file, mask, min_read_count, min_cpg_count,
-        min_sample_coverage, raw_data, threads):
+        min_sample_coverage, raw_data, threads, debug):
     """
     Calls methylation over ROIs.
 
@@ -257,6 +260,9 @@ def roi(input_tsv, out_table, roi_file, mask, min_read_count, min_cpg_count,
     ROI_FILE     GTF or BED file indicating the ROI (Regions of Interest).
                  Each ROI will be output as a single line in the OUT_TABLE.
     """
+    if debug:
+        logging.basicConfig(format='%(levelname)s:%(message)s',
+                            level=logging.DEBUG)
     in_bed_prefixes = []
     in_sample_list = []
     with open(input_tsv, 'r') as infile:

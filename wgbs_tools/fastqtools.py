@@ -202,12 +202,12 @@ def pe_adapter_remove(fin_fastq, fnoadap_fq, fadaptrim_fq, fadap_seq,
                 else:
                     cutlength -= chew_length
                     if cutlength >= min_seqlength:
-                        for_trimmed_seq = for_seq[0][:cutlength]
+                        for_trimmed_seq = for_seq[:cutlength]
                         ftrimmed_outfile.write(for_header)
                         ftrimmed_outfile.write('{}\n'.format(for_trimmed_seq))
                         ftrimmed_outfile.write(for_third)
                         ftrimmed_outfile.write('{}\n'.format(for_qual[:cutlength]))
-                        rev_trimmed_seq = rev_seq[0][:cutlength]
+                        rev_trimmed_seq = rev_seq[:cutlength]
                         rtrimmed_outfile.write(rev_header)
                         rtrimmed_outfile.write('{}\n'.format(rev_trimmed_seq))
                         rtrimmed_outfile.write(rev_third)
