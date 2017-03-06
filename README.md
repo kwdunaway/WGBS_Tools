@@ -1,6 +1,6 @@
 # WGBS_Tools
 
-WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfite Sequencing data. It is optimized for easy installation rather than efficiency. Any questions may be directed to Keith Dunaway (kwdunaway@ucdavis.edu).
+WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfite Sequencing data. Any questions may be directed to Keith Dunaway (kwdunaway@ucdavis.edu).
 
 ### Table of Contents
 
@@ -101,13 +101,24 @@ The pm_bed has 7 columns:
 Methylation tables are created as a way to determine the average methylation over a given area. They
 are produced by both the [roi](#roi) and [window](#window) commands. The format for these files are:
 
-bed (pm_bed) format is a custome format to hold base specific methylation information.
-It is based on a 9 column bed format and can be loaded into most genome browsers (like the UCSC browser).
-The pm_bed has 7 columns:
+1. chromosome
+1. start
+1. end
+1. sample 1 methylation %
+1. sample 2 methylation % ... (etc.)
+
+There is also the option for printing the "raw" information. This is useful if you have further
+calculations that you want to do and need read counts rather than a percentage of methylation
+averaged across the region of interest. The format for these files are:
 
 1. chromosome
 1. start
 1. end
+1. sample 1 methylated read count
+1. sample 1 total read count
+1. sample 2 methylated read count
+1. sample 2 total read count ... (etc.)
+
 
 ## <a name="Commands"> Commands </a>
 

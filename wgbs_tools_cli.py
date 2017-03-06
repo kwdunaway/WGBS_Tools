@@ -933,3 +933,112 @@ def ll_chrcov(in_bed, out_table):
             outline = '{}\t{}'.format(outline, cov_table[bed_file][chrom])
         outfile.write(outline)
     outfile.close()
+
+
+@cli.command()
+@click.argument('in_bam', type=click.STRING)
+@click.argument('out_prefix', type=click.STRING)
+def ll_chrcov(in_bam, out_prefix):
+    """
+    Gets chromosome coverage of bed file.
+
+    Takes in bed file(s) and outputs a table with the chromosome coverage.
+    This just yields the total bases covered. If you want a percentage of the
+    chromsome covered, you need to divide these numbers by the chromosome
+    length.
+
+    \b
+    Required arguments:
+    IN_BAM      Bam/Sam file output from BS_Seeker2
+    OUT_PREFIX  Prefix for all Percent Methylation bed file. The suffix will
+                automatically be _(chr#).bed.gz. For example, if you put
+                test as the prefix and are looking at chromosomes chr1, X, fake,
+                it will create the files:
+                test_chr1.bed.gz
+                test_X.bed.gz
+                test_fake.bed.gz
+
+    """
+
+
+
+@cli.command()
+@click.option('--genome', type=click.STRING,
+              default='hg38',
+              help='Genome used for alignment and analysis. '
+                   'Default: hg38')
+@click.option('--methtype', type=click.STRING,
+              default='CG',
+              help='Type of methylation that the Percent Methylation bed files '
+                   'contain. Choices are: C, CG, CH, CHG, or CHH. Default: CG')
+@click.option('--strand', type=click.STRING,
+              default='both',
+              help='Strand that the Percent Methylation bed files contain '
+                   'information about. Choices are: positive, negative, or '
+                   'both. Default: both')
+@click.option('--max_dup_reads', type=click.INT,
+              default=1,
+              help='Maximum number of duplicate reads allowed to inform each '
+                   'C in the Percent Methylation bed files. Default: 1')
+@click.option('--threads', type=click.INT,
+              default=NUM_CPUS,
+              help='Number of threads used when multiprocessing. '
+                   'Default: Number of system CPUs')
+@click.option('--header', 'header_name', type=click.STRING,
+              default='',
+              help='Name in header of bed file. This is useful for loading '
+                   'these files into a genome browser. The name of the track '
+                   'will be {header}_chr#. '
+                   'Default: bed_prefix of lowest directory')
+@click.option('--infoyaml', type=click.STRING,
+              default='info.yaml',
+              help='Yaml file which contains information which could change '
+                   'based on experiment. Read README.md to modify the '
+                   'default or create your own. '
+                   'Default: info.yaml')
+@click.argument('in_bam', type=click.STRING)
+@click.argument('bed_prefix', type=click.STRING)
+def bam2pm(in_bam, bed_prefix, genome, methtype, strand, max_dup_reads, threads,
+           header_name, infoyaml):
+    """
+    Converts BAM to percent methylation BED.
+
+    Converts a BAM file (produced by BS_Seeker2) into a Percentage Methylation
+    BED format (PerMeth).
+
+    \b
+    Required arguments:
+    IN_BAM       Input sorted BAM file.
+                 It should be indexed as well, although this will index the
+                 bam file if an index is not found.
+    BED_PREFIX   Prefix of output percent methylation bed files.
+                 If you want to output in a directory other than the current
+                 working directory, use Option: out_dir.
+    """
+    #Load data
+    if infoyaml == 'info.yaml':
+        infoyaml = resource_filename(wgbs_tools.__name__, '../info.yaml')
+    stream = file(infoyaml, 'r')
+    info_dict = yaml.safe_load(stream)
+    chroms = info_dict[genome]['chroms']
+
+    #Index full bam file if not found
+    indexname = '{}.bai'.format(in_bam)
+    if not os.path.isfile(indexname):
+        command = 'samtools index {}'.format(in_bam)
+        logging.warning('Index not found, running command: {}'.format(command))
+        subprocess.check_call(command, shell=True)
+
+    #Determine header_prefix
+    if header_name == '':
+        bed_dirs = bed_prefix.split('/')
+        header_prefix = bed_dirs[-1]
+    else:
+        header_prefix = header_name
+
+    #Convert sam to permeth bed files (percent methylation bed files)
+    #This also only prints CpGs on chromosomes in ranges defined in the yaml
+    samutils.bam_to_permeth(in_bam, bed_prefix, header_prefix, genome,
+                            methtype, strand, max_dup_reads, chroms, threads)
+
+

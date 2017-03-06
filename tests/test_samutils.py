@@ -37,8 +37,8 @@ def test_bam_to_permeth(test_bam, working_dir, correct_chr1bed,
     strand_type = 'both'
     max_dup_reads = 1
     threads = 1
-    samutils.bam_to_permeth(test_bam, out_prefix, bed_prefix, genome,
-                   meth_type, strand_type, max_dup_reads, chroms, threads)
+    samutils.bam_to_permeth(test_bam, out_prefix, bed_prefix, genome, meth_type,
+                            strand_type, max_dup_reads, chroms, threads)
     out_bed = '{}_chr1.bed.gz'.format(out_prefix)
     with gzip.open(out_bed, 'r') as content_file:
         testcontent = content_file.read()
@@ -54,5 +54,37 @@ def test_bam_to_permeth(test_bam, working_dir, correct_chr1bed,
     with gzip.open(out_bed, 'r') as content_file:
         testcontent = content_file.read()
         assert testcontent == correct_chrNHbed, \
+            'Multiprocess permeth creation not working for empty chromosome ' \
+            'information.'
+
+def test_bam_to_permeth_pe(testpe_bam, working_dir, correctpe_chr1bed,
+                           correctpe_chr2bed, correctpe_chrNHbed):
+    """Tests sam to permethbed conversion of paired end reads"""
+    chroms = {'1': 99999999, '2': 99999999, 'chrNH': 5}
+    bed_prefix = 'test'
+    out_prefix = os.path.join(working_dir, bed_prefix)
+    genome = 'bosTau6'
+    meth_type = 'CG'
+    strand_type = 'both'
+    max_dup_reads = 1
+    threads = 1
+    samutils.bam_to_permeth(testpe_bam, out_prefix, bed_prefix, genome,
+                            meth_type, strand_type, max_dup_reads, chroms,
+                            threads)
+    out_bed = '{}_1.bed.gz'.format(out_prefix)
+    with gzip.open(out_bed, 'r') as content_file:
+        testcontent = content_file.read()
+        assert testcontent == correctpe_chr1bed, \
+            'BAM to Percent Methylation conversion is not working correctly.'
+    out_bed = '{}_2.bed.gz'.format(out_prefix)
+    with gzip.open(out_bed, 'r') as content_file:
+        testcontent = content_file.read()
+        assert testcontent == correctpe_chr2bed, \
+            'BAM to Percent Methylation conversion is not working correctly ' \
+            'for multiprocessing.'
+    out_bed = '{}_chrNH.bed.gz'.format(out_prefix)
+    with gzip.open(out_bed, 'r') as content_file:
+        testcontent = content_file.read()
+        assert testcontent == correctpe_chrNHbed, \
             'Multiprocess permeth creation not working for empty chromosome ' \
             'information.'

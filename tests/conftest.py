@@ -154,6 +154,12 @@ def test_bam():
     return resource_filename(wgbs_tools.__name__, '../tests/data/bam/test.bam')
 
 @pytest.fixture
+def testpe_bam():
+    """Bam file for testing samutils"""
+    return resource_filename(wgbs_tools.__name__,
+                             '../tests/data/bam/test_pe.bam')
+
+@pytest.fixture
 def correct_chr1bed():
     """Correct chr1 percent methylation bed file content for tests in
     test_samtutils"""
@@ -179,6 +185,36 @@ def correct_chrNHbed():
     test_samtutils"""
     path = resource_filename(wgbs_tools.__name__,
                              '../tests/data/bam/correct_chrNH.bed')
+    with open(path, 'r') as content_file:
+        content = content_file.read()
+    return content
+
+@pytest.fixture
+def correctpe_chr1bed():
+    """Correct chr1 percent methylation bed file content for tests in
+    test_samtutils"""
+    path = resource_filename(wgbs_tools.__name__,
+                             '../tests/data/bam/correctpe_1.bed')
+    with open(path, 'r') as content_file:
+        content = content_file.read()
+    return content
+
+@pytest.fixture
+def correctpe_chr2bed():
+    """Correct chr2 percent methylation bed file content for tests in
+    test_samtutils"""
+    path = resource_filename(wgbs_tools.__name__,
+                             '../tests/data/bam/correctpe_2.bed')
+    with open(path, 'r') as content_file:
+        content = content_file.read()
+    return content
+
+@pytest.fixture
+def correctpe_chrNHbed():
+    """Correct chrNH percent methylation bed file content for tests in
+    test_samtutils"""
+    path = resource_filename(wgbs_tools.__name__,
+                             '../tests/data/bam/correctpe_chrNH.bed')
     with open(path, 'r') as content_file:
         content = content_file.read()
     return content

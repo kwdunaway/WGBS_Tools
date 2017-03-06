@@ -84,13 +84,13 @@ def chr_bam_to_permeth(in_bam, out_bed, bed_prefix, genome, meth_type,
 
     # Open bam file and process each read, one at a time
     samfile = pysam.AlignmentFile(in_bam, 'rb')
-    for read in samfile.fetch(chrom):
+    for read in samfile.fetch(str(chrom)):
         start = read.reference_start
         methstring = read.get_tag('XM')
         mpos = read.mpos
         if mpos > read.reference_start:
             methlen = mpos - read.reference_start
-            methstring = methstring[:-methlen]
+            methstring = methstring[0:methlen]
         strand = read.get_tag('XO')[0]
         if strand == '+':
             strandmult = 1
@@ -116,7 +116,6 @@ def chr_bam_to_permeth(in_bam, out_bed, bed_prefix, genome, meth_type,
 
         # Pulls out methylation information and adds it to methylation dict
         for search_char in search_chars:
-            print(methstring, search_char)
             offsets = utilities.find_occurences(methstring, search_char)
             for pos in offsets:
                 basepos = start + pos * strandmult
