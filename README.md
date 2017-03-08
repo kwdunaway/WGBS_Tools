@@ -46,6 +46,7 @@ Also, the following python packages will be installed if not already:
 - pyyaml
 
 ### Instructions:
+
 1. Change directory to WGBS_tools and type the following:
 
    ```
@@ -56,7 +57,7 @@ Also, the following python packages will be installed if not already:
    ```
    pytest tests
    ```
-1. Instructions for how to use the commands are below as well as accessible by typing:
+1. Instructions for how to use the commands are in this manual as well as accessible by typing:
 
    ```
    wgbs_tools --help
@@ -67,6 +68,10 @@ Also, the following python packages will be installed if not already:
    ```
    wgbs_tools align_pe --help
    ```
+
+1. Download your genome's fasta file
+
+
 
 1. The final step is to edit (or create your own) *info.yaml* file. You must add your own genomic information.
 Chromosome lengths for genomes hg38, mm10, and bosTau6 are provided. However, you will still need to edit the
@@ -153,7 +158,9 @@ averaged across the region of interest. The format for these files are:
   add_genome     Adds genome information to info.yaml file.
 
 ### <a name="align"> align </a>
+
 The main alignment pipeline. It takes in a fastq file and outputs the following:
+
 1. Bam containing all of the aligned reads in BS_Seeker format. See [BS-Seeker2](https://github.com/BSSeeker/BSseeker2) for more details.
 1. Log of BS_Seeker2 run which has useful overall information about the sequencing run.
 1. You need to edit the info.yaml with your genome information (see info.yaml)

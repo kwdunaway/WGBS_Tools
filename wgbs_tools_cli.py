@@ -1095,8 +1095,15 @@ def ll_chrcov(in_bed, out_table):
 @click.option('--infoyaml', type=click.STRING,
               default='info.yaml',
               help='Yaml file which will be modified. Default: info.yaml')
+@click.option('--force/--not-force',
+              default=False,
+              help='Forces addition of genomic information without checking '
+                   'to see if index and fasta files exist on system. '
+                   'Default: --not-force')
 @click.argument('genome', type=click.STRING)
-def add_genome(genome):
+@click.argument('index', type=click.STRING)
+@click.argument('fasta', type=click.STRING)
+def add_genome(genome, index, fasta, infoyaml, force):
     """
     Adds genome information to info.yaml file.
 
@@ -1104,23 +1111,39 @@ def add_genome(genome):
 
     \b
     Required arguments:
-    GENOME     UCSC name of genome.
+    GENOME     UCSC name of genome
+    INDEX      Path to BS Seeker2 index
+    FASTA      Location of a fasta file containing all chromosomal sequences.
     """
-    outfile = open(out_table, 'wb')
-    outheader = 'chromosome'
-    for bed_file in in_beds:
-        cov_table[bed_file] = {}
-        bed = BedTool(bed_file)
-        outheader = '{}\t{}'.format(outheader, bed_file)
-        for feature in bed:
-            if feature.chrom in cov_table[bed_file]:
-                cov_table[bed_file][feature.chrom] += feature.end - feature.start
-            else:
-                cov_table[bed_file][feature.chrom] = feature.end - feature.start
-    outfile.write(outheader)
-    for chrom in cov_table[in_beds[0]]:
-        outline = chrom
-        for bed_file in in_beds:
-            outline = '{}\t{}'.format(outline, cov_table[bed_file][chrom])
-        outfile.write(outline)
+    #Checks to see if necessary files exist on system
+    if not force:
+        assert os.path.exists(index), \
+            'Failure: {} does not exist. \nPlease ensure you input the ' \
+            'correct path or use the --force option.'.format(index)
+        assert os.path.exists(fasta), \
+            'Failure: {} does not exist. \nPlease ensure you input the ' \
+            'correct path or use the --force option.'.format(fasta)
+
+    workingdir = tempfile.mkdtemp()
+
+    #Gets chromosome sizes by first fetching them using fetchChromSizes from
+    #  UCSC genome browser web site. Then, parses the resulting file.
+    chrom_sizes = os.path.join(workingdir, 'chroms.txt')
+    fcs = resource_filename(wgbs_tools.__name__, '../external/fetchChromSizes')
+    command = 'sh {} {} > {}'.format(fcs, genome, chrom_sizes)
+    print('Running command: {}'.format(command))
+    subprocess.check_call(command, shell=True)
+
+    # Appends info.yaml file
+    outfile = open(infoyaml, 'wb+')
+    outfile.write('{}:\n'.format(genome))
+    outfile.write('  index: {}\n'.format(index))
+    outfile.write('  fasta: {}\n'.format(fasta))
+    outfile.write('  chroms:\n')
+    with open(chrom_sizes, 'r') as cs_file:
+        for line in cs_file:
+            line_list = line.split('\t')
+            printline = '      {}: {}'.format(line_list[0], line_list[1])
+            outfile.write(printline)
     outfile.close()
+    shutil.rmtree(workingdir)
