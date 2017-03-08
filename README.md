@@ -101,7 +101,7 @@ You can modify the provided *info.yaml* file, or create a new one. Any commands 
 ### <a name="pm_bed"> pm_bed </a>
 
 Percent Methylation bed (pm_bed) files contain base specific methylation information (usually for a single chromosome).
-It is based on a 9 column bed format and can be loaded into most genome browsers (like the UCSC browser):
+It is based on the 9 column bed format and can be loaded into most genome browsers (like the [UCSC browser](http://genome.ucsc.edu/)):
 
 1. chromosome
 1. start of C
