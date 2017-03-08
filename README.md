@@ -94,7 +94,7 @@ The rest of the file contains genome specific information. You can have multiple
 
 **chroms:** Each line after this represents a single chromosome in your genome. (2 spaces preceding)
 
-**chromname: size** Chromosome name (as defined by fasta/bs2index) and then size of chromosome in bp. Each line is a different chromosome. (6 spaces preceding)
+***chromname: size*** Chromosome name (as defined by fasta/bs2index) and then size of chromosome in bp. Each line is a different chromosome. (6 spaces preceding)
 
 ### <a name="pm_bed"> pm_bed </a>
 
