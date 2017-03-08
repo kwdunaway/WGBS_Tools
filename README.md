@@ -76,25 +76,25 @@ Chromosome lengths for genomes hg38, mm10, and bosTau6 are provided. However, yo
 
 ### <a name="infoyaml"> info.yaml </a>
 
-This is a yaml file that contains system and genome specific information. It is separate from the rest of the 
-code so that any user can modify it to work for whatever system and genome they are using.
-
-The first two lines will most likely not need to be modified:
+This is a yaml file that contains system and genome specific information. It is outside of the 
+code so that any user can easily modify it to work for whatever WGBS experiment they desire. The 
+first two lines will most likely not need to be modified:
 
 **adapter:** The adapter sequence for single end reads. This is used to trim reads that have adapter contamination. It may need to be changed if you are not using Illumina sequencing.
 
-**bs2_path:** The path for BS Seeker2 aligner. It is set assuming BS Seeker2 is in PATH. You can change this to point to a specific instance of BS Seeker 2 or in case you do not put it in PATH.
+**bs2_path:** The path for BS Seeker2 aligner. It is set assuming BS Seeker2 is in PATH. You can change this to point to a specific instance of BS Seeker 2 or if you did not put it in PATH.
 
-The rest of the file contains genome specific information. The format is:
+The rest of the file contains genome specific information. You can have multiple genomes represented in the same file, but each genome must have a unique name. The format is:
 
-**genome:** Genome name. This needs to be unique throughout the file.
+**genome:** Genome name. This needs to be unique throughout the *info.yaml* file.
 
 **index:** Path to the BS Seeker2 index for this genome. (2 spaces preceding) 
 
 **fasta:** Location of a single fasta file containing all chromosomal sequences. (2 spaces preceding)
 
-**chroms:** 
+**chroms:** Each line after this represents a single chromosome in your genome. (2 spaces preceding)
 
+**chromname: size** Chromosome name (as defined by fasta/bs2index) and then size of chromosome in bp. Each line is a different chromosome. (6 spaces preceding)
 
 ### <a name="pm_bed"> pm_bed </a>
 
