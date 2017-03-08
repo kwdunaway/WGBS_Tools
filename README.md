@@ -6,7 +6,7 @@ WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfi
 
 1. [Installation](#Installation)
 1. [File Formats](#FileFormats)
-  1. [infoyaml](#info.yaml)
+  1. [info.yaml](#infoyaml)
   1. [pm_bed](#pm_bed)
   1. [meth_table](#meth_table)
 1. [Commands](#Commands)
@@ -87,11 +87,10 @@ The first two lines will most likely not need to be modified:
 
 The rest of the file contains genome specific information. The format is:
 
-  genome:
-  hg38:
-    index: /share/lasallelab/genomes/hg38/BSseek2_refgen/
-    fasta: /share/lasallelab/genomes/hg38/hg38.fa
-    chroms:
+**genome:** Genome name. This needs to be unique throughout the file.
+**index:** Path to the BS Seeker2 index for this genome. (2 spaces 
+**fasta:** Location of a single fasta file containing all chromosomal sequences.
+**chroms:** 
         chr1: 247249719
 
 
