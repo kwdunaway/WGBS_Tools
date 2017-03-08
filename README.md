@@ -1,6 +1,6 @@
 # WGBS_Tools
 
-WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfite Sequencing data. Any questions may be directed to Keith Dunaway (kwdunaway@ucdavis.edu).
+WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfite Sequencing data. Any questions or comments may be directed to Keith Dunaway (kwdunaway@ucdavis.edu). If you find any problems, please create a github issue.
 
 ### Table of Contents
 
@@ -88,10 +88,12 @@ The first two lines will most likely not need to be modified:
 The rest of the file contains genome specific information. The format is:
 
 **genome:** Genome name. This needs to be unique throughout the file.
-**index:** Path to the BS Seeker2 index for this genome. (2 spaces 
-**fasta:** Location of a single fasta file containing all chromosomal sequences.
+
+**index:** Path to the BS Seeker2 index for this genome. (2 spaces preceding) 
+
+**fasta:** Location of a single fasta file containing all chromosomal sequences. (2 spaces preceding)
+
 **chroms:** 
-        chr1: 247249719
 
 
 ### <a name="pm_bed"> pm_bed </a>
