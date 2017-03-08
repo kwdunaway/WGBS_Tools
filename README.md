@@ -82,9 +82,11 @@ code so that any user can modify it to work for whatever system and genome they 
 The first two lines will most likely not need to be modified:
 
 **adapter:** The adapter sequence for single end reads. This is used to trim reads that have adapter contamination. It may need to be changed if you are not using Illumina sequencing.
+
 **bs2_path:** The path for BS Seeker2 aligner. It is set assuming BS Seeker2 is in PATH. You can change this to point to a specific instance of BS Seeker 2 or in case you do not put it in PATH.
 
 The rest of the file contains genome specific information. The format is:
+
   genome:
   hg38:
     index: /share/lasallelab/genomes/hg38/BSseek2_refgen/
