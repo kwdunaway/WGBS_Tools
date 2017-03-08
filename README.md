@@ -92,9 +92,9 @@ The rest of the file contains genome specific information. You can have multiple
 
 **fasta:** Location of a single fasta file containing all chromosomal sequences. (2 spaces preceding)
 
-**chroms:** Each line after this represents a single chromosome in your genome. (2 spaces preceding)
+**chroms:** (2 spaces preceding, nothing after the **:** on this line)
 
-***chromname: size*** Chromosome name (as defined by fasta/bs2index) and then size of chromosome in bp. Each line is a different chromosome. (6 spaces preceding)
+***chromname: size*** Chromosome name (as defined by fasta/bs2index) and then size of chromosome in bp. Each line represents a different chromosome. You don't need every chromosome listed here, just the ones you want analyzed. For instance, there could be unlocalized contig names that you may not want to keep in your analysis. (6 spaces preceding)
 
 ### <a name="pm_bed"> pm_bed </a>
 
