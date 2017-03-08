@@ -1089,3 +1089,38 @@ def ll_chrcov(in_bed, out_table):
             outline = '{}\t{}'.format(outline, cov_table[bed_file][chrom])
         outfile.write(outline)
     outfile.close()
+
+
+@cli.command()
+@click.option('--infoyaml', type=click.STRING,
+              default='info.yaml',
+              help='Yaml file which will be modified. Default: info.yaml')
+@click.argument('genome', type=click.STRING)
+def add_genome(genome):
+    """
+    Adds genome information to info.yaml file.
+
+    Takes in a genome name and appropriate information to info.yaml file.
+
+    \b
+    Required arguments:
+    GENOME     UCSC name of genome.
+    """
+    outfile = open(out_table, 'wb')
+    outheader = 'chromosome'
+    for bed_file in in_beds:
+        cov_table[bed_file] = {}
+        bed = BedTool(bed_file)
+        outheader = '{}\t{}'.format(outheader, bed_file)
+        for feature in bed:
+            if feature.chrom in cov_table[bed_file]:
+                cov_table[bed_file][feature.chrom] += feature.end - feature.start
+            else:
+                cov_table[bed_file][feature.chrom] = feature.end - feature.start
+    outfile.write(outheader)
+    for chrom in cov_table[in_beds[0]]:
+        outline = chrom
+        for bed_file in in_beds:
+            outline = '{}\t{}'.format(outline, cov_table[bed_file][chrom])
+        outfile.write(outline)
+    outfile.close()

@@ -10,6 +10,7 @@ WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfi
   1. [pm_bed](#pm_bed)
   1. [meth_table](#meth_table)
 1. [Commands](#Commands)
+  1. [add_genome](#add_genome)
   1. [align](#align)
   1. [roi](#roi)
   1. [window](#window)
@@ -80,11 +81,15 @@ This is a yaml file that contains system and genome specific information. It is 
 code so that any user can easily modify it to work for whatever WGBS experiment they desire. The 
 first two lines will most likely not need to be modified:
 
-**adapter:** The adapter sequence for single end reads. This is used to trim reads that have adapter contamination. It may need to be changed if you are not using Illumina sequencing.
+**adapter:** The adapter sequence for single end reads. This is used to trim reads that have 
+adapter contamination. It may need to be changed if you are not using Illumina sequencing.
 
-**bs2_path:** The path for BS Seeker2 aligner. It is set assuming BS Seeker2 is in PATH. You can change this to point to a specific instance of BS Seeker 2 or if you did not put it in PATH.
+**bs2_path:** The path for BS Seeker2 aligner. It is set assuming BS Seeker2 is in PATH. 
+You can change this to point to a specific instance of BS Seeker 2 or if you did not put it in PATH.
 
-The rest of the file contains genome specific information. You can have multiple genomes represented in the same file, but each genome must have a unique name. The format is:
+The rest of the file contains genome specific information. You can have multiple genomes represented 
+in the same file, but each genome must have a unique name. In order to add your genome of interest, 
+use the [add_genome](#add_genome) command. The format is:
 
 **genome:** Genome name. This needs to be unique throughout the *info.yaml* file.
 
@@ -94,14 +99,19 @@ The rest of the file contains genome specific information. You can have multiple
 
 **chroms:** (2 spaces preceding, nothing after the **:** on this line)
 
-***chromname: size*** Chromosome name (as defined by fasta/bs2index) and then size of chromosome in bp. Each line represents a different chromosome. You don't need every chromosome listed here, just the ones you want analyzed. For instance, there could be unlocalized contig names that you may not want to keep in your analysis. (6 spaces preceding)
+***chromname: size*** Chromosome name (as defined by fasta/bs2index) and then size of chromosome 
+in bp. Each line represents a different chromosome. You don't need every chromosome listed here, 
+just the ones you want analyzed. For instance, there could be unlocalized contig names that you may 
+not want to keep in your analysis. (6 spaces preceding)
 
-You can modify the provided *info.yaml* file, or create a new one. Any commands that use this can point to a different file using the *--infoyaml* option.
+You can modify the provided *info.yaml* file, or create a new one. Any commands that use this can 
+point to a different file using the *--infoyaml* option.
 
 ### <a name="pm_bed"> pm_bed </a>
 
-Percent Methylation bed (pm_bed) files contain base specific methylation information (usually for a single chromosome).
-It is based on the 9 column bed format and can be loaded into most genome browsers (like the [UCSC browser](http://genome.ucsc.edu/)):
+Percent Methylation bed (pm_bed) files contain base specific methylation information (usually for 
+a single chromosome). It is based on the 9 column bed format and can be loaded into most genome browsers 
+(like the [UCSC browser](http://genome.ucsc.edu/)):
 
 1. chromosome
 1. start of C
@@ -139,6 +149,9 @@ averaged across the region of interest. The format for these files are:
 
 ## <a name="Commands"> Commands </a>
 
+### <a name="add_genome"> add_genome </a>
+  add_genome     Adds genome information to info.yaml file.
+
 ### <a name="align"> align </a>
 The main alignment pipeline. It takes in a fastq file and outputs the following:
 1. Bam containing all of the aligned reads in BS_Seeker format. See [BS-Seeker2](https://github.com/BSSeeker/BSseeker2) for more details.
@@ -160,7 +173,6 @@ The main alignment pipeline. It takes in a fastq file and outputs the following:
 
 ### <a name="pm2dss"> pm2dss </a>
   pm2dss     Converts pm_bed to dss format.
-
 
 ## <a name="VersionHistory"> Version History </a>
 __0.1__:
