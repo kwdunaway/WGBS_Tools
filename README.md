@@ -21,13 +21,14 @@ WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfi
 ## <a name="Installation"> Installation </a>
 
 **Note:** It is recommended that you set up a virtual environment prior
-to installing wgbs_tools. The author uses *venv* and will assume the user
-does the same. Using another virtual environment will most likely not make
-a difference. However, other virtual environments are not supported.
+to installing wgbs_tools. The author uses *venv* and will assume you are
+doing the same. While not supported, using a another virtual environment
+will most likely not make a difference. 
 
 ### Prerequisites:
 
-Before installation, essure that he following programs are installed:
+Before installation, essure that he following programs are installed and
+accessible in PATH:
 
 - [Bowtie](http://bowtie-bio.sourceforge.net/manual.shtml)
 - [BS-Seeker2](https://github.com/BSSeeker/BSseeker2)
@@ -35,7 +36,7 @@ Before installation, essure that he following programs are installed:
 - [Bedtools2](https://github.com/arq5x/bedtools2)
 - [SRA Toolkit](http://www.ncbi.nlm.nih.gov/books/NBK158900/)
 
-Also, the following python packages:
+Also, the following python packages will be installed if not already:
 
 - click
 - pybedtools
@@ -49,9 +50,6 @@ Also, the following python packages:
    ```
    python setup.py develop
    ```
-1. Since every system has a different path, you need to edit the paths in the following file:
-
-   **WGBS_Tools/info.yaml** = change line after *bs2_path:* with BS-Seeker2 path
 1. Test to ensure everything installed correctly:
 
    ```
@@ -66,7 +64,7 @@ Also, the following python packages:
 1. You can also get instructions for a specific command by typing the command name with --help. For instance:
 
    ```
-   wgbs_tools align --help
+   wgbs_tools align_pe --help
    ```
 
 1. The final step is to edit (or create your own) *info.yaml* file. You must add your own genomic information.
@@ -78,6 +76,21 @@ Chromosome lengths for genomes hg38, mm10, and bosTau6 are provided. However, yo
 
 ### <a name="infoyaml"> info.yaml </a>
 
+This is a yaml file that contains system and genome specific information. It is separate from the rest of the 
+code so that any user can modify it to work for whatever system and genome they are using.
+
+The first two lines will most likely not need to be modified:
+
+**adapter:** The adapter sequence for single end reads. This is used to trim reads that have adapter contamination. It may need to be changed if you are not using Illumina sequencing.
+**bs2_path:** The path for BS Seeker2 aligner. It is set assuming BS Seeker2 is in PATH. You can change this to point to a specific instance of BS Seeker 2 or in case you do not put it in PATH.
+
+The rest of the file contains genome specific information. The format is:
+  genome:
+  hg38:
+    index: /share/lasallelab/genomes/hg38/BSseek2_refgen/
+    fasta: /share/lasallelab/genomes/hg38/hg38.fa
+    chroms:
+        chr1: 247249719
 
 
 ### <a name="pm_bed"> pm_bed </a>
