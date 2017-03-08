@@ -96,11 +96,12 @@ The rest of the file contains genome specific information. You can have multiple
 
 ***chromname: size*** Chromosome name (as defined by fasta/bs2index) and then size of chromosome in bp. Each line represents a different chromosome. You don't need every chromosome listed here, just the ones you want analyzed. For instance, there could be unlocalized contig names that you may not want to keep in your analysis. (6 spaces preceding)
 
+You can modify the provided *info.yaml* file, or create a new one. Any commands that use this can point to a different file using the *--infoyaml* option.
+
 ### <a name="pm_bed"> pm_bed </a>
 
-Percent Methylation bed (pm_bed) format is a custome format to hold base specific methylation information.
-It is based on a 9 column bed format and can be loaded into most genome browsers (like the UCSC browser).
-The pm_bed has 7 columns:
+Percent Methylation bed (pm_bed) files contain base specific methylation information (usually for a single chromosome).
+It is based on a 9 column bed format and can be loaded into most genome browsers (like the UCSC browser):
 
 1. chromosome
 1. start of C
