@@ -5,6 +5,8 @@ WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfi
 ### Table of Contents
 
 1. [Installation](#Installation)
+  1. [Prerequisites](#Prerequisites)
+  1. [Instructions](#Instructions)
 1. [Commands](#Commands)
   1. [Adjust existing files](#acommands)
     1. [add_genome](#add_genome)
@@ -35,7 +37,7 @@ to installing wgbs_tools. The author uses [venv](http://sourabhbajaj.com/mac-set
 doing the same. While not supported, using a another virtual environment
 will most likely not make a difference. 
 
-### Prerequisites:
+### <a name="Prerequisites"> Prerequisites:
 
 Before installation, essure that he following programs are installed and
 accessible in PATH:
@@ -54,7 +56,7 @@ Also, the following python packages will be installed if not already:
 - pytest
 - pyyaml
 
-### Instructions:
+### <a name="Instructions"> Instructions:
 
 1. Change directory to WGBS_tools and type the following:
 
