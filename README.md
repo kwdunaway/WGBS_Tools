@@ -11,9 +11,12 @@ WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfi
   1. [process_pe](#process_pe)
   1. [trim_sefq](#trim_sefq)
   1. [trim_pefq](#trim_pefq)
+  1. [sumlogs](#sumlogs)
+  1. [adjustcols](#adjustcols)
   1. [roi](#roi)
   1. [window](#window)
   1. [pm_stats](#pm_stats)
+  1. [bam2pm](#bam2pm)
   1. [pm2bg](#pm2bg)
   1. [pm2dss](#pm2dss)
 1. [File Formats](#FileFormats)
@@ -119,10 +122,28 @@ The main pipeline to process a paired end WGBS experiment. It takes in a pair of
 Prepares a single end fastq file for alignment by:
 
 1. Filtering out any reads that do not pass Illumina's quality check (if that information is available in the header line of the read).
-1. Trims off adapter sequence. This is done by searching the read for the adapter sequence given in the *yaml.info* file, and removing all bases starting at that sequence and on.
-1. Removes 10bp from the 3' end of all reads (after adapter trimming). 
+1. Trims off adapter sequence. This is done by searching the read for the adapter sequence (can be adjusted using the *--adapter* option), and removing all bases starting at that sequence and on.
+1. Removes 10bp (can be adjusted using teh *--chew* option)from the 3' end of all reads (after adapter trimming). 
 
 ### <a name="trim_pefq"> trim_pefq </a>
+
+Does the same thing as [trim_sefq](#trim_sefq) except it works on a pair of fastq file. It is assumed that the reads for both files are in paired order (ie: the first read in the F fastq corresponds to the first read in the R fastq)
+
+### <a name="sumlogs"> sumlogs </a>
+
+Summarizes BS Seeker2 logs. This is useful to parse out the most useful information within the very long BS Seeker2 log file.
+
+### <a name="adjustcols"> adjustcols </a>
+
+Adjusts numerical column of files. This is useful if you want to adjust each line of a bed or GTF file by a fixed number of bases. For example:
+
+If you wanted to look at everything within a gene and 5000bp around it, you would run the following command:
+
+```
+wgbs_tools adjustcols --cols 1,2 --adjusts 5000,5000 infileprefix outprefix
+```
+
+The default is set to extend the end position by 1 base.
 
 ### <a name="roi"> roi </a>
 
@@ -164,11 +185,23 @@ There are a few uses for determining these basic stats:
   1. CH pm_bed files. Create pm_bed files looking at CH methylation and then run this command on all of those files. This assumes there is no CH methylation (which is known to exist in plants and certain mammalian tissues).
 
 
+### <a name="bam2pm"> bam2pm </a>
+
+Converts a bam file that was created from BS Seeker2 to a folder of percent methylation bed files (one for each chromosome).
+
 ### <a name="pm2bg"> pm2bg </a>
-  pm2bg      Converts pm_bed to bedgraph format.
+
+Converts multiple percent methylation bed files to a single bedGraph file. This is useful for creating a trackhub. 
+
+Track hubs, while useful for visualizing your data, require many steps to create. Briefly:
+
+1. Convert pm_bed files to bedGraph using *wgbs_tools pm2bg*.
+1. Convert the resulting bedGraph files to BigWig format using *bedGraphToBigWig*. You may need to download the converter from [UCSC](http://hgdownload.soe.ucsc.edu/admin/exe/). The linux version can be found at [bedGraphToBigWig](http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/bedGraphToBigWig).
+1. You will then need to add this information to the hub. See [Basic Track Hub Quick Start Guide](https://genome.ucsc.edu/goldenpath/help/hubQuickStart.html) for more information.
 
 ### <a name="pm2dss"> pm2dss </a>
-  pm2dss     Converts pm_bed to dss format.
+
+Converts multiple multiple percent methylation bed files to DSS format. These file are necessary as input for many R packages dealing with methylation (such as the R packages *bsseq* and *DSS*).
 
 ## <a name="FileFormats"> File Formats </a>
 

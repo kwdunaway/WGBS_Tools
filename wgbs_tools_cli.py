@@ -751,25 +751,24 @@ def pm2dss(in_prefix, out_prefix, gz):
 
 
 @cli.command()
-@click.option('--gz/--no-gz',
-              default=True,
-              help='Boolean which indicates if the output files will be '
-                   'compressed (.gz format) or not. Default: --gz (compressed)')
+# @click.option('--gz/--no-gz',
+#               default=True,
+#               help='Boolean which indicates if the output files will be '
+#                    'compressed (.gz format) or not. Default: --gz (compressed)')
 @click.argument('in_prefix', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
-def pm2bg(in_prefix, out_prefix, gz):
+def pm2bg(in_prefix, out_file, gz):
     """
     Converts pm_bed to bedgraph format.
 
-    The percent methylation bed files (pm_bed) are used to create bedgraph
-    files, which can be used for various reasons, including creating genome
-    browser tracks.
+    The percent methylation bed files (pm_bed) are used to create a bedGraph
+    file, which can be used for various reasons, including creating a trackhub.
 
     \b
     Required arguments:
     IN_PREFIX      Prefix for all percent methlyated bed files (can be
                    compressed and/or uncompressed)
-    OUT_PREFIX     Prefix for all outfiles (in bedgraph format). The full
+    OUT_FILE       Prefix for all outfiles (in bedgraph format). The full
                    name of each outfile is [out_prefix][uniq_id].bg
 
     \b
@@ -781,23 +780,24 @@ def pm2bg(in_prefix, out_prefix, gz):
         pm01_bg/pm01_chr1.bg
         pm01_bg/pm01_chr3.bg
     """
-    if gz:
-        suffix = '.bg.gz'
-    else:
-        suffix = '.bg'
-    for bed_name in glob.glob('{}*.bed'.format(in_prefix)):
-        uniqname = bed_name.split(in_prefix)[1].split('.bed')[0]
-        bg_name = '{}{}{}'.format(out_prefix, uniqname, suffix)
-        logging.info('Processing {}'.format(bed_name))
-        logging.info('Creating {}'.format(bg_name))
-        permethbed.convert_pm2bg(bed_name, bg_name)
-    for bed_name in glob.glob('{}*.bed.gz'.format(in_prefix)):
-        uniqname = bed_name.split(in_prefix)[1].split('.bed.gz')[0]
-        bg_name = '{}{}{}'.format(out_prefix, uniqname, suffix)
-        logging.info('Processing {}'.format(bed_name))
-        logging.info('Creating {}'.format(bg_name))
-        permethbed.convert_pm2bg(bed_name, bg_name)
-
+    #TODO: convert this to take in multiple permeth files and output a single bg
+    # if gz:
+    #     suffix = '.bg.gz'
+    # else:
+    #     suffix = '.bg'
+    # for bed_name in glob.glob('{}*.bed'.format(in_prefix)):
+    #     uniqname = bed_name.split(in_prefix)[1].split('.bed')[0]
+    #     bg_name = '{}{}{}'.format(out_prefix, uniqname, suffix)
+    #     logging.info('Processing {}'.format(bed_name))
+    #     logging.info('Creating {}'.format(bg_name))
+    #     permethbed.convert_pm2bg(bed_name, bg_name)
+    # for bed_name in glob.glob('{}*.bed.gz'.format(in_prefix)):
+    #     uniqname = bed_name.split(in_prefix)[1].split('.bed.gz')[0]
+    #     bg_name = '{}{}{}'.format(out_prefix, uniqname, suffix)
+    #     logging.info('Processing {}'.format(bed_name))
+    #     logging.info('Creating {}'.format(bg_name))
+    #     permethbed.convert_pm2bg(bed_name, bg_name)
+    #
 
 @cli.command()
 @click.option('--suffix', type=click.STRING,
