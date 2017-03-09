@@ -152,8 +152,16 @@ Determines basic stats of multiple pm_bed files. This will print a table where e
 1. name: Unique name of file (string between prefix and suffix)
 1. percentage: Percentage methylation of file
 1. methylated_reads: Amount of methylated reads in pm file
-1.  total_reads: Amount of total reads in pm file
+1. total_reads: Amount of total reads in pm file
 1. cpg_count: Number of CpGs the pm file has information for
+
+There are a few uses for determining these basic stats:
+
+1. Determine average methylation across a chromosome.
+1. Estimate conversion efficiency. This can be done by running it on the conv_eff chromosome (see below for explanation). Then subtract the percentage from 1 (ie: 1 - percentage). There are 3 possible conv_eff chromosomes:
+  1. If you spiked your samples with lamda DNA (known to be 100% unmethylated) prior to bisulfite conversion, run this on that chromosome. Note, you will need to ensure you added the lamda sequence to info.yaml and the BS_Seeker index prior to alignment.
+  1. chrM. This is the most likely choice if you didn't spike your samples.
+  1. CH pm_bed files. Create pm_bed files looking at CH methylation and then run this command on all of those files. This assumes there is no CH methylation (which is known to exist in plants and certain mammalian tissues).
 
 
 ### <a name="pm2bg"> pm2bg </a>
