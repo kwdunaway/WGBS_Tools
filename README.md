@@ -45,11 +45,10 @@ accessible in PATH:
 - [Bowtie](http://bowtie-bio.sourceforge.net/manual.shtml) (for single end alignment)
 - [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml) (for paired end alignment)
 - [BS-Seeker2](https://github.com/BSSeeker/BSseeker2)
-- [Pysam](https://github.com/pysam-developers/pysam)
 - [Bedtools2](https://github.com/arq5x/bedtools2)
 - [SRA Toolkit](http://www.ncbi.nlm.nih.gov/books/NBK158900/)
 
-Also, the following python packages will be installed if not already:
+Also, the following python packages will be installed if not already. They can also be installed using pip:
 
 - click
 - pybedtools
