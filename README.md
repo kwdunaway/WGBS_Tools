@@ -6,19 +6,22 @@ WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfi
 
 1. [Installation](#Installation)
 1. [Commands](#Commands)
-  1. [add_genome](#add_genome)
-  1. [process_se](#process_se)
-  1. [process_pe](#process_pe)
-  1. [trim_sefq](#trim_sefq)
-  1. [trim_pefq](#trim_pefq)
-  1. [sumlogs](#sumlogs)
-  1. [adjustcols](#adjustcols)
-  1. [roi](#roi)
-  1. [window](#window)
-  1. [pm_stats](#pm_stats)
-  1. [bam2pm](#bam2pm)
-  1. [pm2bg](#pm2bg)
-  1. [pm2dss](#pm2dss)
+  1. [Adjust existing files](#acommands)
+    1. [add_genome](#add_genome)
+    1. [adjustcols](#adjustcols)
+  1. [Process FASTQ into Percent Methylation BED files](#pcommands)
+    1. [process_se](#process_se)
+    1. [process_pe](#process_pe)
+    1. [trim_sefq](#trim_sefq)
+    1. [trim_pefq](#trim_pefq)
+    1. [bam2pm](#bam2pm)
+    1. [sumlogs](#sumlogs)
+  1. [Use Percent Methylation BED files](#pmbedcommands)
+    1. [roi](#roi)
+    1. [window](#window)
+    1. [pm_stats](#pm_stats)
+    1. [pm2bg](#pm2bg)
+    1. [pm2dss](#pm2dss)
 1. [File Formats](#FileFormats)
   1. [info.yaml](#infoyaml)
   1. [pm_bed](#pm_bed)
@@ -94,13 +97,33 @@ This manual is meant to provide additional information and context for the comma
 *--help* for a given command before reading this manual. If there is still confusion, please email the author
 (contact information at the top).
 
-### <a name="add_genome"> add_genome </a>
+### <a name="acommands"> Adjust existing files </a>
+
+This group of commands slightly adjust existing files. 
+
+#### <a name="add_genome"> add_genome </a>
 
 Adds genome information to info.yaml file. By default it appends the *info.yaml* file in WGBS_Tools directory. 
 However, you can change this using the *--infoyaml* option. See [info.yaml](#infoyaml) for more information 
 about the *info.yaml* file.
 
-### <a name="process_se"> process_se </a>
+#### <a name="adjustcols"> adjustcols </a>
+
+Adjusts numerical column of files. This is useful if you want to adjust each line of a bed or GTF file by a fixed number of bases. For example:
+
+If you wanted to look at everything within a gene and 5000bp around it, you would run the following command:
+
+```
+wgbs_tools adjustcols --cols 1,2 --adjusts 5000,5000 infileprefix outprefix
+```
+
+The default is set to extend the end position by 1 base.
+
+### <a name="pcommands"> Process FASTQ into Percent Methylation BED files </a>
+
+This group of commands are all related to processing a FASTQ (or pair of FASTQ) file(s) into creating a set of Percent Methylation BED files.
+
+#### <a name="process_se"> process_se </a>
 
 The main pipeline to process a single end WGBS experiment. It takes in a single fastq file and outputs the following:
 
@@ -113,11 +136,11 @@ The main pipeline to process a single end WGBS experiment. It takes in a single 
 The defaults are set for determining CpG methylation in a hg38 experiment which used 100bp Illumina reads sequenced on the HiSeq 2000. 
 However, the options can modified to work for your specific genome/experiment.
 
-### <a name="process_pe"> process_pe </a>
+#### <a name="process_pe"> process_pe </a>
 
 The main pipeline to process a paired end WGBS experiment. It takes in a pair of fastq files and outputs the same as [process_se](#process_se).
 
-### <a name="trim_pefq"> trim_sefq </a>
+#### <a name="trim_pefq"> trim_sefq </a>
 
 Prepares a single end fastq file for alignment by:
 
@@ -125,27 +148,23 @@ Prepares a single end fastq file for alignment by:
 1. Trims off adapter sequence. This is done by searching the read for the adapter sequence (can be adjusted using the *--adapter* option), and removing all bases starting at that sequence and on.
 1. Removes 10bp (can be adjusted using teh *--chew* option)from the 3' end of all reads (after adapter trimming). 
 
-### <a name="trim_pefq"> trim_pefq </a>
+#### <a name="trim_pefq"> trim_pefq </a>
 
 Does the same thing as [trim_sefq](#trim_sefq) except it works on a pair of fastq file. It is assumed that the reads for both files are in paired order (ie: the first read in the F fastq corresponds to the first read in the R fastq)
 
-### <a name="sumlogs"> sumlogs </a>
+#### <a name="bam2pm"> bam2pm </a>
+
+Converts a bam file that was created from BS Seeker2 to a folder of percent methylation bed files (one for each chromosome).
+
+#### <a name="sumlogs"> sumlogs </a>
 
 Summarizes BS Seeker2 logs. This is useful to parse out the most useful information within the very long BS Seeker2 log file.
 
-### <a name="adjustcols"> adjustcols </a>
+### <a name="pmbedcommands"> Use Percent Methylation BED files </a>
 
-Adjusts numerical column of files. This is useful if you want to adjust each line of a bed or GTF file by a fixed number of bases. For example:
+This group of commands use the Percent Methylation BED files to create useful tables or convert them into other widely used formats.
 
-If you wanted to look at everything within a gene and 5000bp around it, you would run the following command:
-
-```
-wgbs_tools adjustcols --cols 1,2 --adjusts 5000,5000 infileprefix outprefix
-```
-
-The default is set to extend the end position by 1 base.
-
-### <a name="roi"> roi </a>
+#### <a name="roi"> roi </a>
 
 Finds methylation over Regions of Interest (ROIs). The inputs:
 
@@ -160,13 +179,13 @@ This command is useful if you have a few regions that you want to get the averag
 - Since some statistical analyses would rather have counts of methylated and total reads, that information can be provided using the *--raw-data* option.
 - You may want to mask out some regions in your analysis using the *--mask* option. For instance, CpG islands have a high concentration of hypomethylated CpGs, which could skew your results.
 
-### <a name="window"> window </a>
+#### <a name="window"> window </a>
 
 This command finds methylation over windows and is very similar to [roi](#roi). The main difference is that the user provides parameters to create 
 the regions of interest, in the form of non overlapping windows. It is highly suggested mask out CpG Islands when using this command due to their hypomethylation
 vastly skewing windows.
 
-### <a name="pm_stats"> pm_stats </a>
+#### <a name="pm_stats"> pm_stats </a>
 
 Determines basic stats of multiple pm_bed files. This will print a table where each row represents a different pm_bed file. There are 5 columns:
 
@@ -185,11 +204,7 @@ There are a few uses for determining these basic stats:
   1. CH pm_bed files. Create pm_bed files looking at CH methylation and then run this command on all of those files. This assumes there is no CH methylation (which is known to exist in plants and certain mammalian tissues).
 
 
-### <a name="bam2pm"> bam2pm </a>
-
-Converts a bam file that was created from BS Seeker2 to a folder of percent methylation bed files (one for each chromosome).
-
-### <a name="pm2bg"> pm2bg </a>
+#### <a name="pm2bg"> pm2bg </a>
 
 Converts multiple percent methylation bed files to a single bedGraph file. This is useful for creating a trackhub. 
 
@@ -199,7 +214,7 @@ Track hubs, while useful for visualizing your data, require many steps to create
 1. Convert the resulting bedGraph files to BigWig format using *bedGraphToBigWig*. You may need to download the converter from [UCSC](http://hgdownload.soe.ucsc.edu/admin/exe/). The linux version can be found at [bedGraphToBigWig](http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/bedGraphToBigWig).
 1. You will then need to add this information to the hub. See [Basic Track Hub Quick Start Guide](https://genome.ucsc.edu/goldenpath/help/hubQuickStart.html) for more information.
 
-### <a name="pm2dss"> pm2dss </a>
+#### <a name="pm2dss"> pm2dss </a>
 
 Converts multiple multiple percent methylation bed files to DSS format. These file are necessary as input for many R packages dealing with methylation (such as the R packages *bsseq* and *DSS*).
 
