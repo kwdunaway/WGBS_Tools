@@ -48,14 +48,6 @@ accessible in PATH:
 - [Bedtools2](https://github.com/arq5x/bedtools2)
 - [SRA Toolkit](http://www.ncbi.nlm.nih.gov/books/NBK158900/)
 
-Also, the following python packages will be installed if not already. They can also be installed using pip:
-
-- click
-- pybedtools
-- pysam
-- pytest
-- pyyaml
-
 ### <a name="Instructions"> Instructions:
 
 1. Change directory to WGBS_tools and type the following:
