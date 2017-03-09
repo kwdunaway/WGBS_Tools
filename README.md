@@ -42,7 +42,8 @@ will most likely not make a difference.
 Before installation, essure that he following programs are installed and
 accessible in PATH:
 
-- [Bowtie](http://bowtie-bio.sourceforge.net/manual.shtml)
+- [Bowtie](http://bowtie-bio.sourceforge.net/manual.shtml) (for single end alignment)
+- [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml) (for paired end alignment)
 - [BS-Seeker2](https://github.com/BSSeeker/BSseeker2)
 - [Pysam](https://github.com/pysam-developers/pysam)
 - [Bedtools2](https://github.com/arq5x/bedtools2)
