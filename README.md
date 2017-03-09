@@ -31,7 +31,7 @@ WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfi
 ## <a name="Installation"> Installation </a>
 
 **Note:** It is recommended that you set up a virtual environment prior
-to installing wgbs_tools. The author uses *venv* and will assume you are
+to installing wgbs_tools. The author uses [venv](http://sourabhbajaj.com/mac-setup/Python/virtualenv.html) and will assume you are
 doing the same. While not supported, using a another virtual environment
 will most likely not make a difference. 
 
