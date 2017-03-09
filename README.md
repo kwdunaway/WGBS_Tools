@@ -131,20 +131,30 @@ Finds methylation over Regions of Interest (ROIs). The inputs:
 1. INPUT_TSV: A tab separated file indicating sample names and locations. Each line represents a different sample and has two columns:
   1. The first tab should be sample name.
   1. The second tab should be the path to the prefix of bed file.
-1. OUT_TABLE: Name of the table which contains all of the ROI methylation information
+1. OUT_TABLE: Name of the output table which contains the percent methylation information.
 1. ROI_FILE: GTF or BED file indicating the ROI (Regions of Interest).
- 
- This takes in a BED or GTF file and a  and creates a table that contains the methylation percentage over all Regions
-  of Interest (ROIs). Allows creation of an optional 2col table which
-  contains the number of methylated and total reads per sample per ROI.
 
-  roi        Calls methylation over ROIs.
+This command is useful if you have a few regions that you want to get the average methylation over. Some examples: gene body, promoters, CpG islands. A few notes:
+
+- Since some statistical analyses would rather have counts of methylated and total reads, that information can be provided using the *--raw-data* option.
+- You may want to mask out some regions in your analysis using the *--mask* option. For instance, CpG islands have a high concentration of hypomethylated CpGs, which could skew your results.
 
 ### <a name="window"> window </a>
-  window     Calls methylation over windows.
+
+This command finds methylation over windows and is very similar to [roi](#roi). The main difference is that the user provides parameters to create 
+the regions of interest, in the form of non overlapping windows. It is highly suggested mask out CpG Islands when using this command due to their hypomethylation
+vastly skewing windows.
 
 ### <a name="pm_stats"> pm_stats </a>
-  pm_stats   Gets stats of multiple pm_bed files.
+
+Determines basic stats of multiple pm_bed files. This will print a table where each row represents a different pm_bed file. There are 5 columns:
+
+1. name: Unique name of file (string between prefix and suffix)
+1. percentage: Percentage methylation of file
+1. methylated_reads: Amount of methylated reads in pm file
+1.  total_reads: Amount of total reads in pm file
+1. cpg_count: Number of CpGs the pm file has information for
+
 
 ### <a name="pm2bg"> pm2bg </a>
   pm2bg      Converts pm_bed to bedgraph format.
