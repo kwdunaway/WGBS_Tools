@@ -7,7 +7,10 @@ WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfi
 1. [Installation](#Installation)
 1. [Commands](#Commands)
   1. [add_genome](#add_genome)
-  1. [align](#align)
+  1. [process_se](#process_se)
+  1. [process_pe](#process_pe)
+  1. [trim_sefq](#trim_sefq)
+  1. [trim_pefq](#trim_pefq)
   1. [roi](#roi)
   1. [window](#window)
   1. [pm_stats](#pm_stats)
@@ -77,24 +80,67 @@ Also, the following python packages will be installed if not already:
 
 ## <a name="Commands"> Commands </a>
 
-Each command is accessed using the *wgbs_tools* 
+Each command is accessed by typing *wgbs_tools* followed by the command name. Syntax and brief explanations are provided
+using the *--help* option. For instance:
+
+   ```
+   wgbs_tools roi --help
+   ```
+
+This manual is meant to provide additional information and context for the commands. It is assumed that the user typed
+*--help* for a given command before reading this manual. If there is still confusion, please email the author
+(contact information at the top).
 
 ### <a name="add_genome"> add_genome </a>
 
 Adds genome information to info.yaml file. By default it appends the *info.yaml* file in WGBS_Tools directory. 
-However, you can change this using the *--infoyaml* option.
+However, you can change this using the *--infoyaml* option. See [info.yaml](#infoyaml) for more information 
+about the *info.yaml* file.
 
+### <a name="process_se"> process_se </a>
 
-
-### <a name="align"> align </a>
-
-The main alignment pipeline. It takes in a fastq file and outputs the following:
+The main pipeline to process a single end WGBS experiment. It takes in a single fastq file and outputs the following:
 
 1. Bam containing all of the aligned reads in BS_Seeker format. See [BS-Seeker2](https://github.com/BSSeeker/BSseeker2) for more details.
+1. Folder containing a single Percent Methylation bed file for each chromosome. See [pm_bed](#pm_bed) for more information about the format.
 1. Log of BS_Seeker2 run which has useful overall information about the sequencing run.
+1. Bisulfite conversion efficency information.
+1. Summary file containing stats about alignment and conversion efficency.
 
+The defaults are set for determining CpG methylation in a hg38 experiment which used 100bp Illumina reads sequenced on the HiSeq 2000. 
+However, the options can modified to work for your specific genome/experiment.
+
+### <a name="process_pe"> process_pe </a>
+
+The main pipeline to process a paired end WGBS experiment. It takes in a pair of fastq files and outputs the same as [process_se](#process_se).
+
+### <a name="trim_pefq"> trim_sefq </a>
+
+Prepares a single end fastq file for alignment by:
+
+1. Filtering out any reads that do not pass Illumina's quality check (if that information is available in the header line of the read).
+1. Trims off adapter sequence. This is done by searching the read for the adapter sequence given in the *yaml.info* file, and removing all bases starting at that sequence and on.
+1. Removes 10bp from the 3' end of all reads (after adapter trimming). 
+
+### <a name="trim_pefq"> trim_pefq </a>
 
 ### <a name="roi"> roi </a>
+
+Finds methylation over Regions of Interest (ROIs). The inputs:
+
+1. INPUT_TSV: Input tab separated file indicating sample names and locations.
+  1. The first tab should be sample name
+  1. The second tab should be the path to the prefix of bed file
+               Ex file format:
+               pm01   tests/data/bed/pm01_
+               pm02   tests/data/bed/pm02_
+1. OUT_TABLE: Name of the table which contains all of the ROI methylation information
+1. ROI_FILE: GTF or BED file indicating the ROI (Regions of Interest).
+ 
+ This takes in a BED or GTF file and a  and creates a table that contains the methylation percentage over all Regions
+  of Interest (ROIs). Allows creation of an optional 2col table which
+  contains the number of methylated and total reads per sample per ROI.
+
   roi        Calls methylation over ROIs.
 
 ### <a name="window"> window </a>

@@ -40,6 +40,15 @@ def cli():
               default='hg38',
               help='Genome used for alignment and analysis. '
                    'Default: hg38')
+@click.option('--chew', 'chew_length', type=click.INT,
+              default=10,
+              help='Number of bases to removed off of the end of each read. '
+                   'Default: 10')
+@click.option('--min-read', 'min_seqlength', type=click.INT,
+              default=35,
+              help='Minimum read length of reads after adapter trimming and '
+                   'chew. If the read is less than this lenght, it is not '
+                   'included in the output. Default: 35')
 @click.option('--noadap-bs2params', 'noadap_bs2_params', type=click.STRING,
               default='-m 3 -f bam',
               help='Parameters passed to BS Seeker 2 for alignment of reads '
@@ -86,9 +95,10 @@ def cli():
                    'Default: info.yaml')
 @click.argument('in_fastq', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
-def process_se(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
-               adaptrim_bs2_params, methtype, strand, max_dup_reads, conv_chrom,
-               threads, working_dir, infoyaml):
+def process_se(in_fastq, out_prefix, out_dir, chew_length, min_seqlength,
+               genome, noadap_bs2_params, adaptrim_bs2_params, methtype,
+               strand, max_dup_reads, conv_chrom, threads, working_dir,
+               infoyaml):
     """
     Pipeline to process single end FASTQ file.
 
@@ -153,7 +163,8 @@ def process_se(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
 
     #Remove adapter contamination from reads
     logging.info('Removing adapter contamination and split fastq files')
-    fastqtools.adapter_remove(qualfil_fastq, noadap_fq, adaptrim_fq, adapter)
+    fastqtools.adapter_remove(qualfil_fastq, noadap_fq, adaptrim_fq, adapter,
+                              chew_length, min_seqlength)
 
     #Align to genome
     logging.info('Aligning reads without adapter contamination to {}'
@@ -216,7 +227,8 @@ def process_se(in_fastq, out_prefix, out_dir, genome, noadap_bs2_params,
     bsseeker.process_logs(noadap_log, adaptrim_log, conv_eff, out_summary)
 
     #Remove temp files
-    shutil.rmtree(workingdir)
+    if working_dir == '':
+        shutil.rmtree(workingdir)
 
 
 @cli.command()
@@ -897,6 +909,81 @@ def pm_stats(in_prefix, out_file, suffix):
 
 
 @cli.command()
+@click.option('--adapter', type=click.STRING,
+              help='Beginning sequence of adapter. Default: AGATCGGAAG')
+@click.option('--out_dir', type=click.STRING,
+              default='',
+              help='Directory to put all outfiles. '
+                   'Default: <current working directory>')
+@click.option('--threads', type=click.INT,
+              default=NUM_CPUS,
+              help='Number of threads used when multiprocessing. '
+                   'Default: Number of system CPUs')
+@click.option('--chew', 'chew_length', type=click.INT,
+              default=10,
+              help='Number of bases to removed off of the end of each read. '
+                   'Default: 10')
+@click.option('--min-read', 'min_seqlength', type=click.INT,
+              default=35,
+              help='Minimum read length of reads after adapter trimming and '
+                   'chew. If the read is less than this lenght, it is not '
+                   'included in the output. Default: 35')
+@click.option('--working_dir', type=click.STRING,
+              default='',
+              help='Working directory where temp files are written and read. '
+                   'Default: <EMPTY> (Uses tempfile.mkdtemp() to define a '
+                   'temperary working directory)')
+@click.argument('in_for_fq', type=click.STRING)
+@click.argument('out_prefix', type=click.STRING)
+def trim_sefq(in_fastq, out_prefix, adapter, out_dir, threads, chew_length,
+              min_seqlength, working_dir):
+    """
+    Filters and trims PE FASTQ files.
+
+    \b
+    Quality filters and adapter trims a pair of paired-end FASTQ files. Takes in
+    two FASTQ file and outputs four different FASTQ files:
+      1) *_trimmed.fq.gz Contains reads that had adapter sequence detected and
+                         have been trimmed out. Then, the sequence was chewed
+                         back another 10 bp.
+      2) *_noadap.fq.gz  Contains reads that had no adapter sequence detected.
+    \b
+    Required arguments:
+    IN_FASTQ         Input FASTQ file
+    OUT_PREFIX       Prefix of the two output files
+    """
+    #Create output directory
+    if out_dir != '':
+        if not os.path.exists(out_dir):
+            os.makedirs(out_dir)
+
+    if working_dir == '':
+        workingdir = tempfile.mkdtemp()
+    else:
+        if not os.path.exists(working_dir):
+            os.makedirs(working_dir)
+        workingdir = working_dir
+
+    #Name files
+    temp_prefix = out_prefix.split('\t')[-1]
+    qualfil_fastq = '{}_filtered.fq.gz'.format(temp_prefix)
+    noadap_fq = '{}_noadap.fq.gz'.format(temp_prefix)
+    adaptrim_fq = '{}_trimmed.fq.gz'.format(temp_prefix)
+
+    #Filter fastq file
+    logging.info('Filtering out quality failed reads from fastq file')
+    fastqtools.qual_filter_fastq(in_fastq, qualfil_fastq)
+
+    #Remove adapter contamination from reads
+    logging.info('Removing adapter contamination and split fastq files')
+    fastqtools.adapter_remove(qualfil_fastq, noadap_fq, adaptrim_fq, adapter,
+                              chew_length, min_seqlength)
+
+    if working_dir == '':
+        shutil.rmtree(workingdir)
+
+
+@cli.command()
 @click.option('--for-adap', 'for_adap', type=click.STRING,
               default='AGATCGGAAG',
               help='Beginning sequence of forward adapters. Default: '
@@ -925,8 +1012,8 @@ def pm_stats(in_prefix, out_file, suffix):
 @click.argument('in_for_fq', type=click.STRING)
 @click.argument('in_rev_fq', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
-def filter_pefq(in_for_fq, in_rev_fq, out_prefix, for_adap, rev_adap, out_dir,
-                threads, chew_length, min_seqlength):
+def trim_pefq(in_for_fq, in_rev_fq, out_prefix, for_adap, rev_adap, out_dir,
+              threads, chew_length, min_seqlength):
     """
     Filters and trims PE FASTQ files.
 
