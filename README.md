@@ -128,10 +128,9 @@ Prepares a single end fastq file for alignment by:
 
 Finds methylation over Regions of Interest (ROIs). The inputs:
 
-1. INPUT_TSV: Input tab separated file indicating sample names and locations.
+1. INPUT_TSV: A tab separated file indicating sample names and locations. Each line represents a different sample and has two columns:
   1. The first tab should be sample name.
   1. The second tab should be the path to the prefix of bed file.
-  1. Each line represents a different sample.
 1. OUT_TABLE: Name of the table which contains all of the ROI methylation information
 1. ROI_FILE: GTF or BED file indicating the ROI (Regions of Interest).
  
