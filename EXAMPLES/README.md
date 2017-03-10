@@ -2,7 +2,7 @@
 
 This will go through an example WGBS single-end sequenced experiment. WGBS_Tools can also analyze paired end experiments using slightly different commands. For instance, you would use *process_pe* for paired end experiments and *process_se* for single end experiments.
 
-Here is a basic workflow:
+Here is a basic workflow (the wgbs_tools commands are in red):
 
 ![Kiku](workflow.png)
 
