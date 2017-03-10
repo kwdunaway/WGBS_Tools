@@ -2,6 +2,8 @@
 
 WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfite Sequencing data. Any questions or comments may be directed to Keith Dunaway (kwdunaway@ucdavis.edu). If you find any problems, please create a github issue.
 
+For examples on how to utilize wgbs_tools to analyze a typical WGBS experiment from start to finish, read *EXAMPLES/README.md*.
+
 ### Table of Contents
 
 1. [Installation](#Installation)
@@ -48,6 +50,15 @@ accessible in PATH:
 - [Bedtools2](https://github.com/arq5x/bedtools2)
 - [SRA Toolkit](http://www.ncbi.nlm.nih.gov/books/NBK158900/)
 
+It is also important that you set up your genome specific information:
+
+1. Download the FASTA file of your genome. This can be done through the [UCSC downloads](http://hgdownload.cse.ucsc.edu/downloads.html) page. Just select
+the genome you are using then click on "Full data set". Now scroll to the bottom of the page and there should be a file named *genomename*.fa.gz. For example,
+the Dolphin genome's fasta file is named *turTru2.fa.gz*.
+
+1. Create a BS-Seeker2 index from the fasta file. Instructions for this can be found at [BS-Seeker2](https://github.com/BSSeeker/BSseeker2) 
+under the *bs_seeker2-build.py* section.
+
 ### <a name="Instructions"> Instructions:
 
 1. Change directory to WGBS_tools and type the following:
@@ -71,10 +82,6 @@ accessible in PATH:
    ```
    wgbs_tools add_genome --help
    ```
-
-1. Download and decompress your genome's fasta file. You can find many using the UCSC download page: http://hgdownload.cse.ucsc.edu/downloads.html
-
-1. Create a BS Seeker2 index from the fasta file. See [BS-Seeker2](https://github.com/BSSeeker/BSseeker2) for instructions.
 
 1. Edit or create your own *info.yaml* file. See [info.yaml](#infoyaml) and [add_genome](#add_genome) for more details.
 
@@ -148,11 +155,11 @@ Does the same thing as [trim_sefq](#trim_sefq) except it works on a pair of fast
 
 #### <a name="bam2pm"> bam2pm </a>
 
-Converts a bam file that was created from BS Seeker2 to a folder of percent methylation bed files (one for each chromosome).
+Converts a bam file that was created from BS-Seeker2 to a folder of percent methylation bed files (one for each chromosome).
 
 #### <a name="sumlogs"> sumlogs </a>
 
-Summarizes BS Seeker2 logs. This is useful to parse out the most useful information within the very long BS Seeker2 log file.
+Summarizes BS-Seeker2 logs. This is useful to parse out the most useful information within the very long BS-Seeker2 log file.
 
 ### <a name="pmbedcommands"> Use Percent Methylation BED files </a>
 
@@ -226,7 +233,7 @@ The first two lines of *info.yaml* will most likely not need to be modified:
 **adapter:** The adapter sequence for single end reads. This is used to trim reads that have 
 adapter contamination. It may need to be changed if you are not using Illumina sequencing.
 
-**bs2_path:** The path for BS Seeker2 aligner. It is set assuming BS Seeker2 is in PATH. 
+**bs2_path:** The path for BS-Seeker2 aligner. It is set assuming BS-Seeker2 is in PATH. 
 You can change this to point to a specific instance of BS Seeker 2 or if you did not put it in PATH.
 
 The rest of the file contains genome specific information. You can have multiple genomes represented 
@@ -235,7 +242,7 @@ use the [add_genome](#add_genome) command. The format is:
 
 **genome:** Genome name. This needs to be unique throughout the *info.yaml* file.
 
-**index:** Path to the BS Seeker2 index for this genome. (2 spaces preceding) 
+**index:** Path to the BS-Seeker2 index for this genome. (2 spaces preceding) 
 
 **fasta:** Location of a single fasta file containing all chromosomal sequences. (2 spaces preceding)
 

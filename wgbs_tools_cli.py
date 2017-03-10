@@ -867,6 +867,7 @@ def pm_stats(in_prefix, out_file, suffix):
     """
     Gets stats of multiple pm_bed files.
 
+    \b
     Prints 5 columns:
     [0] name: Unique name of file (string between prefix and suffix)
     [1] percentage: Percentage methylation of file
