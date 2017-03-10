@@ -1,10 +1,20 @@
 # WGBS_Tools Examples
 
-This will go through an example WGBS single-end sequenced experiment. WGBS_Tools can also analyze paired end experiments using slightly different commands. For instance, you would use *process_pe* for paired end experiments and *process_se* for single end experiments.
+This will go through examples of how to use wgbs_tools. All of the data is provided, however it is necessary you follow the installation instructions before proceeding.
+
+### Table of Contents
+
+1. [Workflow](#Workflow)
+  1. [Prerequisites](#Prerequisites)
+  1. [Instructions](#Instructions)
+1. [Commands](#Commands)
+  1. [Adjust existing files](#acommands)
+
+## <a name="Workflow"> Workflow </a>
 
 Here is a basic workflow (the wgbs_tools commands are in red):
 
-![Kiku](workflow.png)
+![work_outline](work_outline.png)
 
 
 ## Load genomic information
@@ -25,3 +35,5 @@ You then need to add the genome specific information to you *info.yaml* file. Yo
 ```
 wgbs_tools 
 ```
+
+1. 
