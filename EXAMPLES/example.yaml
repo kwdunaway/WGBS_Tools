@@ -1,0 +1,8 @@
+adapter: AGATCGGAAG
+bs2_path: bs_seeker2-align.py
+example_genome:
+  index: example_genome/genome.fa_bowtie/
+  fasta: example_genome/genome.fa
+  chroms:
+      chr1: 247249719
+      chr2: 242951149
