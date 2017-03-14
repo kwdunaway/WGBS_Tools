@@ -1,5 +1,5 @@
 Settings:
-  Output files: "/Users/kdunaway1/Programming/github/BSseeker2/bs_utils/reference_genomes/genome.fa_bowtie/W_C2T.*.ebwt"
+  Output files: "example_genome/genome.fa_bowtie/W_C2T.*.ebwt"
   Line rate: 6 (line is 64 bytes)
   Lines per side: 1 (side is 64 bytes)
   Offset rate: 5 (one in 32)
@@ -16,7 +16,7 @@ Settings:
   Random seed: 0
   Sizeofs: void*:8, int:4, long:8, size_t:8
 Input files DNA, FASTA:
-  /Users/kdunaway1/Programming/github/BSseeker2/bs_utils/reference_genomes/genome.fa_bowtie/W_C2T.fa
+  example_genome/genome.fa_bowtie/W_C2T.fa
 Reading reference sizes
   Time reading reference sizes: 00:00:00
 Calculating joined length
@@ -250,8 +250,8 @@ fchr[T]: 159
 fchr[$]: 300
 Exiting Ebwt::buildToDisk()
 Returning from initFromVector
-Wrote 4194598 bytes to primary EBWT file: /Users/kdunaway1/Programming/github/BSseeker2/bs_utils/reference_genomes/genome.fa_bowtie/W_C2T.1.ebwt
-Wrote 44 bytes to secondary EBWT file: /Users/kdunaway1/Programming/github/BSseeker2/bs_utils/reference_genomes/genome.fa_bowtie/W_C2T.2.ebwt
+Wrote 4194598 bytes to primary EBWT file: example_genome/genome.fa_bowtie/W_C2T.1.ebwt
+Wrote 44 bytes to secondary EBWT file: example_genome/genome.fa_bowtie/W_C2T.2.ebwt
 Re-opening _in1 and _in2 as input streams
 Returning from Ebwt constructor
 Headers:
@@ -498,8 +498,8 @@ fchr[T]: 159
 fchr[$]: 300
 Exiting Ebwt::buildToDisk()
 Returning from initFromVector
-Wrote 4194598 bytes to primary EBWT file: /Users/kdunaway1/Programming/github/BSseeker2/bs_utils/reference_genomes/genome.fa_bowtie/W_C2T.rev.1.ebwt
-Wrote 44 bytes to secondary EBWT file: /Users/kdunaway1/Programming/github/BSseeker2/bs_utils/reference_genomes/genome.fa_bowtie/W_C2T.rev.2.ebwt
+Wrote 4194598 bytes to primary EBWT file: example_genome/genome.fa_bowtie/W_C2T.rev.1.ebwt
+Wrote 44 bytes to secondary EBWT file: example_genome/genome.fa_bowtie/W_C2T.rev.2.ebwt
 Re-opening _in1 and _in2 as input streams
 Returning from Ebwt constructor
 Headers:
