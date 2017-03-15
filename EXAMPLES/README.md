@@ -17,7 +17,8 @@ cd EXAMPLES
   1. [Filter and trim reads](#adaptrim)
   1. [Align using BS Seeker2](#alignse)
   1. [Convert bam to pm_bed](#bam2pm)
-1. [Window the genome](#window)
+1. [Analyze your experiment](#analysis)
+  1. [Windowing](#window)
 
 ## <a name="Workflow"> Workflow </a>
 
@@ -63,7 +64,7 @@ Once the genome/system specific information is in the *.yaml* file, you are read
 process a single-end WGBS experiment in a single command:
 
 ```
-wgbs_tools process_se --genome example --infoyaml example.yaml example.fq outdir
+wgbs_tools process_se --genome example_genome --infoyaml example.yaml example.fq outdir
 ```
 
 This should produce the directory `outdir`. It should look just like the one in the `correct` folder. This is the end product of `process_se`. It contains:
@@ -77,7 +78,7 @@ If you want to see the intermediate files, try running the command:
 
 ```
 rm -r outdir
-wgbs_tools process_se --genome example --infoyaml example.yaml --working-dir workingdir example.fq outdir
+wgbs_tools process_se --genome example_genome --infoyaml example.yaml --working-dir workingdir example.fq outdir
 ```
 
 This will produce an extra folder called `workingdir` and contains all of the intermediate files. The default settings remove these files after processing but
@@ -147,11 +148,45 @@ So, use the correct converter: `bam2pm` for BS Seeker2 and `bisbam2pm` for Bisma
 file to pm_bed format by:
 
 ```
-wgbs_tools bam2pm --genome example --infoyaml example.yaml outdir.bam outdir
+wgbs_tools bam2pm --genome example_genome --infoyaml example.yaml outdir.bam outdir
 ```
 
-Once in pm_bed format, you can analyze the experiment using a variety of tools in the `wgbs_tools` module.
 
-### <a name="window"> Window the genome </a>
+## <a name="analysis"> Analyze your experiment </a>
 
-One question you may have is "Are there areas of the genome that are hypo/hyper methylated?". To answer this, you 
+Once all of your WGBS samples are in pm_bed format, you can analyze the experiment using a variety of commands in `wgbs_tools`. You may have a variety
+of different experiments, but they usually all boil down to the question: "Are there areas of the genome that are hypo/hyper methylated?". 
+
+To answer this, you need to compare your samples against each other (specifically, control samples to the experimental ones). But first you need to create
+a file that identifies where all of your samples are and what sample they came from. Look at `example_input.tsv` in this folder for an example of what this 
+tab separated file (tsv) looks like. It has two columns:
+
+1. Sample name. This can be anything but I suggest you keep it short for easier readability
+1. Prefix to pm_bed files. When creating pm_bed files, they are broken up by chromosome. This is the path all the way to that prefix.
+
+You will notice that the path for all of the samples leads to the `pmbeds` folder. If you look in the folder, each sample only has one `pm_bed` file (for
+chrT). The chromosomes are defined by the `.yaml` file and `example.yaml`, which has only one chromosome (chrT) for the genome `example_genome`. In a real
+genome there will be multiple pm_bed files corresponding to the multiple chromosomes of the genome.
+
+You will also notice that there is one zipped file in the `pmbeds` folder. This is to demonstrate that all of these commands work on zipped or unzipped 
+pm_bed files.
+
+### <a name="window"> Windowing </a>
+
+The `window` command breaks the genome up into equal, non-overlapping sections (aka windows). The default size is 20000bp with at least 20 CpGs represented
+in every sample, which can all be changed with command options. An example of how to use the command:
+
+```
+wgbs_tools window --window-size 10 --min-cpgs 1 --infoyaml example.yaml --genome example_genome example_input.tsv windowed.txt
+```
+
+If you look at the `example.yaml`, chrT is set at 100bp. So, you would expect there to be windows 10 windows at 10bp each. However, you will 
+notice that in the windowed.txt file, there are only 4 windows. This is because if there is no data on a window for any of the samples, that window is
+not printed. Now try the command:
+
+```
+wgbs_tools window --window-size 10 --min-cpgs 2 --infoyaml example.yaml --genome example_genome example_input.tsv windowed2.txt
+```
+
+If you compare the `windowed.txt` and `windowed2.txt`, you will notice that there are 4 lines in `windowed.txt` and only 2 in `windowed2.txt`. By changing
+the number of minimum CpGs per window, it will 

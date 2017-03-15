@@ -1,7 +1,7 @@
 adapter: AGATCGGAAG
 bs2_path: bs_seeker2-align.py
-example:
+example_genome:
   index: example_genome/
   fasta: example_genome/genome.fa
   chroms:
-      chrT: 999999999
+      chrT: 100
