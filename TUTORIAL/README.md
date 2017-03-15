@@ -189,4 +189,13 @@ wgbs_tools window --window-size 10 --min-cpgs 2 --infoyaml example.yaml --genome
 ```
 
 If you compare the `windowed.txt` and `windowed2.txt`, you will notice that there are 4 lines in `windowed.txt` and only 2 in `windowed2.txt`. By changing
-the number of minimum CpGs per window, it will 
+the number of minimum CpGs per window, it will remove any windows that do not meet this minimum CpG count. 
+
+To get a more complete idea of what's going on, let's look at the raw data:
+
+```
+wgbs_tools window --raw-data windowed_rawdata.txt --window-size 10 --min-cpgs 1 --infoyaml example.yaml --genome example_genome example_input.tsv windowed.txt
+```
+
+This is the same command and the first, with just one additional option: `--raw-data windowed_rawdata.txt`. If you look at the file created, you can see
+the number of methylated
