@@ -14,11 +14,11 @@ cd EXAMPLES
 1. [Add genome to .yaml](#AddGenome)
 1. [Process fastq file in single step](#processse)
 1. [Process fastq file in multiple steps](#processstep)
-  1. [Filter and trim reads](#adaptrim)
-  1. [Align using BS Seeker2](#alignse)
-  1. [Convert bam to pm_bed](#bam2pm)
+    1. [Filter and trim reads](#adaptrim)
+    1. [Align using BS Seeker2](#alignse)
+    1. [Convert bam to pm_bed](#bam2pm)
 1. [Analyze your experiment](#analysis)
-  1. [Windowing](#window)
+    1. [Windowing](#window)
 
 ## <a name="Workflow"> Workflow </a>
 
