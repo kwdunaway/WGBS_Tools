@@ -2,7 +2,11 @@
 
 WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfite Sequencing data. Any questions or comments may be directed to Keith Dunaway (kwdunaway@ucdavis.edu). If you find any problems, please create a github issue.
 
-For examples on how to utilize wgbs_tools to analyze a typical WGBS experiment from start to finish, read *EXAMPLES/README.md*.
+For examples on how to utilize wgbs_tools to analyze a typical WGBS experiment from start to finish, read *TUTORIAL/README.md*.
+
+Here is a basic workflow (the wgbs_tools commands are in red):
+
+![work_outline](TUTORIAL/work_outline.png)
 
 ### Table of Contents
 
