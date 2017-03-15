@@ -71,7 +71,9 @@ def chrom_meth(pm_sample, chrom, roi_chrom, mask, meth_dict):
 
 
 def create_window_roi(window_roi, windowsize, chroms):
-    """"""
+    """
+    Creates a bed file with all of the window locations
+    """
     windows = []
     for chrom in chroms:
         length = chroms[chrom]

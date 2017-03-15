@@ -32,10 +32,10 @@ def cli():
 
 
 @cli.command()
-@click.option('--out_dir', type=click.STRING,
+@click.option('--out-dir', 'out_dir', type=click.STRING,
               default='',
               help='Directory to put all outfiles. '
-                   'Default: <current working directory>')
+                   'Default: <directory with same name as OUT_PREFIX>')
 @click.option('--genome', type=click.STRING,
               default='hg38',
               help='Genome used for alignment and analysis. '
@@ -82,7 +82,7 @@ def cli():
               default=NUM_CPUS,
               help='Number of threads used when multiprocessing. '
                    'Default: Number of system CPUs')
-@click.option('--working_dir', type=click.STRING,
+@click.option('--working-dir', 'working_dir', type=click.STRING,
               default='',
               help='Working directory where temp files are written and read. '
                    'Default: <EMPTY> (Uses tempfile.mkdtemp() to define a '
@@ -133,22 +133,11 @@ def process_se(in_fastq, out_prefix, out_dir, chew_length, min_seqlength,
     chroms = info_dict[genome]['chroms']
     adapter = info_dict['adapter']
 
-    #Name temp files
-    temp_prefix = os.path.join(workingdir, out_prefix)
-    qualfil_fastq = '{}_filtered.fq.gz'.format(temp_prefix)
-    noadap_fq = '{}_noadap.fq.gz'.format(temp_prefix)
-    adaptrim_fq = '{}_trimmed.fq.gz'.format(temp_prefix)
-    noadap_bam = '{}_noadap.bam'.format(temp_prefix)
-    noadap_log = '{}_noadap.bam.log'.format(temp_prefix)
-    adaptrim_bam = '{}_adaptrim.bam'.format(temp_prefix)
-    adaptrim_log = '{}_adaptrim.bam.log'.format(temp_prefix)
-    noadap_sorted = '{}_noadap_sorted'.format(temp_prefix)
-    adaptrim_sorted = '{}_adaptrim_sorted'.format(temp_prefix)
-
     #Create output directory and file names that go there
-    if out_dir != '':
-        if not os.path.exists(out_dir):
-            os.makedirs(out_dir)
+    if out_dir == '':
+        out_dir = out_prefix
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
     full_bam = os.path.join(out_dir, '{}.bam'.format(out_prefix))
     bed_dir = os.path.join(out_dir, 'permethbed_{}'.format(out_prefix))
     if not os.path.exists(bed_dir):
@@ -156,6 +145,18 @@ def process_se(in_fastq, out_prefix, out_dir, chew_length, min_seqlength,
     bed_prefix = os.path.join(bed_dir, '{}_'.format(out_prefix))
     conv_eff = os.path.join(out_dir, '{}_conveff.txt'.format(out_prefix))
     out_summary = os.path.join(out_dir, '{}_summary.txt'.format(out_prefix))
+
+    #Name temp files
+    temp_prefix = os.path.join(workingdir, out_prefix)
+    qualfil_fastq = '{}_filtered.fq.gz'.format(temp_prefix)
+    noadap_fq = '{}_noadap.fq.gz'.format(temp_prefix)
+    adaptrim_fq = '{}_trimmed.fq.gz'.format(temp_prefix)
+    noadap_bam = '{}_noadap.bam'.format(temp_prefix)
+    noadap_log = '{}_noadap.bam.bs_seeker2_log'.format(temp_prefix)
+    adaptrim_bam = '{}_adaptrim.bam'.format(temp_prefix)
+    adaptrim_log = '{}_adaptrim.bam.bs_seeker2_log'.format(temp_prefix)
+    noadap_sorted = '{}_noadap_sorted'.format(temp_prefix)
+    adaptrim_sorted = '{}_adaptrim_sorted'.format(temp_prefix)
 
     #Filter fastq file
     logging.info('Filtering out quality failed reads from fastq file')
@@ -527,8 +528,8 @@ def roi(input_tsv, out_table, roi_file, mask, min_read_count, min_cpg_count,
     in_sample_list = []
     with open(input_tsv, 'r') as infile:
         for line in infile:
-            if line.endswith('\n') or line.endswith('\r'):
-                line = line[:-1]
+            # if line.endswith('\n') or line.endswith('\r'):
+            line = line.rstrip()
             in_bed_prefixes.append(line.split('\t')[1])
             in_sample_list.append(line.split('\t')[0])
     if min_sample_coverage == -1:
@@ -592,8 +593,7 @@ def adjustcols(in_prefix, out_prefix, suffix, cols, adjusts, header):
                     outfile.write(line)
                     headerin = False
                 else:
-                    if line.endswith('\n') or line.endswith('\r'):
-                        line = line[:-1]
+                    line = line.rstrip()
                     cells = line.split('\t')
                     for num in range(len(col_list)):
                         col = int(col_list[num])
@@ -685,9 +685,11 @@ def window(input_tsv, out_table, windowsize, mask, raw_data, threads,
     in_sample_list = []
     with open(input_tsv, 'r') as infile:
         for line in infile:
-            line = line[:-1]
-            in_bed_prefixes.append(line.split('\t')[1])
-            in_sample_list.append(line.split('\t')[0])
+            line = line.rstrip()
+            line_list = line.split('\t')
+            if len(line_list) > 1:
+                in_bed_prefixes.append(line_list[1])
+                in_sample_list.append(line_list[0])
     if min_sample_coverage == -1:
         min_sample_coverage = len(in_sample_list)
     stream = file(infoyaml, 'r')
@@ -841,7 +843,7 @@ def ll_fixdmrs(in_prefix, suffix):
                 print('Processing: {}'.format(in_file_name))
                 firstline = firstline[:-1]
                 for line in in_file:
-                    line = line[:-1]
+                    line = line.rstrip()
                     firstline = '{}\t{}'.format(firstline, line)
                 firstline = '{}\n'.format(firstline)
                 outfile = open(out_file_name, 'wb')
@@ -911,6 +913,7 @@ def pm_stats(in_prefix, out_file, suffix):
 
 @cli.command()
 @click.option('--adapter', type=click.STRING,
+              default='AGATCGGAAG',
               help='Beginning sequence of adapter. Default: AGATCGGAAG')
 @click.option('--out_dir', type=click.STRING,
               default='',
@@ -934,12 +937,12 @@ def pm_stats(in_prefix, out_file, suffix):
               help='Working directory where temp files are written and read. '
                    'Default: <EMPTY> (Uses tempfile.mkdtemp() to define a '
                    'temperary working directory)')
-@click.argument('in_for_fq', type=click.STRING)
+@click.argument('in_fastq', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
 def trim_sefq(in_fastq, out_prefix, adapter, out_dir, threads, chew_length,
               min_seqlength, working_dir):
     """
-    Filters and trims PE FASTQ files.
+    Filters and trims single end FASTQ file.
 
     \b
     Quality filters and adapter trims a pair of paired-end FASTQ files. Takes in
@@ -1016,7 +1019,7 @@ def trim_sefq(in_fastq, out_prefix, adapter, out_dir, threads, chew_length,
 def trim_pefq(in_for_fq, in_rev_fq, out_prefix, for_adap, rev_adap, out_dir,
               threads, chew_length, min_seqlength):
     """
-    Filters and trims PE FASTQ files.
+    Filters and trims paired end FASTQ files.
 
     \b
     Quality filters and adapter trims a pair of paired-end FASTQ files. Takes in
@@ -1116,6 +1119,9 @@ def bam2pm(in_bam, bed_prefix, genome, methtype, strand, max_dup_reads, threads,
     info_dict = yaml.safe_load(stream)
     chroms = info_dict[genome]['chroms']
 
+    if not bed_prefix.endswith('_'):
+        bed_prefix = '{}_'.format(bed_prefix)
+
     #Index full bam file if not found
     indexname = '{}.bai'.format(in_bam)
     if not os.path.isfile(indexname):
@@ -1188,10 +1194,17 @@ def ll_chrcov(in_bed, out_table):
               help='Forces addition of genomic information without checking '
                    'to see if index and fasta files exist on system. '
                    'Default: --not-force')
+@click.option('--all/--main',
+              default=False,
+              help='Sets whether to include all chromosomes or just the main '
+                   'ones. If a chromosome has "_" in the name, it will not be '
+                   'included if main is set. Examples include '
+                   'chromosomes with _random, _alt, and chrUn_ in the name. '
+                   'Default: --main')
 @click.argument('genome', type=click.STRING)
-@click.argument('index', type=click.STRING)
 @click.argument('fasta', type=click.STRING)
-def add_genome(genome, index, fasta, infoyaml, force):
+@click.argument('index', type=click.STRING)
+def add_genome(genome, fasta, index, infoyaml, force, all):
     """
     Adds genome information to info.yaml file.
 
@@ -1223,15 +1236,20 @@ def add_genome(genome, index, fasta, infoyaml, force):
     subprocess.check_call(command, shell=True)
 
     # Appends info.yaml file
-    outfile = open(infoyaml, 'wb+')
+    outfile = open(infoyaml, 'ab')
     outfile.write('{}:\n'.format(genome))
-    outfile.write('  index: {}\n'.format(index))
     outfile.write('  fasta: {}\n'.format(fasta))
+    outfile.write('  index: {}\n'.format(index))
     outfile.write('  chroms:\n')
     with open(chrom_sizes, 'r') as cs_file:
         for line in cs_file:
             line_list = line.split('\t')
-            printline = '      {}: {}'.format(line_list[0], line_list[1])
-            outfile.write(printline)
+            if all:
+                printline = '      {}: {}'.format(line_list[0], line_list[1])
+                outfile.write(printline)
+            else:
+                if '_' not in line_list[0]:
+                    printline = '      {}: {}'.format(line_list[0], line_list[1])
+                    outfile.write(printline)
     outfile.close()
     shutil.rmtree(workingdir)

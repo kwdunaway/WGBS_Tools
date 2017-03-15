@@ -22,7 +22,7 @@ def qual_filter_fastq(in_fastq, out_fastq):
     """
 
     # Checks to see if the fastq file has Illumina quality calls
-    if out_fastq.endswith('.gz'):
+    if in_fastq.endswith('.gz'):
         with gzip.open(in_fastq, 'r') as infq:
             first_line = infq.readline()
     else:
@@ -84,27 +84,31 @@ def adapter_remove(in_fastq, noadap_fq, adaptrim_fq, adap_seq, chew_length=10,
         trimmed_outfile = gzip.open(adaptrim_fq, 'wb')
     else:
         trimmed_outfile = open(adaptrim_fq, 'wb')
-    with open(in_fastq, 'r') as fastq_in_file:
-        for header_line in fastq_in_file:
-            seq_line = next(fastq_in_file)
-            seq_line = seq_line[:-1]
-            third_line = next(fastq_in_file)
-            qual_line = next(fastq_in_file)
-            qual_line = qual_line[:-1]
-            seq_trimmed = seq_line.split(adap_seq)
-            if len(seq_trimmed[0]) == len(seq_line):
-                noadap_outfile.write(header_line)
-                noadap_outfile.write('{}\n'.format(seq_line[:-chew_length]))
-                noadap_outfile.write(third_line)
-                noadap_outfile.write('{}\n'.format(qual_line[:-chew_length]))
-            else:
-                trimmed_seq_line = seq_trimmed[0][:-chew_length]
-                if len(trimmed_seq_line) >= min_seqlength:
-                    qline_len = len(trimmed_seq_line)
-                    trimmed_outfile.write(header_line)
-                    trimmed_outfile.write('{}\n'.format(trimmed_seq_line))
-                    trimmed_outfile.write(third_line)
-                    trimmed_outfile.write('{}\n'.format(qual_line[:qline_len]))
+    if in_fastq.endswith('.gz'):
+        fastq_in_file = gzip.open(in_fastq, 'r')
+    else:
+        fastq_in_file = open(in_fastq, 'r')
+    for header_line in fastq_in_file:
+        seq_line = next(fastq_in_file)
+        seq_line = seq_line[:-1]
+        third_line = next(fastq_in_file)
+        qual_line = next(fastq_in_file)
+        qual_line = qual_line[:-1]
+        seq_trimmed = seq_line.split(adap_seq)
+        if len(seq_trimmed[0]) == len(seq_line):
+            noadap_outfile.write(header_line)
+            noadap_outfile.write('{}\n'.format(seq_line[:-chew_length]))
+            noadap_outfile.write(third_line)
+            noadap_outfile.write('{}\n'.format(qual_line[:-chew_length]))
+        else:
+            trimmed_seq_line = seq_trimmed[0][:-chew_length]
+            if len(trimmed_seq_line) >= min_seqlength:
+                qline_len = len(trimmed_seq_line)
+                trimmed_outfile.write(header_line)
+                trimmed_outfile.write('{}\n'.format(trimmed_seq_line))
+                trimmed_outfile.write(third_line)
+                trimmed_outfile.write('{}\n'.format(qual_line[:qline_len]))
+    fastq_in_file.close()
     noadap_outfile.close()
     trimmed_outfile.close()
 

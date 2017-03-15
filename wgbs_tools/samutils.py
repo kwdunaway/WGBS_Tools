@@ -32,9 +32,9 @@ def bam_to_permeth(in_bam, out_prefix, bed_prefix, genome,
     pool = multiprocessing.Pool(threads)
     for chrom in chroms:
         chrom_length = chroms[chrom]
-        out_bed = '{}_{}.bed.gz'.format(out_prefix, chrom)
+        out_bed = '{}{}.bed.gz'.format(bed_prefix, chrom)
         pool.apply_async(chr_bam_to_permeth,
-                         args=(in_bam, out_bed, bed_prefix, genome, meth_type,
+                         args=(in_bam, out_bed, out_prefix, genome, meth_type,
                                strand_type, max_dup_reads, chrom, chrom_length))
     pool.close()
     pool.join()

@@ -32,8 +32,6 @@ def test_align_bs2_noadap(bs2_path, fasta, bs2_index, noadap_fastq, working_dir,
                        bam_out)
     command = 'samtools view -o {} {}'.format(out_sam, bam_out)
     subprocess.check_call(command, shell = True)
-    # command = 'cp {} {}'.format(out_sam, correct_noadapsam)
-    # subprocess.check_call(command, shell = True)
     with open(out_sam, 'r') as content_file:
         testcontent = content_file.read()
         assert testcontent == correct_noadapsam, 'Full alignment error.'
