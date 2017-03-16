@@ -1,6 +1,0 @@
-track	name=pm02_chrF	description=pm02_chrF	useScore=0	itemRgb=On	db=hg38
-chrT	1	2	1.00-20	0	+	0	0	210,27,27
-chrT	3	4	1.00-10	0	+	0	0	210,27,27
-chrT	12	22	0.00-10	0	+	0	0	210,27,27
-chrT	21	22	0.00-20	0	+	0	0	210,27,27
-chrT	31	32	0.50-200	0	+	0	0	210,27,27
