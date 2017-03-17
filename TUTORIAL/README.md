@@ -20,7 +20,9 @@ cd TUTORIAL
 1. [Analyze your experiment](#analysis)
     1. [Windowing](#window)
     1. [Regions of Interest](#roi)
-    1. [Convert to DSS format for statistical analyses](#expm2dss)
+1. [Convert pm_bed to another format](#convert)
+    1. [pm_bed to DSS](#expm2dss)
+
 
 ## <a name="Workflow"> Workflow </a>
 
@@ -146,9 +148,7 @@ wgbs_tools bam2pm --genome example_genome --infoyaml example.yaml out.bam out
 
 ## <a name="analysis"> Analyze your experiment </a>
 
-Once all of your WGBS samples are in pm_bed format, you can analyze the experiment using a variety of commands in `wgbs_tools`. You may have a variety of different experiments, but they usually all boil down to the question: "Are there areas of the genome that are hypo/hyper methylated?". 
-
-To answer this, you need to compare your samples against each other (specifically, control samples to the experimental ones). But first you need to create a file that identifies where all of your samples are and what sample they came from. Look at `example_input.tsv` in this folder for an example of what this tab separated file (tsv) looks like. It has two columns:
+You may have a variety of different experiments, but they usually all boil down to the question: "Are there areas of the genome that are hypo/hyper methylated?".  To answer this, you need to compare your samples against each other (specifically, control samples to the experimental ones). But first you need to create a file that identifies where all of your samples are and what sample they came from. Look at `example_input.tsv` in this folder for an example of what this tab separated file (tsv) looks like. It has two columns:
 
 1. Sample name. This can be anything but I suggest you keep it short for easier readability
 1. Prefix to pm_bed files. When creating pm_bed files, they are broken up by chromosome. This is the path all the way to that prefix.
@@ -211,6 +211,16 @@ wgbs_tools roi --mask data/mask.bed --min-cpgs 1 data/example_input.tsv roi_tabl
 
 One important difference is that `roi` does not need a `.yaml` file to run. This is because while `window` needs chromosome lengths to subset the genome, roi only uses the areas designated in the `roi.bed` file.
 
-### <a name="expm2dss"> Convert to DSS format for statistical analyses </a>
+## <a name="convert"> Convert pm_bed to another format </a>
 
-WGBS_Tools is meant to be a utility to take raw WGBS data and output it into a useful format. Since there are other programs to analyze 
+You may want to convert your data to another format. Some of the most common formats have converters built into `wgbs_tools`.
+
+## <a name="expm2dss"> pm_bed to DSS </a>
+
+If you want to find small (< 1000bp) DMRs you should consider using the R packages DSS or bsseq. In order to use these modules, you need to convert your data to DSS format:
+
+```
+mkdir DSS
+wgbs_tools pm2dss data/pmbeds/pm DSS/pm
+```
+
