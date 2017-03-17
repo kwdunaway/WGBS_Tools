@@ -1,6 +1,6 @@
 # WGBS_Tools
 
-WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfite Sequencing data. Any questions or comments may be directed to Keith Dunaway (kwdunaway@ucdavis.edu). If you find any problems, please create a github issue.
+WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfite Sequencing data. Any questions or comments may be directed to Keith Dunaway (keith0dun@gmail.com). If you find any problems, please create a github issue.
 
 For examples on how to utilize wgbs_tools to analyze a typical WGBS experiment from start to finish, read *TUTORIAL/README.md*.
 
@@ -34,6 +34,7 @@ Here is a basic workflow (the wgbs_tools commands are in red):
     1. [info.yaml](#infoyaml)
     1. [pm_bed](#pm_bed)
     1. [meth_table](#meth_table)
+1. [Statistical Analyses](#statanalysis)
 1. [Version History](#VersionHistory)
 
 ## <a name="Installation"> Installation </a>
@@ -216,12 +217,12 @@ Converts multiple percent methylation bed files to a single bedGraph file. This 
 Track hubs, while useful for visualizing your data, require many steps to create. Briefly:
 
 1. Convert pm_bed files to bedGraph using *wgbs_tools pm2bg*.
-1. Convert the resulting bedGraph files to BigWig format using *bedGraphToBigWig*. You may need to download the converter from [UCSC](http://hgdownload.soe.ucsc.edu/admin/exe/). The linux version can be found at [bedGraphToBigWig](http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/bedGraphToBigWig).
+1. Convert the resulting bedGraph files to BigWig format using *bedGraphToBigWig*. You may need to download the converter from [UCSC](http://hgdownload.soe.ucsc.edu/admin/exe/). The Linux version can be found at [bedGraphToBigWig](http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/bedGraphToBigWig).
 1. You will then need to add this information to the hub. See [Basic Track Hub Quick Start Guide](https://genome.ucsc.edu/goldenpath/help/hubQuickStart.html) for more information.
 
 #### <a name="pm2dss"> pm2dss </a>
 
-Converts multiple multiple percent methylation bed files to DSS format. These file are necessary as input for many R packages dealing with methylation (such as the R packages *bsseq* and *DSS*).
+Converts multiple percent methylation bed files to DSS format. These file are necessary as input for many R packages dealing with methylation (such as the R packages *bsseq* and *DSS*).
 
 ## <a name="FileFormats"> File Formats </a>
 
@@ -301,6 +302,18 @@ averaged across the region of interest. The format for these files are:
 1. sample 2 methylated read count
 1. sample 2 total read count ... (etc.)
 
+
+## <a name="statanalysis"> Statistical Analyses </a>
+
+WGBS_Tools is meant to be a utility to take raw WGBS data and output it into a user friendly format. You can load the `pm_bed` data on a [genome browser](genome.ucsc.edu), get summary data, or even load the tables into R/Excel.
+
+Unfortunately, due to its experiment specific nature, statistical analyses is outside the scope of this toolkit. However, we can give a few suggestions:
+
+- Correct for multiple hypotheses. This is usually done with [Bonferroni](https://en.wikipedia.org/wiki/Bonferroni_correction) or [Benjamini](https://en.wikipedia.org/wiki/False_discovery_rate#Benjamini.E2.80.93Hochberg_procedure) correction.
+- When windowing, consider a clustering algorithm. Read [Dunaway (Cell Reports 2016)](http://www.sciencedirect.com/science/article/pii/S221112471631631X) for an example.
+- If you want to find small (< 1000bp) DMRs, consider using the R packages DSS or bsseq. You can convert using `pm2dss`.
+
+
 ## <a name="VersionHistory"> Version History </a>
 __0.1__:
 Initial conversion of scripts to python. Improvements in multiprocessing, installation, and readability were implimented as well.
@@ -309,5 +322,4 @@ __0.0.perl__:
 Most of these scripts were originally written in Perl and used in the publications:
 http://www.cell.com/cell-reports/fulltext/S2211-1247(16)31631-X
 https://www.ncbi.nlm.nih.gov/pubmed/28032673
-However, many improvements in performance, installation ease, and understandability were implimented since this version. If you still want those scripts, please go to folder: WGBS_Tools/perl
-
+However, many improvements in performance, installation ease, and understandability were implemented since this version. If you still want those scripts, please go to folder: WGBS_Tools/perl

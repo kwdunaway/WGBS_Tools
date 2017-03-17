@@ -87,17 +87,10 @@ def create_window_roi(window_roi, windowsize, chroms):
 
 
 def roi_meth(in_bed_prefixes, in_sample_list, out_table, mask_file, roi_file,
-             min_read_count, min_cpg_count, min_file_count, raw_data_name, 
+             min_read_count, min_cpg_count, min_file_count, raw_data_name,
              thread_count):
     """Creates a table with the methylation across desired Regions of
     Interest (ROI)
-    1) Output file
-    2) Input BED or GTF File (needs to have a header line)
-    3) Input BED or GTF column for name of ROI (ex: 3 for bed files) (NA for no name)
-    4) Minimum Read Threshold
-    5) Minimum File Threshold (Files without NA data)
-    6,8+) Input Percent Methylation Folder Prefix (exclude \"chr\" from the path)
-    7,9+) Input Sample Name (for header of output file)
     """
     # Reduces thread count if there aren't enough tasks to fill all threads
     if len(in_bed_prefixes) < thread_count:

@@ -30,7 +30,7 @@ def test_create_window_roi(working_dir, correct_window_roi):
     with open(window_roi, 'r') as content_file:
         testcontent = content_file.read()
         assert testcontent == correct_window_roi, \
-            'Error in creating correct window roi.'
+            'Error in creating correct_output window roi.'
 
 
 def test_roi_meth1(bed_folder, working_dir, correct_meth_table1,
@@ -56,11 +56,11 @@ def test_roi_meth1(bed_folder, working_dir, correct_meth_table1,
     with open(out_table, 'r') as content_file:
         testcontent = content_file.read()
         assert testcontent == correct_meth_table1, \
-            'Error in creating correct methylation table from roi.'
+            'Error in creating correct_output methylation table from roi.'
     with open(out_raw_name, 'r') as content_file:
         testcontent = content_file.read()
         assert testcontent == correct_meth_raw1, \
-            'Error in creating correct raw methylation table from roi.'
+            'Error in creating correct_output raw methylation table from roi.'
 
 
 def test_roi_meth2(bed_folder, working_dir, correct_meth_table2,
@@ -86,11 +86,11 @@ def test_roi_meth2(bed_folder, working_dir, correct_meth_table2,
     with open(out_table, 'r') as content_file:
         testcontent = content_file.read()
         assert testcontent == correct_meth_table2, \
-            'Error in creating correct methylation table from roi.'
+            'Error in creating correct_output methylation table from roi.'
     with open(out_raw_name, 'r') as content_file:
         testcontent = content_file.read()
         assert testcontent == correct_meth_raw2, \
-            'Error in creating correct raw methylation table from roi.'
+            'Error in creating correct_output raw methylation table from roi.'
 
 
 def test_roi_meth3(bed_folder, working_dir, correct_meth_table3):
@@ -115,7 +115,7 @@ def test_roi_meth3(bed_folder, working_dir, correct_meth_table3):
     with open(out_table, 'r') as content_file:
         testcontent = content_file.read()
         assert testcontent == correct_meth_table3, \
-            'Error in creating correct methylation table from roi.'
+            'Error in creating correct_output methylation table from roi.'
 
 
 def test_convert_pm2dss(bed_folder, working_dir, correct_out_dss):

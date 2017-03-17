@@ -528,10 +528,11 @@ def roi(input_tsv, out_table, roi_file, mask, min_read_count, min_cpg_count,
     in_sample_list = []
     with open(input_tsv, 'r') as infile:
         for line in infile:
-            # if line.endswith('\n') or line.endswith('\r'):
             line = line.rstrip()
-            in_bed_prefixes.append(line.split('\t')[1])
-            in_sample_list.append(line.split('\t')[0])
+            line_list = line.split('\t')
+            if len(line_list) > 1:
+                in_bed_prefixes.append(line_list[1])
+                in_sample_list.append(line_list[0])
     if min_sample_coverage == -1:
         min_sample_coverage = len(in_sample_list)
     permethbed.roi_meth(in_bed_prefixes, in_sample_list, out_table,
@@ -703,9 +704,9 @@ def window(input_tsv, out_table, windowsize, mask, raw_data, threads,
 
 @cli.command()
 @click.option('--gz/--no-gz',
-              default=True,
+              default=False,
               help='Boolean which indicates if the output files will be '
-                   'compressed (.gz format) or not. Default: --gz (compressed)')
+                   'compressed (.gz format) or not. Default: --no-gz')
 @click.argument('in_prefix', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
 def pm2dss(in_prefix, out_prefix, gz):
@@ -1220,10 +1221,10 @@ def add_genome(genome, fasta, index, infoyaml, force, all):
     if not force:
         assert os.path.exists(index), \
             'Failure: {} does not exist. \nPlease ensure you input the ' \
-            'correct path or use the --force option.'.format(index)
+            'correct_output path or use the --force option.'.format(index)
         assert os.path.exists(fasta), \
             'Failure: {} does not exist. \nPlease ensure you input the ' \
-            'correct path or use the --force option.'.format(fasta)
+            'correct_output path or use the --force option.'.format(fasta)
 
     workingdir = tempfile.mkdtemp()
 
