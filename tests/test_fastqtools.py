@@ -7,9 +7,9 @@ import os
 import subprocess
 
 
-def test_qual_filter_fastq(qual_fastq, working_dir, correct_qualfil_fastq):
+def test_qual_filter_fastq(qual_fastq, tmpdir, correct_qualfil_fastq):
     """Tests qual_filter_fastq function"""
-    out_fastq = os.path.join(working_dir, 'test_qualfilterout.fq')
+    out_fastq = os.path.join(str(tmpdir), 'test_qualfilterout.fq')
     fastqtools.qual_filter_fastq(qual_fastq, out_fastq)
     # command = 'cp {} {}'.format(out_fastq, correct_qualfil_fastq)
     # subprocess.check_call(command, shell = True)
@@ -19,12 +19,12 @@ def test_qual_filter_fastq(qual_fastq, working_dir, correct_qualfil_fastq):
             'Quality FASTQ filter error.'
 
 
-def test_adapter_remove(adap_fastq, working_dir,
+def test_adapter_remove(adap_fastq, tmpdir,
                         correct_noadap_fastq, correct_adap_fastq):
     """Tests adapter_remove to ensure adapters gets removed properly and only
     desired reads remain"""
-    noadap_fq = os.path.join(working_dir, 'test_noadapout.fq')
-    adaptrim_fq = os.path.join(working_dir, 'test_adaptrim.fq')
+    noadap_fq = os.path.join(str(tmpdir), 'test_noadapout.fq')
+    adaptrim_fq = os.path.join(str(tmpdir), 'test_adaptrim.fq')
     adap_seq = 'AGATCGGAAG'
     chew_length = 10
     min_seqlength = 35

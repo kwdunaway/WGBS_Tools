@@ -20,9 +20,9 @@ def test_total_count(feature):
     assert total == 10, 'total_count is not returning total count correctly'
 
 
-def test_create_window_roi(working_dir, correct_window_roi):
+def test_create_window_roi(tmpdir, correct_window_roi):
     """Tests the create_window_roi function"""
-    window_roi = os.path.join(working_dir, 'window_roi.bed')
+    window_roi = os.path.join(str(tmpdir), 'window_roi.bed')
     # window_roi = 'window_roi.bed'
     windowsize = 10
     chroms = {'chrF': 200}
@@ -33,7 +33,7 @@ def test_create_window_roi(working_dir, correct_window_roi):
             'Error in creating correct_output window roi.'
 
 
-def test_roi_meth1(bed_folder, working_dir, correct_meth_table1,
+def test_roi_meth1(bed_folder, tmpdir, correct_meth_table1,
                   correct_meth_raw1):
     """Tests roi_meth to multithread analysis"""
     in_bed_prefixes = []
@@ -44,8 +44,8 @@ def test_roi_meth1(bed_folder, working_dir, correct_meth_table1,
     in_sample_list = ['pm01', 'pm02', 'pm03', 'pm04', 'pm05', 'pm06']
     roi_file = os.path.join(bed_folder, 'roi1.bed')
     mask_file = ''
-    out_table = os.path.join(working_dir, 'roi_meth_table1.txt')
-    out_raw_name = os.path.join(working_dir, 'roi_meth_table1.raw.txt')
+    out_table = os.path.join(str(tmpdir), 'roi_meth_table1.txt')
+    out_raw_name = os.path.join(str(tmpdir), 'roi_meth_table1.raw.txt')
     min_read_count = 1
     min_cpg_count = 1
     min_file_count = 1
@@ -63,7 +63,7 @@ def test_roi_meth1(bed_folder, working_dir, correct_meth_table1,
             'Error in creating correct_output raw methylation table from roi.'
 
 
-def test_roi_meth2(bed_folder, working_dir, correct_meth_table2,
+def test_roi_meth2(bed_folder, tmpdir, correct_meth_table2,
                   correct_meth_raw2):
     """Tests roi_meth to mask analysis correctly"""
     in_bed_prefixes = []
@@ -74,8 +74,8 @@ def test_roi_meth2(bed_folder, working_dir, correct_meth_table2,
     in_sample_list = ['pm01', 'pm02', 'pm03', 'pm04', 'pm05', 'pm06']
     roi_file = os.path.join(bed_folder, 'roi1.bed')
     mask_file = 'tests/data/bed/mask2.bed'
-    out_table = os.path.join(working_dir, 'roi_meth_table2.txt')
-    out_raw_name = os.path.join(working_dir, 'roi_meth_table2.raw.txt')
+    out_table = os.path.join(str(tmpdir), 'roi_meth_table2.txt')
+    out_raw_name = os.path.join(str(tmpdir), 'roi_meth_table2.raw.txt')
     min_read_count = 1
     min_cpg_count = 1
     min_file_count = 1
@@ -93,7 +93,7 @@ def test_roi_meth2(bed_folder, working_dir, correct_meth_table2,
             'Error in creating correct_output raw methylation table from roi.'
 
 
-def test_roi_meth3(bed_folder, working_dir, correct_meth_table3):
+def test_roi_meth3(bed_folder, tmpdir, correct_meth_table3):
     """Tests roi_meth to mask analysis correctly across windows"""
     in_bed_prefixes = []
     for num in range(6):
@@ -103,7 +103,7 @@ def test_roi_meth3(bed_folder, working_dir, correct_meth_table3):
     in_sample_list = ['pm01', 'pm02', 'pm03', 'pm04', 'pm05', 'pm06']
     roi_file = os.path.join(bed_folder, 'window_roi.bed')
     mask_file = 'tests/data/bed/mask2.bed'
-    out_table = os.path.join(working_dir, 'roi_meth_table3.txt')
+    out_table = os.path.join(str(tmpdir), 'roi_meth_table3.txt')
     out_raw_name = ''
     min_read_count = 1
     min_cpg_count = 1
@@ -118,10 +118,10 @@ def test_roi_meth3(bed_folder, working_dir, correct_meth_table3):
             'Error in creating correct_output methylation table from roi.'
 
 
-def test_convert_pm2dss(bed_folder, working_dir, correct_out_dss):
+def test_convert_pm2dss(bed_folder, tmpdir, correct_out_dss):
     """Tests the converter of pm to dss formats"""
     in_pmbed = os.path.join(bed_folder, 'pm01_chrF.bed')
-    out_dss = os.path.join(working_dir, 'pm01_chrF.dss')
+    out_dss = os.path.join(str(tmpdir), 'pm01_chrF.dss')
     permethbed.convert_pm2dss(in_pmbed, out_dss)
     with open(out_dss, 'r') as content_file:
         testcontent = content_file.read()
@@ -129,10 +129,10 @@ def test_convert_pm2dss(bed_folder, working_dir, correct_out_dss):
             'Error in converting permeth to DSS format.'
 
 
-def test_convert_pm2bg(bed_folder, working_dir, correct_out_bg):
+def test_convert_pm2bg(bed_folder, tmpdir, correct_out_bg):
     """Tests the converter of pm to bg formats"""
     in_pmbed = os.path.join(bed_folder, 'pm01_chrF.bed')
-    out_dss = os.path.join(working_dir, 'pm01_chrF.bg')
+    out_dss = os.path.join(str(tmpdir), 'pm01_chrF.bg')
     permethbed.convert_pm2bg(in_pmbed, out_dss)
     with open(out_dss, 'r') as content_file:
         testcontent = content_file.read()

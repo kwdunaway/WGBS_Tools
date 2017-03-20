@@ -19,33 +19,34 @@ def test_bsseeker2(bs2_path):
         'Could not find BS-Seeker2 at {}. If this is an incorrect location, ' \
         'Please change info.yaml accordingly.'.format(bs2_path)
 
-def test_align_bs2_noadap(bs2_path, fasta, bs2_index, noadap_fastq, working_dir,
+def test_align_bs2_noadap(bs2_path, fasta, bs2_index, noadap_fastq, tmpdir,
                           correct_noadapsam):
     """
     Tests function align_bs2 from bsseeker using reads without adapter
     contamination trimmed out.
     """
     params = '-m 3 -f bam'
-    bam_out = os.path.join(working_dir, 'noadap_test_out.bam')
-    out_sam = os.path.join(working_dir, 'noadap_test_out.sam')
+    bam_out = os.path.join(str(tmpdir), 'noadap_test_out.bam')
+    sam_out = os.path.join(str(tmpdir), 'noadap_test_out.sam')
     bsseeker.align_bs2(bs2_path, params, fasta, bs2_index, noadap_fastq,
                        bam_out)
-    command = 'samtools view -o {} {}'.format(out_sam, bam_out)
+    command = 'samtools view -o {} {}'.format(sam_out, bam_out)
     subprocess.check_call(command, shell = True)
-    with open(out_sam, 'r') as content_file:
+    # assert os.path.isfile(bam_out), 'Does not exist: {}'.format(bam_out)
+    with open(sam_out, 'r') as content_file:
         testcontent = content_file.read()
         assert testcontent == correct_noadapsam, 'Full alignment error.'
 
 
 def test_align_bs2_adaptrim(bs2_path, fasta, bs2_index, trimmed_fastq,
-                            working_dir, correct_trimmedsam):
+                            tmpdir, correct_trimmedsam):
     """
     Tests function align_bs2 from bsseeker using reads with adapter
     contamination trimmed out of the reads, as well as 10bp chewed back.
     """
     params = '-m 2 -f bam'
-    bam_out = os.path.join(working_dir, 'trimmed_test_out.bam')
-    out_sam = os.path.join(working_dir, 'trimmed_test_out.sam')
+    bam_out = os.path.join(str(tmpdir), 'trimmed_test_out.bam')
+    out_sam = os.path.join(str(tmpdir), 'trimmed_test_out.sam')
     bsseeker.align_bs2(bs2_path, params, fasta, bs2_index, trimmed_fastq,
                        bam_out)
     command = 'samtools view -o {} {}'.format(out_sam, bam_out)
@@ -59,4 +60,3 @@ def test_align_bs2_adaptrim(bs2_path, fasta, bs2_index, trimmed_fastq,
 
 # def test_process_logs():
 #     """Tests process_logs function"""
-#

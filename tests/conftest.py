@@ -13,27 +13,27 @@ import yaml
 from pybedtools import BedTool
 import sys
 
-working_directory = tempfile.mkdtemp()
+# working_directory = tempfile.mkdtemp()
 
-@pytest.yield_fixture(scope='session')
-def temp_dir():
-    tmpdir = tempfile.mkdtemp()
-    def closure(*names):
-        path = os.path.join(tmpdir, *names)
-        try:
-            os.mknod(path)
-        except OSError as exc:
-            if exc.errno != 17:
-                raise
-        return path
-    yield closure
-    shutil.rmtree(tmpdir)
+# @pytest.yield_fixture(scope='session')
+# def temp_dir():
+#     tmpdir = tempfile.mkdtemp()
+#     def closure(*names):
+#         path = os.path.join(tmpdir, *names)
+#         try:
+#             os.mknod(path)
+#         except OSError as exc:
+#             if exc.errno != 17:
+#                 raise
+#         return path
+#     yield closure
+#     shutil.rmtree(tmpdir)
+#
 
-
-@pytest.fixture
-def working_dir():
-    """Get a working directory for all files"""
-    return working_directory
+# @pytest.fixture
+# def working_dir():
+#     """Get a working directory for all files"""
+#     return working_directory
 
 @pytest.fixture
 def sys_version():
