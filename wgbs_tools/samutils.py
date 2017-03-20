@@ -78,7 +78,7 @@ def chr_bam_to_permeth(in_bam, out_bed, bed_prefix, genome, meth_type,
 
     # Create compressed outfile and write header line
     outfile = gzip.open(out_bed, 'wb')
-    header_line = 'track name={}{} description={}_{} useScore=0 itemRgb=On ' \
+    header_line = 'track name={}{} description={}{} useScore=0 itemRgb=On ' \
                   'db={}\n'.format(bed_prefix, chrom, bed_prefix, chrom, genome)
     outfile.write(header_line)
 
