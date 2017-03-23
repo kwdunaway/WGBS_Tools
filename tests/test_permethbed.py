@@ -42,7 +42,7 @@ def test_roi_meth1(bed_folder, tmpdir, correct_meth_table1,
         numname = num + 1
         fileprefix = os.path.join(bed_folder, 'pm0{}_'.format(numname))
         in_bed_prefixes.append(fileprefix)
-        in_sample_list.append('pm0{}_'.format(numname))
+        in_sample_list.append('pm0{}'.format(numname))
     roi_file = os.path.join(bed_folder, 'roi1.bed')
     mask_file = ''
     out_table = os.path.join(str(tmpdir), 'roi_meth_table1.txt')
@@ -73,7 +73,7 @@ def test_roi_meth2(bed_folder, tmpdir, correct_meth_table2,
         numname = num + 1
         fileprefix = os.path.join(bed_folder, 'pm0{}_'.format(numname))
         in_bed_prefixes.append(fileprefix)
-        in_sample_list.append('pm0{}_'.format(numname))
+        in_sample_list.append('pm0{}'.format(numname))
     roi_file = os.path.join(bed_folder, 'roi1.bed')
     mask_file = 'tests/data/bed/mask2.bed'
     out_table = os.path.join(str(tmpdir), 'roi_meth_table2.txt')
@@ -103,7 +103,7 @@ def test_roi_meth3(bed_folder, tmpdir, correct_meth_table3):
         numname = num + 1
         fileprefix = os.path.join(bed_folder, 'pm0{}_'.format(numname))
         in_bed_prefixes.append(fileprefix)
-        in_sample_list.append('pm0{}_'.format(numname))
+        in_sample_list.append('pm0{}'.format(numname))
     roi_file = os.path.join(bed_folder, 'window_roi.bed')
     mask_file = 'tests/data/bed/mask2.bed'
     out_table = os.path.join(str(tmpdir), 'roi_meth_table3.txt')

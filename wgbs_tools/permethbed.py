@@ -163,14 +163,15 @@ def roi_meth(in_bed_prefixes, in_sample_list, out_table, mask_file, roi_file,
                 print_line = '{}\t{}\t{}\t{}'.format(chrom, start, end, name)
                 raw_col_line = print_line
                 file_print_count = 0
+                print(print_line)
                 for pm_sample in in_bed_prefixes:
                     meth = meth_dict[start][end][pm_sample]['meth']
                     total = meth_dict[start][end][pm_sample]['total']
                     cpg = meth_dict[start][end][pm_sample]['cpg']
-                    print "pm_sample: {}".format(pm_sample)
-                    print "start: {}".format(start)
-                    print "end: {}".format(end)
-                    print "Total: {}".format(total)
+                    # print "pm_sample: {}".format(pm_sample)
+                    # print "start: {}".format(start)
+                    # print "end: {}".format(end)
+                    # print "Total: {}".format(total)
                     if total >= min_read_count and cpg >= min_cpg_count:
                         # print('meth:{}\ttotal:{}'.format(meth, total))
                         try:
