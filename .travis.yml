@@ -2,7 +2,7 @@ language: python
 python:
     - 2.7.10
 install:
-  - pip install conda
+  - easy_install conda
   - conda install bowtie
   - python setup.py develop
 script: py.test
