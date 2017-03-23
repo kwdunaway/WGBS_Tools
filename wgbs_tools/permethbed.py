@@ -172,11 +172,11 @@ def roi_meth(in_bed_prefixes, in_sample_list, out_table, mask_file, roi_file,
                         try:
                             float(meth)
                         except ValueError:
-                            print "Not a float"
+                            print "Not a float: {}".format(meth)
                         try:
                             float(total)
                         except ValueError:
-                            print "Not a float"
+                            print "Not a float: {}".format(total)
                         meth_perc = float(meth)/float(total)
                         print_line = '{0}\t{1:.3f}'.format(print_line, meth_perc)
                         file_print_count+=1
