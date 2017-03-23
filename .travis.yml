@@ -1,5 +1,7 @@
 language: python
 python:
-    - 2.7
-install: python setup.py develop
+    - 2.7.10
+install: 
+  - pip install bowtie
+  - python setup.py develop
 script: py.test
