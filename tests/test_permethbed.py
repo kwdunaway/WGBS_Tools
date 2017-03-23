@@ -37,11 +37,12 @@ def test_roi_meth1(bed_folder, tmpdir, correct_meth_table1,
                   correct_meth_raw1):
     """Tests roi_meth to multithread analysis"""
     in_bed_prefixes = []
+    in_sample_list = []
     for num in range(6):
         numname = num + 1
         fileprefix = os.path.join(bed_folder, 'pm0{}_'.format(numname))
         in_bed_prefixes.append(fileprefix)
-    in_sample_list = ['pm01', 'pm02', 'pm03', 'pm04', 'pm05', 'pm06']
+        in_sample_list.append('pm0{}_'.format(numname))
     roi_file = os.path.join(bed_folder, 'roi1.bed')
     mask_file = ''
     out_table = os.path.join(str(tmpdir), 'roi_meth_table1.txt')
@@ -67,11 +68,12 @@ def test_roi_meth2(bed_folder, tmpdir, correct_meth_table2,
                   correct_meth_raw2):
     """Tests roi_meth to mask analysis correctly"""
     in_bed_prefixes = []
+    in_sample_list = []
     for num in range(6):
         numname = num + 1
         fileprefix = os.path.join(bed_folder, 'pm0{}_'.format(numname))
         in_bed_prefixes.append(fileprefix)
-    in_sample_list = ['pm01', 'pm02', 'pm03', 'pm04', 'pm05', 'pm06']
+        in_sample_list.append('pm0{}_'.format(numname))
     roi_file = os.path.join(bed_folder, 'roi1.bed')
     mask_file = 'tests/data/bed/mask2.bed'
     out_table = os.path.join(str(tmpdir), 'roi_meth_table2.txt')
@@ -96,11 +98,12 @@ def test_roi_meth2(bed_folder, tmpdir, correct_meth_table2,
 def test_roi_meth3(bed_folder, tmpdir, correct_meth_table3):
     """Tests roi_meth to mask analysis correctly across windows"""
     in_bed_prefixes = []
+    in_sample_list = []
     for num in range(6):
         numname = num + 1
         fileprefix = os.path.join(bed_folder, 'pm0{}_'.format(numname))
         in_bed_prefixes.append(fileprefix)
-    in_sample_list = ['pm01', 'pm02', 'pm03', 'pm04', 'pm05', 'pm06']
+        in_sample_list.append('pm0{}_'.format(numname))
     roi_file = os.path.join(bed_folder, 'window_roi.bed')
     mask_file = 'tests/data/bed/mask2.bed'
     out_table = os.path.join(str(tmpdir), 'roi_meth_table3.txt')

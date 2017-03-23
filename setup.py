@@ -9,9 +9,9 @@ setuptools.setup(
     py_modules=['wgbs_tools'],
     install_requires=[
         'click',
-        'pysam',
-        'pyyaml',
         'pytest',
+        'pyyaml',
+        'pysam',
         'pybedtools',
     ],
     entry_points='''

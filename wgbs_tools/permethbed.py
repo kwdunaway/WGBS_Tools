@@ -167,6 +167,7 @@ def roi_meth(in_bed_prefixes, in_sample_list, out_table, mask_file, roi_file,
                     meth = meth_dict[start][end][pm_sample]['meth']
                     total = meth_dict[start][end][pm_sample]['total']
                     cpg = meth_dict[start][end][pm_sample]['cpg']
+                    print "Total: {}".format(total)
                     if total >= min_read_count and cpg >= min_cpg_count:
                         # print('meth:{}\ttotal:{}'.format(meth, total))
                         try:
