@@ -3,10 +3,7 @@ python:
 language: python
 python:
   # We don't actually use the Travis Python, but this keeps it organized.
-  - "2.6"
   - "2.7"
-  - "3.3"
-  - "3.4"
 install:
   - sudo apt-get update
   # We do this conditionally because it saves us some downloading if the
@@ -27,7 +24,8 @@ install:
   # Replace dep1 dep2 ... with your dependencies
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
-  - conda install bowtie
+  - conda install anaconda-clien
+  - conda install -c biobuilds bowtie=1.1.2
   - python setup.py install
 
 script: py.test
