@@ -25,6 +25,7 @@ install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
   - source activate test-environment
   - conda install anaconda-client
+  - conda install samtools
   - conda install -c biobuilds bowtie=1.1.2
   - git clone https://github.com/BSSeeker/BSseeker2.git
   - export PATH=$PATH:$PWD/BSseeker2/
