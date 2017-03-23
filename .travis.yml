@@ -26,7 +26,7 @@ install:
   - source activate test-environment
   - conda install anaconda-client
   - conda install -c biobuilds bowtie=1.1.2
-  - git clone git@github.com:BSSeeker/BSseeker2.git
+  - git clone https://github.com/BSSeeker/BSseeker2.git
   - export PATH=$PATH:$PWD/BSseeker2/
   - python setup.py develop
 
