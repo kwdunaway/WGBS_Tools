@@ -26,6 +26,6 @@ install:
   - source activate test-environment
   - conda install anaconda-client
   - conda install -c biobuilds bowtie=1.1.2
-  - python setup.py install
+  - python setup.py develop
 
 script: py.test
