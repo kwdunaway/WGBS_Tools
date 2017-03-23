@@ -1,5 +1,9 @@
 # WGBS_Tools
 
+[![Build Status](https://travis-ci.org/sartorlab/.svg?branch=mastert )](https://travis-ci.org/sartorlab/methylSig) [![Coverage Status]
+
+[![Build Status](https://github.com/kwdunaway/WGBS_Tools/tree/move_python)
+
 WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfite Sequencing data. Any questions or comments may be directed to Keith Dunaway (keith0dun@gmail.com). If you find any problems, please create a github issue.
 
 For examples on how to utilize wgbs_tools to analyze a typical WGBS experiment from start to finish, read *TUTORIAL/README.md*.
