@@ -13,7 +13,7 @@
 
 WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfite Sequencing data. Any questions or comments may be directed to Keith Dunaway (keith0dun@gmail.com). If you find any problems, please create a github issue.
 
-For examples on how to utilize wgbs_tools to analyze a typical WGBS experiment from start to finish, read *TUTORIAL/README.md*.
+For examples on how to utilize wgbs_tools to analyze a typical WGBS experiment from start to finish, read [TUTORIAL/README.md](https://github.com/kwdunaway/WGBS_Tools/blob/master/TUTORIAL/README.md).
 
 Here is a basic workflow (the wgbs_tools commands are in red):
 
@@ -109,7 +109,7 @@ under the *bs_seeker2-build.py* section.
    wgbs_tools add_genome --help
    ```
 
-1. In order for `wgbs_tools` to know genome specific information (like chromosome names and sizes), you need to edit the default *info.yaml* file. See [info.yaml](#infoyaml) for the format of the *info.yaml* file and [add_genome](#add_genome) for more details on how to add your genome to the file. For a tutorial and examples, see the `TUTORIAL` folder.
+1. In order for `wgbs_tools` to know genome specific information (like chromosome names and sizes), you need to edit the default *info.yaml* file. See [info.yaml](#infoyaml) for the format of the *info.yaml* file and [add_genome](#add_genome) for more details on how to add your genome to the file. For a tutorial and examples, see [TUTORIAL/README.md](https://github.com/kwdunaway/WGBS_Tools/blob/master/TUTORIAL/README.md).
 
 ## <a name="Commands"> Commands </a>
 
@@ -130,7 +130,7 @@ This group of commands slightly adjust existing files.
 
 #### <a name="add_genome"> add_genome </a>
 
-Adds genome information to info.yaml file. By default it appends the *info.yaml* file in WGBS_Tools directory. However, you can change this using the *--infoyaml* option. See the `TUTORIAL` folder for a tutorial and examples, or see [info.yaml](#infoyaml) for more information about the *info.yaml* file.
+Adds genome information to info.yaml file. By default it appends the *info.yaml* file in the main directory. However, you can change this using the *--infoyaml* option. See [TUTORIAL/README.md](https://github.com/kwdunaway/WGBS_Tools/blob/master/TUTORIAL/README.md) folder for a tutorial and examples, or see [info.yaml](#infoyaml) for more information about the *info.yaml* file.
 
 #### <a name="adjustcols"> adjustcols </a>
 
