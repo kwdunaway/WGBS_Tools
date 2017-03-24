@@ -1,5 +1,7 @@
 WGBS_Tools
 =========
+This is an older version and is no longer maintained. All of the relevant code has been transferred to Python.
+
 WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfite Sequencing data. It is optimized for easy installation rather than efficiency. Any questions may be directed to Keith Dunaway (kwdunaway@ucdavis.edu) or Roy Chu (rgchu@ucdavis.edu).
 
 WGBS_Tools
