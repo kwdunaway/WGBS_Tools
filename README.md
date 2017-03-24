@@ -324,4 +324,4 @@ __0.0.perl__:
 Most of these scripts were originally written in Perl and used in the publications:
 http://www.cell.com/cell-reports/fulltext/S2211-1247(16)31631-X
 https://www.ncbi.nlm.nih.gov/pubmed/28032673
-However, many improvements in performance, installation ease, and understandability were implemented since this version. If you still want those scripts, please go to folder: WGBS_Tools/perl
+However, many improvements in performance, installation ease, and understandability were implemented since this version. If you still want those scripts, please go checkout the branch: `git checkout perl_code`.
