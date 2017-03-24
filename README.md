@@ -109,7 +109,7 @@ under the *bs_seeker2-build.py* section.
    wgbs_tools add_genome --help
    ```
 
-1. In order for `wgbs_tools` to know genome specific information (like chromosome names and sizes), you need to edit the current *info.yaml* file. See [info.yaml](#infoyaml) for the format of the *info.yaml* file and [add_genome](#add_genome) for more details on how to add your genome to the file.
+1. In order for `wgbs_tools` to know genome specific information (like chromosome names and sizes), you need to edit the default *info.yaml* file. See [info.yaml](#infoyaml) for the format of the *info.yaml* file and [add_genome](#add_genome) for more details on how to add your genome to the file. For a tutorial and examples, see the `TUTORIAL` folder.
 
 ## <a name="Commands"> Commands </a>
 
@@ -254,7 +254,7 @@ code so that any user can easily modify it to work for whatever WGBS experiment 
 create experiment specific *.yaml* files and point to each differently using the *--infoyaml* option.
 Alternatively, you can have a single file with multiple genomes, depending on your preferences.
 
-The first two lines of *info.yaml* will most likely not need to be modified:
+The first two lines of *info.yaml* ***will most likely not need to be modified***:
 
 **adapter:** The adapter sequence for single end reads. This is used to trim reads that have 
 adapter contamination. It may need to be changed if you are not using Illumina sequencing.
