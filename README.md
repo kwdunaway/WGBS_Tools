@@ -1,6 +1,7 @@
 # WGBS_Tools
 
-[![Build Status](https://secure.travis-ci.org/kwdunaway/WGBS_Tools.png?branch=move_python)](http://travis-ci.org/kwdunaway/WGBS_Tools)
+[![Build Status](https://travis-ci.org/kwdunaway/WGBS_Tools.svg?branch=move_python)](https://travis-ci.org/kwdunaway/WGBS_Tools)
+[![Coverage Status](https://coveralls.io/repos/github/kwdunaway/WGBS_Tools/badge.svg?branch=master)](https://coveralls.io/github/kwdunaway/WGBS_Tools?branch=master)
 
 WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfite Sequencing data. Any questions or comments may be directed to Keith Dunaway (keith0dun@gmail.com). If you find any problems, please create a github issue.
 
