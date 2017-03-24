@@ -4,8 +4,8 @@ language: python
 python:
   # We don't actually use the Travis Python, but this keeps it organized.
   - "2.7"
-before_install:
-  - pip install --user codecov
+#before_install:
+#  - pip install --user codecov
 install:
   - sudo apt-get update
   # We do this conditionally because it saves us some downloading if the
@@ -35,5 +35,5 @@ install:
 
 script: py.test
 
-after_success:
-  - codecov --file coverage/lcov.info --disable search
+#after_success:
+#  - codecov --file coverage/lcov.info --disable search
