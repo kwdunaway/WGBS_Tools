@@ -1,6 +1,6 @@
 # WGBS_Tools
 
-[![Build Status](https://travis-ci.org/kwdunaway/WGBS_Tools.svg?branch=move_python)](https://travis-ci.org/kwdunaway/WGBS_Tools)
+[![Build Status](https://travis-ci.org/kwdunaway/WGBS_Tools.svg?branch=master)](https://travis-ci.org/kwdunaway/WGBS_Tools)
 
 <!--[![Coverage Status](https://coveralls.io/repos/github/kwdunaway/WGBS_Tools/badge.svg?branch=master)](https://coveralls.io/github/kwdunaway/WGBS_Tools?branch=master)-->
 <!--bd2bb562-af9d-48bc-b175-a3f598d40d3c-->
