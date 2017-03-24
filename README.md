@@ -130,9 +130,7 @@ This group of commands slightly adjust existing files.
 
 #### <a name="add_genome"> add_genome </a>
 
-Adds genome information to info.yaml file. By default it appends the *info.yaml* file in WGBS_Tools directory. 
-However, you can change this using the *--infoyaml* option. See [info.yaml](#infoyaml) for more information 
-about the *info.yaml* file.
+Adds genome information to info.yaml file. By default it appends the *info.yaml* file in WGBS_Tools directory. However, you can change this using the *--infoyaml* option. See the `TUTORIAL` folder for a tutorial and examples, or see [info.yaml](#infoyaml) for more information about the *info.yaml* file.
 
 #### <a name="adjustcols"> adjustcols </a>
 
