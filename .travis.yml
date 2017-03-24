@@ -33,3 +33,6 @@ install:
   - python setup.py develop
 
 script: py.test
+
+after_sucess:
+  - CODECLIMATE_REPO_TOKEN=<token> codeclimate-test-reporter
