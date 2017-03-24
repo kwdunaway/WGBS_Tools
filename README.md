@@ -80,7 +80,7 @@ under the *bs_seeker2-build.py* section.
 1. Download the repository
 
    ```
-   git clone git@github.com:kwdunaway/WGBS_Tools.git
+   git clone https://github.com/kwdunaway/WGBS_Tools.git
    ```
 
 1. Change directory to WGBS_tools and type the following:
