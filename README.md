@@ -11,7 +11,7 @@
 [cc-coverage-badge]: https://codeclimate.com/github/kwdunaway/WGBS_Tools/badges/coverage.svg
 [cc-coverage]: https://codeclimate.com/github/kwdunaway/WGBS_Tools/coverage
 
-s is a versatile toolkit to manipulate and analyze Whole Genome Bisulfite Sequencing data. Any questions or comments may be directed to Keith Dunaway (keith0dun@gmail.com). If you find any problems, please create a github issue.
+WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfite Sequencing data. Any questions or comments may be directed to Keith Dunaway (keith0dun@gmail.com). If you find any problems, please create a github issue.
 
 For examples on how to utilize wgbs_tools to analyze a typical WGBS experiment from start to finish, read *TUTORIAL/README.md*.
 
@@ -51,7 +51,7 @@ Here is a basic workflow (the wgbs_tools commands are in red):
 ## <a name="Installation"> Installation </a>
 
 **Note:** It is recommended that you set up a virtual environment prior
-to installing wgbs_tools. The author uses [venv](http://sourabhbajaj.com/mac-setup/Python/virtualenv.html) and will assume you are
+to installing wgbs_tools. The author uses [virtualenv](http://sourabhbajaj.com/mac-setup/Python/virtualenv.html) and will assume you are
 doing the same. While not supported, using a another virtual environment
 will most likely not make a difference. 
 
@@ -77,16 +77,24 @@ under the *bs_seeker2-build.py* section.
 
 ### <a name="Instructions"> Instructions:
 
+1. Download the repository
+
+   ```
+   git clone git@github.com:kwdunaway/WGBS_Tools.git
+   ```
+
 1. Change directory to WGBS_tools and type the following:
 
    ```
    python setup.py develop
    ```
+   
 1. Test to ensure everything installed correctly:
 
    ```
    pytest tests
    ```
+   
 1. Brief descriptions of each command are given using:
 
    ```
