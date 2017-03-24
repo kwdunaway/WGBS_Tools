@@ -77,13 +77,13 @@ under the *bs_seeker2-build.py* section.
 
 ### <a name="Instructions"> Instructions:
 
-1. Download the repository
+1. Download the repository:
 
    ```
    git clone https://github.com/kwdunaway/WGBS_Tools.git
    ```
 
-1. Change directory to WGBS_tools and type the following:
+1. Change directory to WGBS_tools and install:
 
    ```
    cd WGBS_tools
@@ -96,7 +96,7 @@ under the *bs_seeker2-build.py* section.
    pytest tests
    ```
    
-1. Brief descriptions of each command are given using:
+1. Brief descriptions of each command are given using the `--help` option. For instance:
 
    ```
    wgbs_tools --help
