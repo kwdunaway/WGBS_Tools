@@ -60,7 +60,7 @@ will most likely not make a difference.
 Before installation, essure that he following programs are installed and
 accessible in PATH:
 
-- [Bowtie](http://bowtie-bio.sourceforge.net/manual.shtml) (for single end alignment)
+- [Bowtie](http://bowtie-bio.sourceforge.net/manual.shtml) (for single end alignment and test check)
 - [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml) (for paired end alignment)
 - [BS-Seeker2](https://github.com/BSSeeker/BSseeker2)
 - [Bedtools2](https://github.com/arq5x/bedtools2)
@@ -86,6 +86,7 @@ under the *bs_seeker2-build.py* section.
 1. Change directory to WGBS_tools and type the following:
 
    ```
+   cd WGBS_tools
    python setup.py develop
    ```
    
