@@ -4,9 +4,8 @@
 
 <!--[![Coverage Status](https://coveralls.io/repos/github/kwdunaway/WGBS_Tools/badge.svg?branch=master)](https://coveralls.io/github/kwdunaway/WGBS_Tools?branch=master)-->
 <!--bd2bb562-af9d-48bc-b175-a3f598d40d3c-->
-
-WGBS_Tool
-[![Test Coverage][cc-coverage-badge]][cc-coverage]
+<!--WGBS_Tool-->
+<!--[![Test Coverage][cc-coverage-badge]][cc-coverage]-->
 
 [cc-coverage-badge]: https://codeclimate.com/github/kwdunaway/WGBS_Tools/badges/coverage.svg
 [cc-coverage]: https://codeclimate.com/github/kwdunaway/WGBS_Tools/coverage
