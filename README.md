@@ -63,7 +63,8 @@ accessible in PATH:
 - [Bowtie](http://bowtie-bio.sourceforge.net/manual.shtml) (for single end alignment and test check)
 - [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml) (for paired end alignment)
 - [BS-Seeker2](https://github.com/BSSeeker/BSseeker2)
-- [Bedtools2](https://github.com/arq5x/bedtools2)
+- [samtools](http://samtools.sourceforge.net/)
+- [bedtools2](https://github.com/arq5x/bedtools2)
 - [SRA Toolkit](http://www.ncbi.nlm.nih.gov/books/NBK158900/)
 
 It is also important that you set up your genome specific information:
