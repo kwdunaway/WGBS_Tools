@@ -5,8 +5,8 @@ python:
   # We don't actually use the Travis Python, but this keeps it organized.
   - "2.7"
 install:
-  - pip install codecov
-  - pip install pytest-cov
+#  - pip install codecov
+#  - pip install pytest-cov
   - sudo apt-get update
   # We do this conditionally because it saves us some downloading if the
   # version is the same.
@@ -34,8 +34,9 @@ install:
   - export PATH=$PATH:$PWD/BSseeker2/
   - python setup.py develop
 
-script: py.test --cov=./
+script: py.test
+#script: py.test --cov=./
 
-after_sucess:
-  - CODECLIMATE_REPO_TOKEN=<token> codeclimate-test-reporter
-  - codecov
+#after_sucess:
+#  - CODECLIMATE_REPO_TOKEN=<token> codeclimate-test-reporter
+#  - codecov
