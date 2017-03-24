@@ -1,0 +1,92 @@
+adapter: AGATCGGAAG
+bs2_path: bs_seeker2-align.py
+hg38:
+  fasta: /share/lasallelab/genomes/hg38/hg38.fa
+  index: /share/lasallelab/genomes/hg38/BSseek2_refgen/
+  chroms:
+      chr1: 247249719
+      chr2: 242951149
+      chr3: 199501827
+      chr4: 191273063
+      chr5: 180857866
+      chr6: 170899992
+      chr7: 158821424
+      chr8: 146274826
+      chr9: 140273252
+      chr10: 135374737
+      chr11: 134452384
+      chr12: 132349534
+      chr13: 114142980
+      chr14: 106368585
+      chr15: 100338915
+      chr16: 88827254
+      chr17: 78774742
+      chr18: 76117153
+      chr19: 63811651
+      chr20: 62435964
+      chr21: 46944323
+      chr22: 49691432
+      chrM: 16571
+      chrX: 154913754
+      chrY: 57772954
+mm10:
+  fasta: /share/lasallelab/genomes/mm10/mm10.fa
+  index: /share/lasallelab/genomes/mm10/BSseek2_refgen/
+  chroms:
+      chr1: 195471971
+      chr2: 182113224
+      chr3: 160039680
+      chr4: 156508116
+      chr5: 151834684
+      chr6: 149736546
+      chr7: 145441459
+      chr8: 129401213
+      chr9: 124595110
+      chr10: 130694993
+      chr11: 122082543
+      chr12: 120129022
+      chr13: 120421639
+      chr14: 124902244
+      chr15: 104043685
+      chr16: 98207768
+      chr17: 94987271
+      chr18: 90702639
+      chr19: 61431566
+      chrX: 171031299
+      chrY: 91744698
+      chrM: 16299
+bosTau6:
+  index: /share/tamu/Analysis/Whole_Genome_Bisulfite/Cow/bosTau6_index/Bos_taurus.UMD3.1.dna.toplevel.fa_bowtie2/
+  fasta: /share/tamu/Data/Genomes/Cow/bosTau6/Ensembl-78-genome/Bos_taurus.UMD3.1.dna.toplevel.fa
+  chroms:
+      1: 158337067
+      2: 137060424
+      3: 121430405
+      4: 120829699
+      5: 121191424
+      6: 119458736
+      7: 112638659
+      8: 113384836
+      9: 105708250
+      10: 104305016
+      11: 107310763
+      12: 91163125
+      13: 84240350
+      14: 84648390
+      15: 85296676
+      16: 81724687
+      17: 75158596
+      18: 66004023
+      19: 64057457
+      20: 72042655
+      21: 71599096
+      22: 61435874
+      23: 52530062
+      24: 62714930
+      25: 42904170
+      26: 51681464
+      27: 45407902
+      28: 46312546
+      29: 51505224
+      X: 148823899
+      M: 16338

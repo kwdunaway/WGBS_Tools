@@ -1,0 +1,44 @@
+[2017-03-16 09:55:37] Mode: Bowtie
+[2017-03-16 09:55:37] Filter for tag XS: #(mCH)/#(all CH)>50.00% and #(mCH)>5
+[2017-03-16 09:55:37] Temporary directory: /var/folders/0z/btfbv0d94_sby7233hf29vjw0000gp/T/bs_seeker2_out_noadap.bam_-bowtie-TMP-ssKfsU
+[2017-03-16 09:55:37] Reduced Representation Bisulfite Sequencing: False
+[2017-03-16 09:55:37] Single end
+[2017-03-16 09:55:37] Aligner command: /usr/local/bin/bowtie -e 120 --quiet --norc --sam-nohead --best -p 8 --nomaqround --sam  -k 2 %(reference_genome)s  -f %(input_file)s %(output_file)s
+[2017-03-16 09:55:37] ----------------------------------------------
+[2017-03-16 09:55:37] Read filename: workingdir/out_noadap.fq.gz
+[2017-03-16 09:55:37] The first base (for mapping): 1
+[2017-03-16 09:55:37] The  last base (for mapping): 200
+[2017-03-16 09:55:37] Path for short reads aligner: /usr/local/bin/bowtie -e 120 --quiet --norc --sam-nohead --best -p 8 --nomaqround --sam  -k 2 %(reference_genome)s  -f %(input_file)s %(output_file)s
+
+[2017-03-16 09:55:37] Reference genome library path: example_genome/genome.fa_bowtie
+[2017-03-16 09:55:37] Directional library
+[2017-03-16 09:55:37] Number of mismatches allowed: 3.0
+[2017-03-16 09:55:37] -------------------------------- 
+[2017-03-16 09:55:37] Start reading and trimming the input sequences
+[2017-03-16 09:55:37] Start mapping
+[2017-03-16 09:55:37] Starting commands:
+[2017-03-16 09:55:37] Launched: /usr/local/bin/bowtie -e 120 --quiet --norc --sam-nohead --best -p 8 --nomaqround --sam  -k 2 example_genome/genome.fa_bowtie/W_C2T  -f /var/folders/0z/btfbv0d94_sby7233hf29vjw0000gp/T/bs_seeker2_out_noadap.bam_-bowtie-TMP-ssKfsU/Trimmed_C2T.fa.tmp-5171209 /var/folders/0z/btfbv0d94_sby7233hf29vjw0000gp/T/bs_seeker2_out_noadap.bam_-bowtie-TMP-ssKfsU/W_C2T_m3.0.mapping.tmp-5171209
+[2017-03-16 09:55:37] Launched: /usr/local/bin/bowtie -e 120 --quiet --norc --sam-nohead --best -p 8 --nomaqround --sam  -k 2 example_genome/genome.fa_bowtie/C_C2T  -f /var/folders/0z/btfbv0d94_sby7233hf29vjw0000gp/T/bs_seeker2_out_noadap.bam_-bowtie-TMP-ssKfsU/Trimmed_C2T.fa.tmp-5171209 /var/folders/0z/btfbv0d94_sby7233hf29vjw0000gp/T/bs_seeker2_out_noadap.bam_-bowtie-TMP-ssKfsU/C_C2T_m3.0.mapping.tmp-5171209
+[2017-03-16 09:55:37] Finished: /usr/local/bin/bowtie -e 120 --quiet --norc --sam-nohead --best -p 8 --nomaqround --sam  -k 2 example_genome/genome.fa_bowtie/W_C2T  -f /var/folders/0z/btfbv0d94_sby7233hf29vjw0000gp/T/bs_seeker2_out_noadap.bam_-bowtie-TMP-ssKfsU/Trimmed_C2T.fa.tmp-5171209 /var/folders/0z/btfbv0d94_sby7233hf29vjw0000gp/T/bs_seeker2_out_noadap.bam_-bowtie-TMP-ssKfsU/W_C2T_m3.0.mapping.tmp-5171209
+[2017-03-16 09:55:37] Finished: /usr/local/bin/bowtie -e 120 --quiet --norc --sam-nohead --best -p 8 --nomaqround --sam  -k 2 example_genome/genome.fa_bowtie/C_C2T  -f /var/folders/0z/btfbv0d94_sby7233hf29vjw0000gp/T/bs_seeker2_out_noadap.bam_-bowtie-TMP-ssKfsU/Trimmed_C2T.fa.tmp-5171209 /var/folders/0z/btfbv0d94_sby7233hf29vjw0000gp/T/bs_seeker2_out_noadap.bam_-bowtie-TMP-ssKfsU/C_C2T_m3.0.mapping.tmp-5171209
+[2017-03-16 09:55:37] --> /var/folders/0z/btfbv0d94_sby7233hf29vjw0000gp/T/bs_seeker2_out_noadap.bam_-bowtie-TMP-ssKfsU/out_noadap.fq.gz-s-1 (1) 
+[2017-03-16 09:55:37] ----------------------------------------------
+[2017-03-16 09:55:37] Number of raw reads: 3
+[2017-03-16 09:55:37] Number of bases in total: 240 
+[2017-03-16 09:55:37] Number of reads are rejected because of multiple hits: 0
+[2017-03-16 09:55:37] Number of unique-hits reads (before post-filtering): 3
+[2017-03-16 09:55:37]         3 FW reads mapped to Watson strand (before post-filtering)
+[2017-03-16 09:55:37]         0 FW reads mapped to Crick strand (before post-filtering)
+[2017-03-16 09:55:37] Post-filtering 3 uniquely aligned reads with mismatches <= 3.0
+[2017-03-16 09:55:37]         3 FW reads mapped to Watson strand
+[2017-03-16 09:55:37]         0 FW reads mapped to Crick strand
+[2017-03-16 09:55:37] Mappability = 100.0000%
+[2017-03-16 09:55:37] Total bases of uniquely mapped reads :     240
+[2017-03-16 09:55:37] ----------------------------------------------
+[2017-03-16 09:55:37] Methylated C in mapped reads 
+[2017-03-16 09:55:37]  mCG  33.333%
+[2017-03-16 09:55:37]  mCHG 50.000%
+[2017-03-16 09:55:37]  mCHH 5.882%
+[2017-03-16 09:55:37] ----------------------------------------------
+[2017-03-16 09:55:37] File : workingdir/out_noadap.fq.gz
+[2017-03-16 09:55:37] ------------------- END --------------------

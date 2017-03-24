@@ -1,0 +1,44 @@
+[2017-03-16 10:22:56] Mode: Bowtie
+[2017-03-16 10:22:56] Filter for tag XS: #(mCH)/#(all CH)>50.00% and #(mCH)>5
+[2017-03-16 10:22:56] Temporary directory: /var/folders/0z/btfbv0d94_sby7233hf29vjw0000gp/T/bs_seeker2_out_trimmed.bam_-bowtie-TMP-gBHlyN
+[2017-03-16 10:22:56] Reduced Representation Bisulfite Sequencing: False
+[2017-03-16 10:22:56] Single end
+[2017-03-16 10:22:56] Aligner command: /usr/local/bin/bowtie -e 80 --quiet --norc --sam-nohead --best -p 8 --nomaqround --sam  -k 2 %(reference_genome)s  -f %(input_file)s %(output_file)s
+[2017-03-16 10:22:56] ----------------------------------------------
+[2017-03-16 10:22:56] Read filename: out_trimmed.fq.gz
+[2017-03-16 10:22:56] The first base (for mapping): 1
+[2017-03-16 10:22:56] The  last base (for mapping): 200
+[2017-03-16 10:22:56] Path for short reads aligner: /usr/local/bin/bowtie -e 80 --quiet --norc --sam-nohead --best -p 8 --nomaqround --sam  -k 2 %(reference_genome)s  -f %(input_file)s %(output_file)s
+
+[2017-03-16 10:22:56] Reference genome library path: new_ref_genome/genome.fa_bowtie
+[2017-03-16 10:22:56] Directional library
+[2017-03-16 10:22:56] Number of mismatches allowed: 2.0
+[2017-03-16 10:22:56] -------------------------------- 
+[2017-03-16 10:22:56] Start reading and trimming the input sequences
+[2017-03-16 10:22:56] Start mapping
+[2017-03-16 10:22:56] Starting commands:
+[2017-03-16 10:22:56] Launched: /usr/local/bin/bowtie -e 80 --quiet --norc --sam-nohead --best -p 8 --nomaqround --sam  -k 2 new_ref_genome/genome.fa_bowtie/W_C2T  -f /var/folders/0z/btfbv0d94_sby7233hf29vjw0000gp/T/bs_seeker2_out_trimmed.bam_-bowtie-TMP-gBHlyN/Trimmed_C2T.fa.tmp-4772554 /var/folders/0z/btfbv0d94_sby7233hf29vjw0000gp/T/bs_seeker2_out_trimmed.bam_-bowtie-TMP-gBHlyN/W_C2T_m2.0.mapping.tmp-4772554
+[2017-03-16 10:22:56] Launched: /usr/local/bin/bowtie -e 80 --quiet --norc --sam-nohead --best -p 8 --nomaqround --sam  -k 2 new_ref_genome/genome.fa_bowtie/C_C2T  -f /var/folders/0z/btfbv0d94_sby7233hf29vjw0000gp/T/bs_seeker2_out_trimmed.bam_-bowtie-TMP-gBHlyN/Trimmed_C2T.fa.tmp-4772554 /var/folders/0z/btfbv0d94_sby7233hf29vjw0000gp/T/bs_seeker2_out_trimmed.bam_-bowtie-TMP-gBHlyN/C_C2T_m2.0.mapping.tmp-4772554
+[2017-03-16 10:22:56] Finished: /usr/local/bin/bowtie -e 80 --quiet --norc --sam-nohead --best -p 8 --nomaqround --sam  -k 2 new_ref_genome/genome.fa_bowtie/W_C2T  -f /var/folders/0z/btfbv0d94_sby7233hf29vjw0000gp/T/bs_seeker2_out_trimmed.bam_-bowtie-TMP-gBHlyN/Trimmed_C2T.fa.tmp-4772554 /var/folders/0z/btfbv0d94_sby7233hf29vjw0000gp/T/bs_seeker2_out_trimmed.bam_-bowtie-TMP-gBHlyN/W_C2T_m2.0.mapping.tmp-4772554
+[2017-03-16 10:22:56] Finished: /usr/local/bin/bowtie -e 80 --quiet --norc --sam-nohead --best -p 8 --nomaqround --sam  -k 2 new_ref_genome/genome.fa_bowtie/C_C2T  -f /var/folders/0z/btfbv0d94_sby7233hf29vjw0000gp/T/bs_seeker2_out_trimmed.bam_-bowtie-TMP-gBHlyN/Trimmed_C2T.fa.tmp-4772554 /var/folders/0z/btfbv0d94_sby7233hf29vjw0000gp/T/bs_seeker2_out_trimmed.bam_-bowtie-TMP-gBHlyN/C_C2T_m2.0.mapping.tmp-4772554
+[2017-03-16 10:22:56] --> /var/folders/0z/btfbv0d94_sby7233hf29vjw0000gp/T/bs_seeker2_out_trimmed.bam_-bowtie-TMP-gBHlyN/out_trimmed.fq.gz-s-1 (1) 
+[2017-03-16 10:22:56] ----------------------------------------------
+[2017-03-16 10:22:56] Number of raw reads: 1
+[2017-03-16 10:22:56] Number of bases in total: 41 
+[2017-03-16 10:22:56] Number of reads are rejected because of multiple hits: 0
+[2017-03-16 10:22:56] Number of unique-hits reads (before post-filtering): 1
+[2017-03-16 10:22:56]         1 FW reads mapped to Watson strand (before post-filtering)
+[2017-03-16 10:22:56]         0 FW reads mapped to Crick strand (before post-filtering)
+[2017-03-16 10:22:56] Post-filtering 1 uniquely aligned reads with mismatches <= 2.0
+[2017-03-16 10:22:56]         1 FW reads mapped to Watson strand
+[2017-03-16 10:22:56]         0 FW reads mapped to Crick strand
+[2017-03-16 10:22:56] Mappability = 100.0000%
+[2017-03-16 10:22:56] Total bases of uniquely mapped reads :      41
+[2017-03-16 10:22:56] ----------------------------------------------
+[2017-03-16 10:22:56] Methylated C in mapped reads 
+[2017-03-16 10:22:56]  mCG  50.000%
+[2017-03-16 10:22:56]  mCHG 0.000%
+[2017-03-16 10:22:56]  mCHH 0.000%
+[2017-03-16 10:22:56] ----------------------------------------------
+[2017-03-16 10:22:56] File : out_trimmed.fq.gz
+[2017-03-16 10:22:56] ------------------- END --------------------

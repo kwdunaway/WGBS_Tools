@@ -1,0 +1,3 @@
+chrom	start	end	name	pm01	pm02	pm03	pm04	pm05	pm06
+chrT	1	2	roi1	1.000	1.000	1.000	1.000	1.000	1.000
+chrT	21	32	roi2	0.455	0.455	0.455	0.455	0.455	0.455
