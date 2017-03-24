@@ -109,7 +109,7 @@ under the *bs_seeker2-build.py* section.
    wgbs_tools add_genome --help
    ```
 
-1. Edit or create your own *info.yaml* file. See [info.yaml](#infoyaml) and [add_genome](#add_genome) for more details.
+1. In order for `wgbs_tools` to know genome specific information (like chromosome names and sizes), you need to edit the current *info.yaml* file. See [info.yaml](#infoyaml) for the format of the *info.yaml* file and [add_genome](#add_genome) for more details on how to add your genome to the file.
 
 ## <a name="Commands"> Commands </a>
 
