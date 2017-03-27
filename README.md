@@ -23,6 +23,7 @@ Here is a basic workflow (the wgbs_tools commands are in red):
 
 1. [Installation](#Installation)
     1. [Prerequisites](#Prerequisites)
+        1. [Genome specific requirements](#genomespec)
     1. [Instructions](#Instructions)
 1. [Commands](#Commands)
     1. [Adjust existing files](#acommands)
@@ -50,33 +51,47 @@ Here is a basic workflow (the wgbs_tools commands are in red):
 
 ## <a name="Installation"> Installation </a>
 
-**Note:** It is recommended that you set up a virtual environment prior
-to installing wgbs_tools. The author uses [virtualenv](http://sourabhbajaj.com/mac-setup/Python/virtualenv.html) and will assume you are
-doing the same. While not supported, using a another virtual environment
-will most likely not make a difference. 
+**Note:** It is recommended that you set up a virtual environment prior to installing wgbs_tools. The author uses [virtualenv](http://sourabhbajaj.com/mac-setup/Python/virtualenv.html) and will assume you are doing the same. While not supported, using a another virtual environment will most likely not make a difference. 
 
 ### <a name="Prerequisites"> Prerequisites:
 
-Before installation, essure that he following programs are installed and
-accessible in PATH:
+WGBS_Tools uses other programs to run. To ensure full functionality, install the following progams and add them to PATH:
 
 - [Bowtie](http://bowtie-bio.sourceforge.net/manual.shtml) (for single end alignment and test check)
 - [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml) (for paired end alignment)
-- [BS-Seeker2](https://github.com/BSSeeker/BSseeker2)
 - [samtools](http://samtools.sourceforge.net/)
 - [bedtools2](https://github.com/arq5x/bedtools2)
-- [SRA Toolkit](http://www.ncbi.nlm.nih.gov/books/NBK158900/)
+- [BS-Seeker2](https://github.com/BSSeeker/BSseeker2)
 
-It is also important that you set up your genome specific information:
+Each of the above links have their own installation instructions. Make sure to follow those correctly before proceeding. To check to see if those programs are installed, try their help commands:
 
-1. Download the FASTA file of your genome. This can be done through the [UCSC downloads](http://hgdownload.cse.ucsc.edu/downloads.html) page. Just select
-the genome you are using then click on "Full data set". Now scroll to the bottom of the page and there should be a file named *genomename*.fa.gz. For example,
-the Dolphin genome's fasta file is named *turTru2.fa.gz*.
+```
+bowtie --help
+bowtie2 --help
+samtools --help
+bedtools --help
+bs_seeker2-build.py --help
+bs_seeker2-align.py --help
+```
 
-1. Create a BS-Seeker2 index from the fasta file. Instructions for this can be found at [BS-Seeker2](https://github.com/BSSeeker/BSseeker2) 
-under the *bs_seeker2-build.py* section.
+
+#### <a name="genomespec"> Genome specific requirements:
+
+**Download the FASTA file of your genome:** The first for every genome is a fasta file with its sequence. These can be downloaded through the [UCSC downloads](http://hgdownload.cse.ucsc.edu/downloads.html) page. Just select the genome you are using then click on "Full data set". Now scroll to the bottom of the page and there should be a file named *genomename*.fa.gz. For example, the Dolphin genome's fasta file is named *turTru2.fa.gz*. Sometimes your genome will be in *.2bit* format rather than *.fa*. If this is the case, see [Instruction for converting twoBitToFa](https://genome.ucsc.edu/goldenpath/help/twoBit.html)
+
+Since there are a wide array of genomes, not every species will be included at the UCSC site. If your genome is not on the site, you will need to download it a different way. Unfortunately, that is outside the scope of these instructions.
+
+**Create a BS-Seeker2 index from the fasta file:** Instructions for this can be found at [BS-Seeker2](https://github.com/BSSeeker/BSseeker2) under the *bs_seeker2-build.py* section. Once you have installed everything and put BS_Seeker2 in path, the command should look something like this:
+
+```
+bs_seeker2-build.py genome.fa
+```
+
+There are a lot of defaults that can be changed so please read the [BS-Seeker2](https://github.com/BSSeeker/BSseeker2) instructions for more details.
 
 ### <a name="Instructions"> Instructions:
+
+Now that you have all of the prerequisites and your genome specific information, you are ready to install WGBS_Tools.
 
 1. Download the repository:
 
@@ -109,7 +124,13 @@ under the *bs_seeker2-build.py* section.
    wgbs_tools add_genome --help
    ```
 
-1. In order for `wgbs_tools` to know genome specific information (like chromosome names and sizes), you need to edit the default *info.yaml* file. See [info.yaml](#infoyaml) for the format of the *info.yaml* file and [add_genome](#add_genome) for more details on how to add your genome to the file. For a tutorial and examples, see [TUTORIAL/README.md](https://github.com/kwdunaway/WGBS_Tools/blob/master/TUTORIAL/README.md).
+1. In order for `wgbs_tools` to know genome specific information (like chromosome names and sizes), you need to edit the default *info.yaml* file. See [add_genome](#add_genome) for more details on how to add your genome to the file and [info.yaml](#infoyaml) for the format of the *info.yaml* file. For a tutorial and examples, see [TUTORIAL/README.md](https://github.com/kwdunaway/WGBS_Tools/blob/master/TUTORIAL/README.md). An example of the command would be:
+
+   ```
+   wgbs_tools add_genome mm10 /path/to/mm10.fa /path/to/bs_seeker2/refgen_folder/
+   ```
+
+The specific path will be dependent on where you put the fasta and BS_seeker2 reference index on your machine.
 
 ## <a name="Commands"> Commands </a>
 
@@ -130,7 +151,7 @@ This group of commands slightly adjust existing files.
 
 #### <a name="add_genome"> add_genome </a>
 
-Adds genome information to info.yaml file. By default it appends the *info.yaml* file in the main directory. However, you can change this using the *--infoyaml* option. See [TUTORIAL/README.md](https://github.com/kwdunaway/WGBS_Tools/blob/master/TUTORIAL/README.md) folder for a tutorial and examples, or see [info.yaml](#infoyaml) for more information about the *info.yaml* file.
+Adds genome information to info.yaml file. By default it appends the *info.yaml* file in the main directory. However, you can change this using the *--infoyaml* option. See [TUTORIAL/README.md](https://github.com/kwdunaway/WGBS_Tools/blob/master/TUTORIAL/README.md) for a tutorial and examples, or see [info.yaml](#infoyaml) for more information about the *info.yaml* file.
 
 #### <a name="adjustcols"> adjustcols </a>
 
