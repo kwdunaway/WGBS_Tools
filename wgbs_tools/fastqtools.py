@@ -14,13 +14,12 @@ def qual_filter_fastq(in_fastq, out_fastq):
     Filters a fastq file based on the Y/N flag in the header line of each read.
 
     :param in_fastq: Input fastq file name. If ends in .gz, assumed gzipped.
-    Otherwise, it is assumed unzipped.
+                     Otherwise, it is assumed unzipped.
     :param out_fastq: Output fastq file name. If ends in .gz, it will zip the
-    resulting file. Otherwise, it is left unzipped.
+                      resulting file. Otherwise, it is left unzipped.
     :return: String denoting completion of function or if the fastq file did
-    not have a field for Illumina quality calls in the header lines.
+             not have a field for Illumina quality calls in the header lines.
     """
-
     # Checks to see if the fastq file has Illumina quality calls
     if in_fastq.endswith('.gz'):
         with gzip.open(in_fastq, 'r') as infq:
@@ -47,7 +46,9 @@ def qual_filter_fastq(in_fastq, out_fastq):
         else:
             command = 'cat {} | grep -A 3 \'^@.* [^:]*:N:[^:]*:\' |   ' \
                       'grep -v "^--$" > {}'.format(in_fastq, out_fastq)
-    logging.info(command)
+    #TODO: Enable logging
+    # logging.info(command)
+    print(command)
     subprocess.check_call(command, shell=True)
 
 
@@ -62,20 +63,20 @@ def adapter_remove(in_fastq, noadap_fq, adaptrim_fq, adap_seq, chew_length=10,
 
     :param in_fastq: input fastq file (can be .gz or uncompressed)
     :param noadap_fq: output fastq file name containing all reads without
-    adapter sequence in them. Trimmed back chew_length.
+                      adapter sequence in them. Trimmed back chew_length.
     :param adaptrim_fq: output fastq file name containing all reads that had
-    adapter sequence in them. The sequence was trimmed out and trimmed back
-    chew_length.
+                        adapter sequence in them. The sequence was trimmed out
+                        and trimmed back chew_length.
     :param adap_seq: Sequence of adapter that is used to filter for
-    adapter contamination.
+                     adapter contamination.
     :param chew_length: Length of read that gets removed after adapter
-    sequence is found.
+                        sequence is found.
     :param min_seqlength: Minimum sequence length the read must be in order
-    to be kept. Any read shorter than this length will be thrown out before
-    writing to the adaptrim_fq file.
-    :return:
+                          to be kept. Any read shorter than this length will be
+                          thrown out before writing to the adaptrim_fq file.
+    :return: Nothing
     """
-    #Opens write files (in either normal or compressed format)
+    # Opens write files (in either normal or compressed format)
     if noadap_fq.endswith('.gz'):
         noadap_outfile = gzip.open(noadap_fq, 'wb')
     else:
@@ -146,9 +147,9 @@ def pe_adapter_remove(fin_fastq, fnoadap_fq, fadaptrim_fq, fadap_seq,
     :param min_seqlength: Minimum sequence length the read must be in order
                           to be kept. Any read shorter than this length will be
                           thrown out before writing to the adaptrim_fq file.
-    :return:
+    :return: Nothing
     """
-    #Opens write files (in either normal or compressed format)
+    # Opens write files (in either normal or compressed format)
     if fnoadap_fq.endswith('.gz'):
         fnoadap_outfile = gzip.open(fnoadap_fq, 'wb')
     else:
@@ -222,76 +223,9 @@ def pe_adapter_remove(fin_fastq, fnoadap_fq, fadaptrim_fq, fadap_seq,
                 rtrimmed_outfile.write('{}\n'.format(rev_trimmed_seq))
                 rtrimmed_outfile.write(rev_third)
                 rtrimmed_outfile.write('{}\n'.format(rev_qual[:cutlength]))
-    # with open(fin_fastq, 'r') as for_file:
-    #     with open(rin_fastq, 'r') as rev_file:
     for_file.close()
     rev_file.close()
     fnoadap_outfile.close()
     ftrimmed_outfile.close()
     rnoadap_outfile.close()
     rtrimmed_outfile.close()
-    #
-    #
-    # import time
-    #
-    # fn = 'c:/temp/temp.txt'
-    #
-    # def worker(arg, q):
-    #     '''stupidly simulates long running process'''
-    #     start = time.clock()
-    #     s = 'this is a test'
-    #     txt = s
-    #     for i in xrange(200000):
-    #         txt += s
-    #     done = time.clock() - start
-    #     with open(fn, 'rb') as f:
-    #         size = len(f.read())
-    #     res = 'Process' + str(arg), str(size), done
-    #     q.put(res)
-    #     return res
-    #
-    # def listener(q):
-    #     '''listens for messages on the q, writes to file. '''
-    #
-    #     f = open(fn, 'wb')
-    #     while 1:
-    #         m = q.get()
-    #         if m == 'kill':
-    #             f.write('killed')
-    #             break
-    #         f.write(str(m) + '\n')
-    #         f.flush()
-    #     f.close()
-    #
-    # def main():
-    #     # must use Manager queue here, or will not work
-    #     manager = multiprocessing.Manager()
-    #     q = manager.Queue()
-    #     pool = multiprocessing.Pool(multiprocessing.cpu_count() + 2)
-    #
-    #     # put listener to work first
-    #     watcher = pool.apply_async(listener, (q,))
-    #
-    #     # fire off workers
-    #     jobs = []
-    #     for i in range(80):
-    #         job = pool.apply_async(worker, (i, q))
-    #         jobs.append(job)
-    #
-    #     # collect results from the workers through the pool result queue
-    #     for job in jobs:
-    #         job.get()
-    #
-    #     # now we are done, kill the listener
-    #     q.put('kill')
-    #     pool.close()
-    #
-    #     proc_list = list(in_bed_prefixes)
-    #     def worker():
-    #         while proc_list:
-    #             pm_prefix = proc_list.pop()
-    #             chrom_meth(pm_prefix, chrom, roi_chrom, mask, meth_dict)
-    #     threads = [Thread(target=worker) for i in range(thread_count)]
-    #     [t.start() for t in threads]
-    #     [t.join() for t in threads]
-    #
