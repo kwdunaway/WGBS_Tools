@@ -23,16 +23,22 @@ def bam_to_permeth(in_bam, out_prefix, bed_prefix, genome,
                    meth_type, strand_type, max_dup_reads, chroms, threads):
     """
 
-    :param in_bam:
-    :param out_prefix:
-    :param bed_prefix:
-    :param genome:
-    :param meth_type:
-    :param strand_type:
-    :param max_dup_reads:
-    :param chroms:
-    :param threads:
-    :return:
+    :param in_bam: input bam file name
+    :param out_prefix: output prefix for bed files
+    :param bed_prefix: header prefix within bed files produced
+    :param genome: genome name (ex: mm10 or hg38)
+    :param meth_type: methylation type (ex: CG or CH)
+    :param strand_type: string that indicates strandedness. If you are
+                        interested in strand specific methyation, change this to
+                        '+' or '-'. Otherwise, use 'both'
+    :param max_dup_reads: int of maximum duplicate reads. For lower coverage
+                          WGBS experiments, use 1. If there are more than
+                          this amount of reads with the same start and end
+                          locations, the extras will be thrown out (and
+                          assumed to be PCR duplicates).
+    :param chroms: dict of chromosome names (keys) and lengths (values)
+    :param threads: int of number of threads for multiprocessing
+    :return: Nothing
     """
     # Assert inputs are correct before starting everything
     assert meth_type in ['C', 'CG', 'CH', 'CHG', 'CHH'], \
