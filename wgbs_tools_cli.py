@@ -2,6 +2,8 @@
 Click wrapper to run all of the wgbs_tools much easier and user friendly.
 """
 
+import logging
+logger = logging.getLogger(__name__)
 import os
 import glob
 import subprocess
@@ -9,17 +11,13 @@ import tempfile
 import shutil
 import click
 import multiprocessing
-from multiprocessing import Process
 import yaml
-import logging
-logger = logging.getLogger(__name__)
-from pkg_resources import resource_filename
 import wgbs_tools
-from pybedtools import BedTool
 
+from pkg_resources import resource_filename
+from pybedtools import BedTool
 from wgbs_tools import fastqtools
 from wgbs_tools import bsseeker
-from wgbs_tools import utilities
 from wgbs_tools import samutils
 from wgbs_tools import permethbed
 
@@ -93,12 +91,13 @@ def cli():
                    'based on experiment. Read README.md to modify the '
                    'default or create your own. '
                    'Default: info.yaml')
+@click.option('--quiet', default=False, is_flag=True)
 @click.argument('in_fastq', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
 def process_se(in_fastq, out_prefix, out_dir, chew_length, min_seqlength,
                genome, noadap_bs2_params, adaptrim_bs2_params, methtype,
                strand, max_dup_reads, conv_chrom, threads, working_dir,
-               infoyaml):
+               infoyaml, quiet):
     """
     Pipeline to process single end FASTQ file.
 
@@ -116,6 +115,10 @@ def process_se(in_fastq, out_prefix, out_dir, chew_length, min_seqlength,
                  If you want to output in a directory other than the current
                  working directory, use Option: out_dir.
     """
+    if quiet:
+        logger.setLevel(logging.ERROR)
+    else:
+        logger.setLevel(logging.INFO)
     if working_dir == '':
         workingdir = tempfile.mkdtemp()
     else:
@@ -297,13 +300,14 @@ def process_se(in_fastq, out_prefix, out_dir, chew_length, min_seqlength,
                    'based on experiment. Read README.md to modify the '
                    'default or create your own. '
                    'Default: info.yaml')
+@click.option('--quiet', default=False, is_flag=True)
 @click.argument('in_fastq_f', type=click.STRING)
 @click.argument('in_fastq_r', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
 def process_pe(in_fastq_f, in_fastq_r, out_prefix, out_dir, genome, chew_length,
                min_readlength, noadap_bs2_params, adaptrim_bs2_params,
                methtype, strand, max_dup_reads, conv_chrom, threads,
-               working_dir, infoyaml):
+               working_dir, infoyaml, quiet):
     """
     Pipeline to process paired end FASTQ files.
 
@@ -322,6 +326,10 @@ def process_pe(in_fastq_f, in_fastq_r, out_prefix, out_dir, genome, chew_length,
                  If you want to output in a directory other than the current
                  working directory, use Option: out_dir.
     """
+    if quiet:
+        logger.setLevel(logging.ERROR)
+    else:
+        logger.setLevel(logging.INFO)
     if working_dir == '':
         workingdir = tempfile.mkdtemp()
     else:
@@ -441,10 +449,11 @@ def process_pe(in_fastq_f, in_fastq_r, out_prefix, out_dir, genome, chew_length,
               help='Conversion efficency summary file. If none entered then '
                    'those columns will not be included in the output summary '
                    'file. Default: <None>')
+@click.option('--quiet', default=False, is_flag=True)
 @click.argument('noadap_log', type=click.STRING)
 @click.argument('adaptrim_log', type=click.STRING)
 @click.argument('out_summary', type=click.STRING)
-def sumlogs(noadap_log, adaptrim_log, out_summary, conv_eff):
+def sumlogs(noadap_log, adaptrim_log, out_summary, conv_eff, quiet):
     """
     Summarizes BS Seeker2 logs.
 
@@ -458,7 +467,11 @@ def sumlogs(noadap_log, adaptrim_log, out_summary, conv_eff):
     NOADAP_LOG     Log file for the noadapter BS Seeker2 alignment
     ADAPTRIM_LOG   Log file for the adapter trimmed BS Seeker2 alignment
     OUT_SUMMARY    Name of the output file
-     """
+    """
+    if quiet:
+        logger.setLevel(logging.ERROR)
+    else:
+        logger.setLevel(logging.INFO)
     bsseeker.process_logs(noadap_log, adaptrim_log, conv_eff, out_summary)
 
 
@@ -493,14 +506,12 @@ def sumlogs(noadap_log, adaptrim_log, out_summary, conv_eff):
                    "and at least one of those samples does not meet the "
                    "minimum read count for the ROI, that ROI is not reported. "
                    "Default: <all samples>")
-@click.option('--debug/--no-debug',
-              default=False,
-              help='Print debug messages. Default: --no-debug')
+@click.option('--quiet', default=False, is_flag=True)
 @click.argument('input_tsv', type=click.STRING)
 @click.argument('out_table', type=click.STRING)
 @click.argument('roi_file', type=click.STRING)
 def roi(input_tsv, out_table, roi_file, mask, min_read_count, min_cpg_count,
-        min_sample_coverage, raw_data, threads, debug):
+        min_sample_coverage, raw_data, threads, quiet):
     """
     Calls methylation over ROIs.
 
@@ -521,9 +532,10 @@ def roi(input_tsv, out_table, roi_file, mask, min_read_count, min_cpg_count,
     ROI_FILE     GTF or BED file indicating the ROI (Regions of Interest).
                  Each ROI will be output as a single line in the OUT_TABLE.
     """
-    if debug:
-        logging.basicConfig(format='%(levelname)s:%(message)s',
-                            level=logging.DEBUG)
+    if quiet:
+        logger.setLevel(logging.ERROR)
+    else:
+        logger.setLevel(logging.INFO)
     in_bed_prefixes = []
     in_sample_list = []
     with open(input_tsv, 'r') as infile:
@@ -563,9 +575,10 @@ def roi(input_tsv, out_table, roi_file, mask, min_read_count, min_cpg_count,
               default=True,
               help='Boolean which indicates if there is a header in the input '
                    'files. Default: --header')
+@click.option('--quiet', default=False, is_flag=True)
 @click.argument('in_prefix', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
-def adjustcols(in_prefix, out_prefix, suffix, cols, adjusts, header):
+def adjustcols(in_prefix, out_prefix, suffix, cols, adjusts, header, quiet):
     """
     Adjusts numerical column of files.
 
@@ -576,6 +589,10 @@ def adjustcols(in_prefix, out_prefix, suffix, cols, adjusts, header):
     IN_PREFIX    Prefix of all files input into the
     OUT_PREFIX   Prefix of all output files
     """
+    if quiet:
+        logger.setLevel(logging.ERROR)
+    else:
+        logger.setLevel(logging.INFO)
     col_list = cols.split(',')
     adjust_list = adjusts.split(',')
     assert len(col_list) == len(adjust_list), \
@@ -656,11 +673,12 @@ def adjustcols(in_prefix, out_prefix, suffix, cols, adjusts, header):
                    'based on experiment. Read README.md to modify the '
                    'default or create your own. '
                    'Default: info.yaml')
+@click.option('--quiet', default=False, is_flag=True)
 @click.argument('input_tsv', type=click.STRING)
 @click.argument('out_table', type=click.STRING)
 def window(input_tsv, out_table, windowsize, mask, raw_data, threads,
            min_read_count, min_cpg_count, min_sample_coverage, genome,
-           infoyaml):
+           infoyaml, quiet):
     """
     Calls methylation over windows.
 
@@ -680,6 +698,10 @@ def window(input_tsv, out_table, windowsize, mask, raw_data, threads,
     OUT_TABLE    Name of the table which contains all of the window methylation
                  information
     """
+    if quiet:
+        logger.setLevel(logging.ERROR)
+    else:
+        logger.setLevel(logging.INFO)
     workingdir = tempfile.mkdtemp()
     window_roi = os.path.join(workingdir, 'windows.bed')
     in_bed_prefixes = []
@@ -707,9 +729,10 @@ def window(input_tsv, out_table, windowsize, mask, raw_data, threads,
               default=False,
               help='Boolean which indicates if the output files will be '
                    'compressed (.gz format) or not. Default: --no-gz')
+@click.option('--quiet', default=False, is_flag=True)
 @click.argument('in_prefix', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
-def pm2dss(in_prefix, out_prefix, gz):
+def pm2dss(in_prefix, out_prefix, gz, quiet):
     """
     Converts pm_bed to dss format.
 
@@ -754,35 +777,412 @@ def pm2dss(in_prefix, out_prefix, gz):
 
 
 @cli.command()
-# @click.option('--gz/--no-gz',
-#               default=True,
-#               help='Boolean which indicates if the output files will be '
-#                    'compressed (.gz format) or not. Default: --gz (compressed)')
+@click.option('--suffix', type=click.STRING,
+              default='.bed.gz',
+              help='Requires all in files end in a particular string. '
+                   'Default: .bed.gz')
+@click.option('--quiet', default=False, is_flag=True)
 @click.argument('in_prefix', type=click.STRING)
-@click.argument('out_prefix', type=click.STRING)
-def pm2bg(in_prefix, out_file, gz):
+@click.argument('out_file', type=click.STRING)
+def pm_stats(in_prefix, out_file, suffix, quiet):
     """
-    Converts pm_bed to bedgraph format.
+    Gets stats of multiple pm_bed files.
 
-    The percent methylation bed files (pm_bed) are used to create a bedGraph
-    file, which can be used for various reasons, including creating a trackhub.
+    \b
+    Prints 5 columns:
+    [0] name: Unique name of file (string between prefix and suffix)
+    [1] percentage: Percentage methylation of file
+    [2] methylated_reads: Amount of methylated reads in pm file
+    [3] total_reads: Amount of total reads in pm file
+    [4] cpg_count: Number of CpGs the pm file has information for
+
+    \b
+    This can also be used to determine conversion efficiency by running it on
+    the conv_eff chromosome (see below for explanation). Then subtract the
+    percentage from 1 (ie: 1 - percentage). There are 3 possible conv_eff
+    chromosomes:
+      1.  If you spiked your samples with lamda DNA (known to be 100%
+          unmethylated) prior to bisulfite conversion, run this on that
+          chromosome. Note, you will need to ensure you added the lamda
+          sequence to info.yaml and the BS_Seeker index prior to alignment.
+      2.  chrM. This is the most likely choice if you didn't spike your samples.
+      3.  CH pm_bed files. Create pm_bed files looking at CH methylation and
+          then run this command on all of those files. This assumes there is
+          no CH methylation (which is known to exist in plants and certain
+          mammalian tissues).
 
     \b
     Required arguments:
     IN_PREFIX      Prefix for all percent methlyated bed files (can be
                    compressed and/or uncompressed)
-    OUT_FILE       Prefix for all outfiles (in bedgraph format). The full
-                   name of each outfile is [out_prefix][uniq_id].bg
+    OUT_FILE       Tab separated table containing statistical information
+    """
+    if quiet:
+        logger.setLevel(logging.ERROR)
+    else:
+        logger.setLevel(logging.INFO)
+    out = open(out_file, 'wb')
+    outline = 'name\tpercentage\tmethylated_reads\ttotal_reads\tcpg_count\n'
+    out.write(outline)
+    for in_file_name in glob.glob('{}*{}'.format(in_prefix, suffix)):
+        uniqname = in_file_name.split(in_prefix)[1].split(suffix)[0]
+        meth_dict = permethbed.bed_meth_stats(in_file_name)
+        outline = '{}\t{}\t{}\t{}\t{}\n' \
+            .format(uniqname, meth_dict['perc'], meth_dict['meth'],
+                    meth_dict['total'], meth_dict['cpg'])
+        out.write(outline)
+    out.close()
+
+
+@cli.command()
+@click.option('--adapter', type=click.STRING,
+              default='AGATCGGAAG',
+              help='Beginning sequence of adapter. Default: AGATCGGAAG')
+@click.option('--out_dir', type=click.STRING,
+              default='',
+              help='Directory to put all outfiles. '
+                   'Default: <current working directory>')
+@click.option('--threads', type=click.INT,
+              default=NUM_CPUS,
+              help='Number of threads used when multiprocessing. '
+                   'Default: Number of system CPUs')
+@click.option('--chew', 'chew_length', type=click.INT,
+              default=10,
+              help='Number of bases to removed off of the end of each read. '
+                   'Default: 10')
+@click.option('--min-read', 'min_seqlength', type=click.INT,
+              default=35,
+              help='Minimum read length of reads after adapter trimming and '
+                   'chew. If the read is less than this lenght, it is not '
+                   'included in the output. Default: 35')
+@click.option('--working_dir', type=click.STRING,
+              default='',
+              help='Working directory where temp files are written and read. '
+                   'Default: <EMPTY> (Uses tempfile.mkdtemp() to define a '
+                   'temperary working directory)')
+@click.option('--quiet', default=False, is_flag=True)
+@click.argument('in_fastq', type=click.STRING)
+@click.argument('out_prefix', type=click.STRING)
+def trim_sefq(in_fastq, out_prefix, adapter, out_dir, threads, chew_length,
+              min_seqlength, working_dir, quiet):
+    """
+    Filters and trims single end FASTQ file.
 
     \b
-    Example run: wgbs_tools pm2bg pm01_bed/pm01 pm01_bg/pm01_
-    If there were three files in the folder:
-        pm01_bed/pm01_chr1.bed
-        pm01_bed/pm01_chr3.bed.gz
-    The output would be put in these three files:
-        pm01_bg/pm01_chr1.bg
-        pm01_bg/pm01_chr3.bg
+    Quality filters and adapter trims a pair of paired-end FASTQ files. Takes in
+    two FASTQ file and outputs four different FASTQ files:
+      1) *_trimmed.fq.gz Contains reads that had adapter sequence detected and
+                         have been trimmed out. Then, the sequence was chewed
+                         back another 10 bp.
+      2) *_noadap.fq.gz  Contains reads that had no adapter sequence detected.
+    \b
+    Required arguments:
+    IN_FASTQ         Input FASTQ file
+    OUT_PREFIX       Prefix of the two output files
     """
+    if quiet:
+        logger.setLevel(logging.ERROR)
+    else:
+        logger.setLevel(logging.INFO)
+    if working_dir == '':
+        workingdir = tempfile.mkdtemp()
+    else:
+        if not os.path.exists(working_dir):
+            os.makedirs(working_dir)
+        workingdir = working_dir
+    if out_dir != '':
+        if not os.path.exists(out_dir):
+            os.makedirs(out_dir)
+
+    #Name files
+    temp_prefix = out_prefix.split('\t')[-1]
+    qualfil_fastq = '{}_filtered.fq.gz'.format(temp_prefix)
+    noadap_fq = '{}_noadap.fq.gz'.format(temp_prefix)
+    adaptrim_fq = '{}_trimmed.fq.gz'.format(temp_prefix)
+
+    #Filter fastq file
+    logging.info('Filtering out quality failed reads from fastq file')
+    fastqtools.qual_filter_fastq(in_fastq, qualfil_fastq)
+
+    #Remove adapter contamination from reads
+    logging.info('Removing adapter contamination and split fastq files')
+    fastqtools.adapter_remove(qualfil_fastq, noadap_fq, adaptrim_fq, adapter,
+                              chew_length, min_seqlength)
+
+    if working_dir == '':
+        shutil.rmtree(workingdir)
+
+
+@cli.command()
+@click.option('--for-adap', 'for_adap', type=click.STRING,
+              default='AGATCGGAAG',
+              help='Beginning sequence of forward adapters. Default: '
+                   'AGATCGGAAG')
+@click.option('--rev-adap', 'rev_adap', type=click.STRING,
+              default='AGATCGGAAG',
+              help='Beginning sequence of forward adapters. Default: '
+                   'AGATCGGAAG')
+@click.option('--out_dir', type=click.STRING,
+              default='',
+              help='Directory to put all outfiles. '
+                   'Default: <current working directory>')
+@click.option('--threads', type=click.INT,
+              default=NUM_CPUS,
+              help='Number of threads used when multiprocessing. '
+                   'Default: Number of system CPUs')
+@click.option('--chew', 'chew_length', type=click.INT,
+              default=10,
+              help='Number of bases to removed off of the end of each read. '
+                   'Default: 10')
+@click.option('--min-read', 'min_seqlength', type=click.INT,
+              default=35,
+              help='Minimum read length of reads after adapter trimming and '
+                   'chew. If the read is less than this lenght, it is not '
+                   'included in the output. Default: 35')
+@click.option('--quiet', default=False, is_flag=True)
+@click.argument('in_for_fq', type=click.STRING)
+@click.argument('in_rev_fq', type=click.STRING)
+@click.argument('out_prefix', type=click.STRING)
+def trim_pefq(in_for_fq, in_rev_fq, out_prefix, for_adap, rev_adap, out_dir,
+              threads, chew_length, min_seqlength, quiet):
+    """
+    Filters and trims paired end FASTQ files.
+
+    \b
+    Quality filters and adapter trims a pair of paired-end FASTQ files. Takes in
+    two FASTQ file and outputs four different FASTQ files:
+      1) *_F_trimmed.fq.gz Contains reads that had adapter sequence detected and
+                           have been trimmed out. Then, the sequence was chewed
+                           back another 10 bp. Forward reads.
+      2) *_F_noadap.fq.gz  Contains reads that had no adapter sequence detected.
+                           Forward reads.
+      3) *_R_trimmed.fq.gz Contains reads that had adapter sequence detected and
+                           have been trimmed out. Then, the sequence was chewed
+                           back another 10 bp. Reverse reads.
+      4) *_R_noadap.fq.gz  Contains reads that had no adapter sequence detected.
+                           Reverse reads.
+
+    \b
+    Required arguments:
+    IN_FOR_FQ        Input Forward orientation FASTQ file
+    IN_FOR_FQ        Input Reverse orientation FASTQ file
+    OUT_PREFIX       Prefix of the four output files
+    """
+    if quiet:
+        logger.setLevel(logging.ERROR)
+    else:
+        logger.setLevel(logging.INFO)
+
+    #Name files
+    fnoadap_fq = '{}_F_noadap.fq.gz'.format(out_prefix)
+    fadaptrim_fq = '{}_F_trimmed.fq.gz'.format(out_prefix)
+    rnoadap_fq = '{}_R_noadap.fq.gz'.format(out_prefix)
+    radaptrim_fq = '{}_R_trimmed.fq.gz'.format(out_prefix)
+
+    #Create output directory
+    if out_dir != '':
+        if not os.path.exists(out_dir):
+            os.makedirs(out_dir)
+
+    #Remove adapter contamination from reads
+    logging.info('Removing adapter contamination and split fastq files')
+    fastqtools.pe_adapter_remove(in_for_fq, fnoadap_fq, fadaptrim_fq,
+                                 for_adap, in_rev_fq, rnoadap_fq, radaptrim_fq,
+                                 rev_adap, chew_length, min_seqlength, threads)
+
+
+@cli.command()
+@click.option('--genome', type=click.STRING,
+              default='hg38',
+              help='Genome used for alignment and analysis. '
+                   'Default: hg38')
+@click.option('--methtype', type=click.STRING,
+              default='CG',
+              help='Type of methylation that the Percent Methylation bed files '
+                   'contain. Choices are: C, CG, CH, CHG, or CHH. Default: CG')
+@click.option('--strand', type=click.STRING,
+              default='both',
+              help='Strand that the Percent Methylation bed files contain '
+                   'information about. Choices are: positive, negative, or '
+                   'both. Default: both')
+@click.option('--max_dup_reads', type=click.INT,
+              default=1,
+              help='Maximum number of duplicate reads allowed to inform each '
+                   'C in the Percent Methylation bed files. Default: 1')
+@click.option('--threads', type=click.INT,
+              default=NUM_CPUS,
+              help='Number of threads used when multiprocessing. '
+                   'Default: Number of system CPUs')
+@click.option('--header', 'header_name', type=click.STRING,
+              default='',
+              help='Name in header of bed file. This is useful for loading '
+                   'these files into a genome browser. The name of the track '
+                   'will be {header}_chr#. '
+                   'Default: bed_prefix of lowest directory')
+@click.option('--infoyaml', type=click.STRING,
+              default='info.yaml',
+              help='Yaml file which contains information which could change '
+                   'based on experiment. Read README.md to modify the '
+                   'default or create your own. '
+                   'Default: info.yaml')
+@click.option('--quiet', default=False, is_flag=True)
+@click.argument('in_bam', type=click.STRING)
+@click.argument('bed_prefix', type=click.STRING)
+def bam2pm(in_bam, bed_prefix, genome, methtype, strand, max_dup_reads, threads,
+           header_name, infoyaml, quiet):
+    """
+    Converts BAM to percent methylation BED.
+
+    Converts a BAM file (produced by BS_Seeker2) into a Percentage Methylation
+    BED format (PerMeth).
+
+    \b
+    Required arguments:
+    IN_BAM       Input sorted BAM file.
+                 It should be indexed as well, although this will index the
+                 bam file if an index is not found.
+    BED_PREFIX   Prefix of output percent methylation bed files.
+                 If you want to output in a directory other than the current
+                 working directory, use Option: out_dir.
+    """
+    if quiet:
+        logger.setLevel(logging.ERROR)
+    else:
+        logger.setLevel(logging.INFO)
+
+    #Load data
+    if infoyaml == 'info.yaml':
+        infoyaml = resource_filename(wgbs_tools.__name__, '../info.yaml')
+    stream = file(infoyaml, 'r')
+    info_dict = yaml.safe_load(stream)
+    chroms = info_dict[genome]['chroms']
+
+    if not bed_prefix.endswith('_'):
+        bed_prefix = '{}_'.format(bed_prefix)
+
+    #Index full bam file if not found
+    indexname = '{}.bai'.format(in_bam)
+    if not os.path.isfile(indexname):
+        command = 'samtools index {}'.format(in_bam)
+        logging.warning('Index not found, running command: {}'.format(command))
+        subprocess.check_call(command, shell=True)
+
+    #Determine header_prefix
+    if header_name == '':
+        bed_dirs = bed_prefix.split('/')
+        header_prefix = bed_dirs[-1]
+    else:
+        header_prefix = header_name
+
+    # Convert sam to permeth bed files (percent methylation bed files)
+    # This also only prints CpGs on chromosomes in ranges defined in the yaml
+    samutils.bam_to_permeth(in_bam, bed_prefix, header_prefix, genome,
+                            methtype, strand, max_dup_reads, chroms, threads)
+
+
+@cli.command()
+@click.option('--infoyaml', type=click.STRING,
+              default='info.yaml',
+              help='Yaml file which will be modified. Default: info.yaml')
+@click.option('--force/--not-force',
+              default=False,
+              help='Forces addition of genomic information without checking '
+                   'to see if index and fasta files exist on system. '
+                   'Default: --not-force')
+@click.option('--all/--main',
+              default=False,
+              help='Sets whether to include all chromosomes or just the main '
+                   'ones. If a chromosome has "_" in the name, it will not be '
+                   'included if main is set. Examples include '
+                   'chromosomes with _random, _alt, and chrUn_ in the name. '
+                   'Default: --main')
+@click.option('--quiet', default=False, is_flag=True)
+@click.argument('genome', type=click.STRING)
+@click.argument('fasta', type=click.STRING)
+@click.argument('index', type=click.STRING)
+def add_genome(genome, fasta, index, infoyaml, force, all, quiet):
+    """
+    Adds genome information to info.yaml file.
+
+    Takes in a genome name and appropriate information to info.yaml file.
+
+    \b
+    Required arguments:
+    GENOME     UCSC name of genome
+    INDEX      Path to BS Seeker2 index
+    FASTA      Location of a fasta file containing all chromosomal sequences.
+    """
+    if quiet:
+        logger.setLevel(logging.ERROR)
+    else:
+        logger.setLevel(logging.INFO)
+
+    #Checks to see if necessary files exist on system
+    if not force:
+        assert os.path.exists(index), \
+            'Failure: {} does not exist. \nPlease ensure you input the ' \
+            'correct_output path or use the --force option.'.format(index)
+        assert os.path.exists(fasta), \
+            'Failure: {} does not exist. \nPlease ensure you input the ' \
+            'correct_output path or use the --force option.'.format(fasta)
+
+    workingdir = tempfile.mkdtemp()
+
+    #Gets chromosome sizes by first fetching them using fetchChromSizes from
+    #  UCSC genome browser web site. Then, parses the resulting file.
+    chrom_sizes = os.path.join(workingdir, 'chroms.txt')
+    fcs = resource_filename(wgbs_tools.__name__, '../external/fetchChromSizes')
+    command = 'sh {} {} > {}'.format(fcs, genome, chrom_sizes)
+    print('Running command: {}'.format(command))
+    subprocess.check_call(command, shell=True)
+
+    # Appends info.yaml file
+    outfile = open(infoyaml, 'ab')
+    outfile.write('{}:\n'.format(genome))
+    outfile.write('  fasta: {}\n'.format(fasta))
+    outfile.write('  index: {}\n'.format(index))
+    outfile.write('  chroms:\n')
+    with open(chrom_sizes, 'r') as cs_file:
+        for line in cs_file:
+            line_list = line.split('\t')
+            if all:
+                printline = '      {}: {}'.format(line_list[0], line_list[1])
+                outfile.write(printline)
+            else:
+                if '_' not in line_list[0]:
+                    printline = '      {}: {}'.format(line_list[0], line_list[1])
+                    outfile.write(printline)
+    outfile.close()
+    shutil.rmtree(workingdir)
+
+
+# @cli.command()
+# @click.option('--quiet', default=False, is_flag=True)
+# @click.argument('in_prefix', type=click.STRING)
+# @click.argument('out_prefix', type=click.STRING)
+# def pm2bg(in_prefix, out_file, gz, quiet):
+#     """
+#     Converts pm_bed to bedgraph format.
+#
+#     The percent methylation bed files (pm_bed) are used to create a bedGraph
+#     file, which can be used for various reasons, including creating a trackhub.
+#
+#     \b
+#     Required arguments:
+#     IN_PREFIX      Prefix for all percent methlyated bed files (can be
+#                    compressed and/or uncompressed)
+#     OUT_FILE       Prefix for all outfiles (in bedgraph format). The full
+#                    name of each outfile is [out_prefix][uniq_id].bg
+#
+#     \b
+#     Example run: wgbs_tools pm2bg pm01_bed/pm01 pm01_bg/pm01_
+#     If there were three files in the folder:
+#         pm01_bed/pm01_chr1.bed
+#         pm01_bed/pm01_chr3.bed.gz
+#     The output would be put in these three files:
+#         pm01_bg/pm01_chr1.bg
+#         pm01_bg/pm01_chr3.bg
+#     """
     #TODO: convert this to take in multiple permeth files and output a single bg
     # if gz:
     #     suffix = '.bg.gz'
@@ -860,290 +1260,6 @@ def ll_fixdmrs(in_prefix, suffix):
 
 
 @cli.command()
-@click.option('--suffix', type=click.STRING,
-              default='.bed.gz',
-              help='Requires all in files end in a particular string. '
-                   'Default: .bed.gz')
-@click.argument('in_prefix', type=click.STRING)
-@click.argument('out_file', type=click.STRING)
-def pm_stats(in_prefix, out_file, suffix):
-    """
-    Gets stats of multiple pm_bed files.
-
-    \b
-    Prints 5 columns:
-    [0] name: Unique name of file (string between prefix and suffix)
-    [1] percentage: Percentage methylation of file
-    [2] methylated_reads: Amount of methylated reads in pm file
-    [3] total_reads: Amount of total reads in pm file
-    [4] cpg_count: Number of CpGs the pm file has information for
-
-    \b
-    This can also be used to determine conversion efficiency by running it on
-    the conv_eff chromosome (see below for explanation). Then subtract the
-    percentage from 1 (ie: 1 - percentage). There are 3 possible conv_eff
-    chromosomes:
-      1.  If you spiked your samples with lamda DNA (known to be 100%
-          unmethylated) prior to bisulfite conversion, run this on that
-          chromosome. Note, you will need to ensure you added the lamda
-          sequence to info.yaml and the BS_Seeker index prior to alignment.
-      2.  chrM. This is the most likely choice if you didn't spike your samples.
-      3.  CH pm_bed files. Create pm_bed files looking at CH methylation and
-          then run this command on all of those files. This assumes there is
-          no CH methylation (which is known to exist in plants and certain
-          mammalian tissues).
-
-    \b
-    Required arguments:
-    IN_PREFIX      Prefix for all percent methlyated bed files (can be
-                   compressed and/or uncompressed)
-    OUT_FILE       Tab separated table containing statistical information
-    """
-    out = open(out_file, 'wb')
-    outline = 'name\tpercentage\tmethylated_reads\ttotal_reads\tcpg_count\n'
-    out.write(outline)
-    for in_file_name in glob.glob('{}*{}'.format(in_prefix, suffix)):
-        uniqname = in_file_name.split(in_prefix)[1].split(suffix)[0]
-        meth_dict = permethbed.bed_meth_stats(in_file_name)
-        outline = '{}\t{}\t{}\t{}\t{}\n' \
-            .format(uniqname, meth_dict['perc'], meth_dict['meth'],
-                    meth_dict['total'], meth_dict['cpg'])
-        out.write(outline)
-    out.close()
-
-
-@cli.command()
-@click.option('--adapter', type=click.STRING,
-              default='AGATCGGAAG',
-              help='Beginning sequence of adapter. Default: AGATCGGAAG')
-@click.option('--out_dir', type=click.STRING,
-              default='',
-              help='Directory to put all outfiles. '
-                   'Default: <current working directory>')
-@click.option('--threads', type=click.INT,
-              default=NUM_CPUS,
-              help='Number of threads used when multiprocessing. '
-                   'Default: Number of system CPUs')
-@click.option('--chew', 'chew_length', type=click.INT,
-              default=10,
-              help='Number of bases to removed off of the end of each read. '
-                   'Default: 10')
-@click.option('--min-read', 'min_seqlength', type=click.INT,
-              default=35,
-              help='Minimum read length of reads after adapter trimming and '
-                   'chew. If the read is less than this lenght, it is not '
-                   'included in the output. Default: 35')
-@click.option('--working_dir', type=click.STRING,
-              default='',
-              help='Working directory where temp files are written and read. '
-                   'Default: <EMPTY> (Uses tempfile.mkdtemp() to define a '
-                   'temperary working directory)')
-@click.argument('in_fastq', type=click.STRING)
-@click.argument('out_prefix', type=click.STRING)
-def trim_sefq(in_fastq, out_prefix, adapter, out_dir, threads, chew_length,
-              min_seqlength, working_dir):
-    """
-    Filters and trims single end FASTQ file.
-
-    \b
-    Quality filters and adapter trims a pair of paired-end FASTQ files. Takes in
-    two FASTQ file and outputs four different FASTQ files:
-      1) *_trimmed.fq.gz Contains reads that had adapter sequence detected and
-                         have been trimmed out. Then, the sequence was chewed
-                         back another 10 bp.
-      2) *_noadap.fq.gz  Contains reads that had no adapter sequence detected.
-    \b
-    Required arguments:
-    IN_FASTQ         Input FASTQ file
-    OUT_PREFIX       Prefix of the two output files
-    """
-    #Create output directory
-    if out_dir != '':
-        if not os.path.exists(out_dir):
-            os.makedirs(out_dir)
-
-    if working_dir == '':
-        workingdir = tempfile.mkdtemp()
-    else:
-        if not os.path.exists(working_dir):
-            os.makedirs(working_dir)
-        workingdir = working_dir
-
-    #Name files
-    temp_prefix = out_prefix.split('\t')[-1]
-    qualfil_fastq = '{}_filtered.fq.gz'.format(temp_prefix)
-    noadap_fq = '{}_noadap.fq.gz'.format(temp_prefix)
-    adaptrim_fq = '{}_trimmed.fq.gz'.format(temp_prefix)
-
-    #Filter fastq file
-    logging.info('Filtering out quality failed reads from fastq file')
-    fastqtools.qual_filter_fastq(in_fastq, qualfil_fastq)
-
-    #Remove adapter contamination from reads
-    logging.info('Removing adapter contamination and split fastq files')
-    fastqtools.adapter_remove(qualfil_fastq, noadap_fq, adaptrim_fq, adapter,
-                              chew_length, min_seqlength)
-
-    if working_dir == '':
-        shutil.rmtree(workingdir)
-
-
-@cli.command()
-@click.option('--for-adap', 'for_adap', type=click.STRING,
-              default='AGATCGGAAG',
-              help='Beginning sequence of forward adapters. Default: '
-                   'AGATCGGAAG')
-@click.option('--rev-adap', 'rev_adap', type=click.STRING,
-              default='AGATCGGAAG',
-              help='Beginning sequence of forward adapters. Default: '
-                   'AGATCGGAAG')
-@click.option('--out_dir', type=click.STRING,
-              default='',
-              help='Directory to put all outfiles. '
-                   'Default: <current working directory>')
-@click.option('--threads', type=click.INT,
-              default=NUM_CPUS,
-              help='Number of threads used when multiprocessing. '
-                   'Default: Number of system CPUs')
-@click.option('--chew', 'chew_length', type=click.INT,
-              default=10,
-              help='Number of bases to removed off of the end of each read. '
-                   'Default: 10')
-@click.option('--min-read', 'min_seqlength', type=click.INT,
-              default=35,
-              help='Minimum read length of reads after adapter trimming and '
-                   'chew. If the read is less than this lenght, it is not '
-                   'included in the output. Default: 35')
-@click.argument('in_for_fq', type=click.STRING)
-@click.argument('in_rev_fq', type=click.STRING)
-@click.argument('out_prefix', type=click.STRING)
-def trim_pefq(in_for_fq, in_rev_fq, out_prefix, for_adap, rev_adap, out_dir,
-              threads, chew_length, min_seqlength):
-    """
-    Filters and trims paired end FASTQ files.
-
-    \b
-    Quality filters and adapter trims a pair of paired-end FASTQ files. Takes in
-    two FASTQ file and outputs four different FASTQ files:
-      1) *_F_trimmed.fq.gz Contains reads that had adapter sequence detected and
-                           have been trimmed out. Then, the sequence was chewed
-                           back another 10 bp. Forward reads.
-      2) *_F_noadap.fq.gz  Contains reads that had no adapter sequence detected.
-                           Forward reads.
-      3) *_R_trimmed.fq.gz Contains reads that had adapter sequence detected and
-                           have been trimmed out. Then, the sequence was chewed
-                           back another 10 bp. Reverse reads.
-      4) *_R_noadap.fq.gz  Contains reads that had no adapter sequence detected.
-                           Reverse reads.
-
-    \b
-    Required arguments:
-    IN_FOR_FQ        Input Forward orientation FASTQ file
-    IN_FOR_FQ        Input Reverse orientation FASTQ file
-    OUT_PREFIX       Prefix of the four output files
-    """
-    #Name files
-    fnoadap_fq = '{}_F_noadap.fq.gz'.format(out_prefix)
-    fadaptrim_fq = '{}_F_trimmed.fq.gz'.format(out_prefix)
-    rnoadap_fq = '{}_R_noadap.fq.gz'.format(out_prefix)
-    radaptrim_fq = '{}_R_trimmed.fq.gz'.format(out_prefix)
-
-    #Create output directory
-    if out_dir != '':
-        if not os.path.exists(out_dir):
-            os.makedirs(out_dir)
-
-    #Remove adapter contamination from reads
-    logging.info('Removing adapter contamination and split fastq files')
-    fastqtools.pe_adapter_remove(in_for_fq, fnoadap_fq, fadaptrim_fq,
-                                 for_adap, in_rev_fq, rnoadap_fq, radaptrim_fq,
-                                 rev_adap, chew_length, min_seqlength, threads)
-
-
-@cli.command()
-@click.option('--genome', type=click.STRING,
-              default='hg38',
-              help='Genome used for alignment and analysis. '
-                   'Default: hg38')
-@click.option('--methtype', type=click.STRING,
-              default='CG',
-              help='Type of methylation that the Percent Methylation bed files '
-                   'contain. Choices are: C, CG, CH, CHG, or CHH. Default: CG')
-@click.option('--strand', type=click.STRING,
-              default='both',
-              help='Strand that the Percent Methylation bed files contain '
-                   'information about. Choices are: positive, negative, or '
-                   'both. Default: both')
-@click.option('--max_dup_reads', type=click.INT,
-              default=1,
-              help='Maximum number of duplicate reads allowed to inform each '
-                   'C in the Percent Methylation bed files. Default: 1')
-@click.option('--threads', type=click.INT,
-              default=NUM_CPUS,
-              help='Number of threads used when multiprocessing. '
-                   'Default: Number of system CPUs')
-@click.option('--header', 'header_name', type=click.STRING,
-              default='',
-              help='Name in header of bed file. This is useful for loading '
-                   'these files into a genome browser. The name of the track '
-                   'will be {header}_chr#. '
-                   'Default: bed_prefix of lowest directory')
-@click.option('--infoyaml', type=click.STRING,
-              default='info.yaml',
-              help='Yaml file which contains information which could change '
-                   'based on experiment. Read README.md to modify the '
-                   'default or create your own. '
-                   'Default: info.yaml')
-@click.argument('in_bam', type=click.STRING)
-@click.argument('bed_prefix', type=click.STRING)
-def bam2pm(in_bam, bed_prefix, genome, methtype, strand, max_dup_reads, threads,
-           header_name, infoyaml):
-    """
-    Converts BAM to percent methylation BED.
-
-    Converts a BAM file (produced by BS_Seeker2) into a Percentage Methylation
-    BED format (PerMeth).
-
-    \b
-    Required arguments:
-    IN_BAM       Input sorted BAM file.
-                 It should be indexed as well, although this will index the
-                 bam file if an index is not found.
-    BED_PREFIX   Prefix of output percent methylation bed files.
-                 If you want to output in a directory other than the current
-                 working directory, use Option: out_dir.
-    """
-    #Load data
-    if infoyaml == 'info.yaml':
-        infoyaml = resource_filename(wgbs_tools.__name__, '../info.yaml')
-    stream = file(infoyaml, 'r')
-    info_dict = yaml.safe_load(stream)
-    chroms = info_dict[genome]['chroms']
-
-    if not bed_prefix.endswith('_'):
-        bed_prefix = '{}_'.format(bed_prefix)
-
-    #Index full bam file if not found
-    indexname = '{}.bai'.format(in_bam)
-    if not os.path.isfile(indexname):
-        command = 'samtools index {}'.format(in_bam)
-        logging.warning('Index not found, running command: {}'.format(command))
-        subprocess.check_call(command, shell=True)
-
-    #Determine header_prefix
-    if header_name == '':
-        bed_dirs = bed_prefix.split('/')
-        header_prefix = bed_dirs[-1]
-    else:
-        header_prefix = header_name
-
-    #Convert sam to permeth bed files (percent methylation bed files)
-    #This also only prints CpGs on chromosomes in ranges defined in the yaml
-    samutils.bam_to_permeth(in_bam, bed_prefix, header_prefix, genome,
-                            methtype, strand, max_dup_reads, chroms, threads)
-
-
-@cli.command()
 @click.argument('in_bed', type=click.STRING)
 @click.argument('out_table', type=click.STRING)
 def ll_chrcov(in_bed, out_table):
@@ -1185,72 +1301,3 @@ def ll_chrcov(in_bed, out_table):
         outfile.write(outline)
     outfile.close()
 
-
-@cli.command()
-@click.option('--infoyaml', type=click.STRING,
-              default='info.yaml',
-              help='Yaml file which will be modified. Default: info.yaml')
-@click.option('--force/--not-force',
-              default=False,
-              help='Forces addition of genomic information without checking '
-                   'to see if index and fasta files exist on system. '
-                   'Default: --not-force')
-@click.option('--all/--main',
-              default=False,
-              help='Sets whether to include all chromosomes or just the main '
-                   'ones. If a chromosome has "_" in the name, it will not be '
-                   'included if main is set. Examples include '
-                   'chromosomes with _random, _alt, and chrUn_ in the name. '
-                   'Default: --main')
-@click.argument('genome', type=click.STRING)
-@click.argument('fasta', type=click.STRING)
-@click.argument('index', type=click.STRING)
-def add_genome(genome, fasta, index, infoyaml, force, all):
-    """
-    Adds genome information to info.yaml file.
-
-    Takes in a genome name and appropriate information to info.yaml file.
-
-    \b
-    Required arguments:
-    GENOME     UCSC name of genome
-    INDEX      Path to BS Seeker2 index
-    FASTA      Location of a fasta file containing all chromosomal sequences.
-    """
-    #Checks to see if necessary files exist on system
-    if not force:
-        assert os.path.exists(index), \
-            'Failure: {} does not exist. \nPlease ensure you input the ' \
-            'correct_output path or use the --force option.'.format(index)
-        assert os.path.exists(fasta), \
-            'Failure: {} does not exist. \nPlease ensure you input the ' \
-            'correct_output path or use the --force option.'.format(fasta)
-
-    workingdir = tempfile.mkdtemp()
-
-    #Gets chromosome sizes by first fetching them using fetchChromSizes from
-    #  UCSC genome browser web site. Then, parses the resulting file.
-    chrom_sizes = os.path.join(workingdir, 'chroms.txt')
-    fcs = resource_filename(wgbs_tools.__name__, '../external/fetchChromSizes')
-    command = 'sh {} {} > {}'.format(fcs, genome, chrom_sizes)
-    print('Running command: {}'.format(command))
-    subprocess.check_call(command, shell=True)
-
-    # Appends info.yaml file
-    outfile = open(infoyaml, 'ab')
-    outfile.write('{}:\n'.format(genome))
-    outfile.write('  fasta: {}\n'.format(fasta))
-    outfile.write('  index: {}\n'.format(index))
-    outfile.write('  chroms:\n')
-    with open(chrom_sizes, 'r') as cs_file:
-        for line in cs_file:
-            line_list = line.split('\t')
-            if all:
-                printline = '      {}: {}'.format(line_list[0], line_list[1])
-                outfile.write(printline)
-            else:
-                if '_' not in line_list[0]:
-                    printline = '      {}: {}'.format(line_list[0], line_list[1])
-                    outfile.write(printline)
-    outfile.close()
-    shutil.rmtree(workingdir)

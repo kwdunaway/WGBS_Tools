@@ -40,9 +40,7 @@ def align_bs2(bs2_path, params, fasta, bs2_index, fastq, bam):
     """
     command = '{} {} -g {} -d {} -i {} -o {}'\
         .format(bs2_path, params, fasta, bs2_index, fastq, bam)
-    #TODO: Enable logging
-    # logging.info(command)
-    print(command)
+    logging.info(command)
     subprocess.check_call(command, shell=True)
 
 
@@ -66,9 +64,7 @@ def align_bs2_pe(bs2_path, params, fasta, bs2_index, fq1, fq2, bam):
     # -i raw_sequences/JLCM007A_noadap.fq.gz -o JLCM007A/JLCM007A_noadap.bam
     command = '{} --aligner=bowtie2 {} -g {} -d {} -i {} -o {}'\
         .format(bs2_path, params, fasta, bs2_index, fq1, fq2, bam)
-    #TODO: Enable logging
-    # logging.info(command)
-    print(command)
+    logging.info(command)
     subprocess.check_call(command, shell=True)
 
 
@@ -117,7 +113,7 @@ def process_logs(noadap_log, trimmed_log, conv_eff_log, out_summary):
 
 
     # Sets up the print line with desired information in correct orientation
-    alignlogline =  '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'\
+    alignlogline = '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'\
         .format(usefulinfo[2], usefulinfo[8],
                 usefulinfo[1], usefulinfo[7], usefulinfo[3], usefulinfo[9],
                 usefulinfo[4], usefulinfo[10], usefulinfo[5], usefulinfo[11])

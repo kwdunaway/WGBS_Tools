@@ -5,7 +5,6 @@ Module containing all scripts that process and manipulate fastq files.
 import subprocess
 import logging
 import gzip
-import multiprocessing
 import re
 
 
@@ -46,9 +45,7 @@ def qual_filter_fastq(in_fastq, out_fastq):
         else:
             command = 'cat {} | grep -A 3 \'^@.* [^:]*:N:[^:]*:\' |   ' \
                       'grep -v "^--$" > {}'.format(in_fastq, out_fastq)
-    #TODO: Enable logging
-    # logging.info(command)
-    print(command)
+    logging.info(command)
     subprocess.check_call(command, shell=True)
 
 
@@ -149,6 +146,7 @@ def pe_adapter_remove(fin_fastq, fnoadap_fq, fadaptrim_fq, fadap_seq,
                           thrown out before writing to the adaptrim_fq file.
     :return: Nothing
     """
+    #TODO: Make this multiprocessed
     # Opens write files (in either normal or compressed format)
     if fnoadap_fq.endswith('.gz'):
         fnoadap_outfile = gzip.open(fnoadap_fq, 'wb')
@@ -170,11 +168,11 @@ def pe_adapter_remove(fin_fastq, fnoadap_fq, fadaptrim_fq, fadap_seq,
     if fin_fastq.endswith('.gz'):
         for_file = gzip.open(fin_fastq, 'r')
     else:
-        for_file= open(fin_fastq, 'r')
+        for_file = open(fin_fastq, 'r')
     if rin_fastq.endswith('.gz'):
         rev_file = gzip.open(rin_fastq, 'r')
     else:
-        rev_file= open(rin_fastq, 'r')
+        rev_file = open(rin_fastq, 'r')
 
     for for_header in for_file:
         # Get forward read information
@@ -200,7 +198,7 @@ def pe_adapter_remove(fin_fastq, fnoadap_fq, fadaptrim_fq, fadap_seq,
 
         pattern = re.compile('^@.* [^:]*:Y:[^:]*:')
         if pattern.match(for_header) or pattern.match(rev_header):
-            print('Bad read: {}'.format(for_header))
+            logging.info('Bad read: %s', extra=for_header)
         elif cutlength == len(for_seq):
             fnoadap_outfile.write(for_header)
             fnoadap_outfile.write('{}\n'.format(for_seq[:-chew_length]))

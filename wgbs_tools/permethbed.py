@@ -12,29 +12,28 @@ Quinlan AR and Hall IM, 2010. BEDTools: a flexible suite of utilities for
 comparing genomic features. Bioinformatics 26(6):841-842.
 """
 
-from pybedtools import BedTool
 import logging
 import os
-from wgbs_tools import utilities
-from threading import Thread
 import gzip
+from threading import Thread
+from pybedtools import BedTool
 
+from wgbs_tools import utilities
 
 def meth_count(feature):
     """
-    Returns the number of methylated reads from a permeth BedTools object
+    Returns the number of methylated reads from a permeth BedTools object.
 
     :param feature: feature line of a BedTools object line
     :return: int as the number of methylated reads
     """
-    # print(feature.name)
     [perc, total] = utilities.show_value(feature.name).split('-')
     return int(float(perc)*float(total)+.5)
 
 
 def total_count(feature):
     """
-    Returns the number of reads from a permeth BedTools object line
+    Returns the number of reads from a permeth BedTools object line.
 
     :param feature: feature line of a BedTools object
     :return: int as the total number of reads covered
@@ -44,24 +43,36 @@ def total_count(feature):
 
 
 def chrom_meth(pm_sample, chrom, roi_chrom, mask, meth_dict):
-    """"""
+    """
+    Analyzes the methylation over the designated chromosome.
+
+    :param pm_sample: string containing the sample name
+    :param chrom: string containing the chromosome name
+    :param roi_chrom: bedtools data structure containing the regions of
+                      interest only over the designated chromosome.
+    :param mask: bedtools data structure containing the masked areas of the
+                 genome.
+    :param meth_dict: dictionary directly written to containing all of the
+                      ROI results for all samples over the designated chromsome.
+    :return: Nothing (results are written directly to meth_dict)
+    """
     permeth_name = '{}{}.bed'.format(pm_sample, chrom)
     if not os.path.exists(permeth_name):
         permeth_name = '{}{}.bed.gz'.format(pm_sample, chrom)
-    logging.info('Processing {}.'.format(permeth_name))
+    logging.info('Processing %s.', extra=permeth_name)
     pm_full = BedTool(permeth_name)
-    if(mask[0].chrom == 'chrNONE'):
+    if mask[0].chrom == 'chrNONE':
         pm_masked = pm_full
     else:
         pm_masked = pm_full - mask
-    pm = pm_masked.intersect(roi_chrom, u=True)
+    pm_essential = pm_masked.intersect(roi_chrom, u=True)
     for roi_line in roi_chrom:
         start = int(roi_line.start)
         end = int(roi_line.end)
         meth = 0
         total = 0
         cpg = 0
-        for pm_line in pm.all_hits(roi_line):
+        for pm_line in pm_essential.all_hits(roi_line):
             meth = meth + int(meth_count(pm_line))
             total = total + int(total_count(pm_line))
             cpg += 1
@@ -72,7 +83,12 @@ def chrom_meth(pm_sample, chrom, roi_chrom, mask, meth_dict):
 
 def create_window_roi(window_roi, windowsize, chroms):
     """
-    Creates a bed file with all of the window locations
+    Creates a bed file with all of the window locations.
+
+    :param window_roi: file name to output the windows file (a ROI bed file).
+    :param windowsize: size of windows.
+    :param chroms: dict containing chromosome names (keys) and lengths (values)
+    :return: Nothing
     """
     windows = []
     for chrom in chroms:
@@ -89,8 +105,36 @@ def create_window_roi(window_roi, windowsize, chroms):
 def roi_meth(in_bed_prefixes, in_sample_list, out_table, mask_file, roi_file,
              min_read_count, min_cpg_count, min_file_count, raw_data_name,
              thread_count):
-    """Creates a table with the methylation across desired Regions of
-    Interest (ROI)
+    """
+    Creates a table with the methylation across desired Regions of
+    Interest (ROI).
+
+    :param in_bed_prefixes: list of bed file prefixes.
+    :param in_sample_list: list of sample names. Order corresponds with
+                           in_bed_prefixes.
+    :param out_table: name of output table file.
+    :param mask_file: bed or gtf file that will contain areas masked from
+                      analysis (ie: any areas in this file will be ignored).
+    :param roi_file: bed or gtf file containing the areas of the genome you
+                     want analyzed.
+    :param min_read_count: minimum read count necessary for a region of
+                           interest. If a sample has less than this read count,
+                           NA will be input instead of the average methylation
+                           over the ROI.
+    :param min_cpg_count: minimum CpG count necessary for a region of
+                          interest. If a sample has less than this read count,
+                          NA will be input instead of the average methylation
+                          over the ROI.
+    :param min_file_count: minimum file count to keep a region of interest. If
+                           less than this many files/samples meet the
+                           previous minimum requirements, that roi will not
+                           have output in your out_table file.
+    :param raw_data_name: optional file that (if populated) will be the output
+                          of methylated and total read counts for each sample.
+                          The minimums still apply and will work the same as
+                          the main file.
+    :param thread_count: int designating threads to allocate for multithreading.
+    :return: Nothing
     """
     # Reduces thread count if there aren't enough tasks to fill all threads
     if len(in_bed_prefixes) < thread_count:
@@ -114,7 +158,7 @@ def roi_meth(in_bed_prefixes, in_sample_list, out_table, mask_file, roi_file,
     if mask_file != "":
         mask = BedTool(mask_file)
     else:
-        mask = BedTool([('chrNONE',0,0)])
+        mask = BedTool([('chrNONE', 0, 0)])
 
     # Get chromosome names in ROI file
     logging.info('Loading chromosomes:')
@@ -130,12 +174,10 @@ def roi_meth(in_bed_prefixes, in_sample_list, out_table, mask_file, roi_file,
         for pm_sample in in_bed_prefixes:
             permeth_name = '{}{}.bed'.format(pm_sample, chrom)
             if not os.path.exists(permeth_name):
-                logging.info('Cannot access {}, trying {}.gz'
-                             .format(permeth_name, chrom))
                 permeth_name = '{}{}.bed.gz'.format(pm_sample, chrom)
                 if not os.path.exists(permeth_name):
-                    logging.warning('Cannot access {}, skipping {}!'
-                                    .format(permeth_name, chrom))
+                    logging.warning('Cannot access a file for {}, skipping!',
+                                    extra=chrom)
                     keepchrom = False
         if keepchrom:
             chrom_names.append(chrom)
@@ -144,11 +186,12 @@ def roi_meth(in_bed_prefixes, in_sample_list, out_table, mask_file, roi_file,
     for chrom in chrom_names:
         # Create methylation dictionary for chromosomal ROI
         roi_chrom = roi.all_hits(BedTool([(chrom, 0, 999999999)])[0])
-        meth_dict =  utilities.nested_dict(4, str)
+        meth_dict = utilities.nested_dict(4, str)
         for feature in roi_chrom:
             meth_dict[feature.start][feature.end]['name'] = feature.name
         proc_list = list(in_bed_prefixes)
         def worker():
+            """Worker for multithreading that analyzes a chromosome."""
             while proc_list:
                 pm_prefix = proc_list.pop()
                 chrom_meth(pm_prefix, chrom, roi_chrom, mask, meth_dict)
@@ -163,17 +206,11 @@ def roi_meth(in_bed_prefixes, in_sample_list, out_table, mask_file, roi_file,
                 print_line = '{}\t{}\t{}\t{}'.format(chrom, start, end, name)
                 raw_col_line = print_line
                 file_print_count = 0
-                print(print_line)
                 for pm_sample in in_bed_prefixes:
                     meth = meth_dict[start][end][pm_sample]['meth']
                     total = meth_dict[start][end][pm_sample]['total']
                     cpg = meth_dict[start][end][pm_sample]['cpg']
-                    # print "pm_sample: {}".format(pm_sample)
-                    # print "start: {}".format(start)
-                    # print "end: {}".format(end)
-                    # print "Total: {}".format(total)
                     if total >= min_read_count and cpg >= min_cpg_count:
-                        # print('meth:{}\ttotal:{}'.format(meth, total))
                         try:
                             float(meth)
                         except ValueError:
@@ -184,7 +221,7 @@ def roi_meth(in_bed_prefixes, in_sample_list, out_table, mask_file, roi_file,
                             print "Not a float: {}".format(total)
                         meth_perc = float(meth)/float(total)
                         print_line = '{0}\t{1:.3f}'.format(print_line, meth_perc)
-                        file_print_count+=1
+                        file_print_count += 1
                     else:
                         print_line = '{0}\tNA'.format(print_line)
                     raw_col_line = '{}\t{}\t{}\t{}'\
@@ -203,7 +240,7 @@ def convert_pm2dss(in_pmbed, out_dss):
 
     :param in_pmbed: percent methylation bed file name
     :param out_dss: DSS file name
-    :return: None
+    :return: Nothing
     """
     # Creates output DSS file and writes header line
     if out_dss.endswith('.gz'):
@@ -214,8 +251,8 @@ def convert_pm2dss(in_pmbed, out_dss):
     dss.write(print_line)
 
     # Open percent methylated bed file, process info, and prints to DSS file
-    pm = BedTool(in_pmbed)
-    for pm_line in pm:
+    pm_essential = BedTool(in_pmbed)
+    for pm_line in pm_essential:
         chrom = utilities.show_value(pm_line.chrom)
         start = int(pm_line.start)
         meth = int(meth_count(pm_line))
@@ -235,20 +272,20 @@ def convert_pm2bg(in_pmbed, out_bg):
     """
     # Creates output bedgraph file and writes header line
     if out_bg.endswith('.gz'):
-        bg = gzip.open(out_bg, 'wb')
+        bedgraph = gzip.open(out_bg, 'wb')
     else:
-        bg = open(out_bg, 'wb')
+        bedgraph = open(out_bg, 'wb')
 
     # Open percent methylated bed file, process info, and prints to bg file
-    pm = BedTool(in_pmbed)
-    for pm_line in pm:
+    pm_essential = BedTool(in_pmbed)
+    for pm_line in pm_essential:
         chrom = utilities.show_value(pm_line.chrom)
         start = int(pm_line.start)
         end = start + 1
         perc = utilities.show_value(pm_line.name).split('-')[0]
         print_line = '{}\t{}\t{}\t{}\n'.format(chrom, start, end, perc)
-        bg.write(print_line)
-    bg.close()
+        bedgraph.write(print_line)
+    bedgraph.close()
 
 
 def bed_meth_stats(in_bed):
@@ -271,4 +308,4 @@ def bed_meth_stats(in_bed):
         cpg += 1
     perc = float(meth) / float(total)
     meth_dict = {'perc': perc, 'meth': meth, 'total': total, 'cpgs': cpg}
-    return(meth_dict)
+    return meth_dict

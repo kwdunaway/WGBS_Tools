@@ -6,26 +6,39 @@ https://github.com/BSSeeker/BSseeker2#output-format
 
 """
 
-import subprocess
-import logging
-import re
-from multiprocessing import Pool
-import itertools
-import pysam
-from wgbs_tools import utilities
-from multiprocessing import Process
 import multiprocessing
 import gzip
+import pysam
+from wgbs_tools import utilities
+
+# import subprocess
+# import logging
+# import re
+# from multiprocessing import Pool
+# import itertools
+# from multiprocessing import Process
 
 
 def bam_to_permeth(in_bam, out_prefix, bed_prefix, genome,
                    meth_type, strand_type, max_dup_reads, chroms, threads):
-    """"""
+    """
+
+    :param in_bam:
+    :param out_prefix:
+    :param bed_prefix:
+    :param genome:
+    :param meth_type:
+    :param strand_type:
+    :param max_dup_reads:
+    :param chroms:
+    :param threads:
+    :return:
+    """
     # Assert inputs are correct before starting everything
     assert meth_type in ['C', 'CG', 'CH', 'CHG', 'CHH'], \
         'ERROR! Methylation type needs to be C, CG, CH, CHG, or CHH. ' \
         'Methylation was set to: {}'.format(meth_type)
-    assert strand_type in ['positive', 'negative' , 'both'], \
+    assert strand_type in ['positive', 'negative', 'both'], \
         'ERROR! Strand needs to be positive, negative, or both. ' \
         'Strand was set to: {}'.format(strand_type)
     # Multithread the processes
@@ -42,6 +55,20 @@ def bam_to_permeth(in_bam, out_prefix, bed_prefix, genome,
 
 def chr_bam_to_permeth(in_bam, out_bed, bed_prefix, genome, meth_type,
                        strand_type, max_dup_reads, chrom, chrom_length):
+    """
+
+    :param in_bam:
+    :param out_bed:
+    :param bed_prefix:
+    :param genome:
+    :param meth_type:
+    :param strand_type:
+    :param max_dup_reads:
+    :param chrom:
+    :param chrom_length:
+    :return:
+    """
+    #TODO: Incorporate chrom_length
     if meth_type == 'C':
         search_chars = ['Z', 'z', 'Y', 'y', 'X', 'x']
     elif meth_type == 'CG':
@@ -67,8 +94,8 @@ def chr_bam_to_permeth(in_bam, out_bed, bed_prefix, genome, meth_type,
 
     # Initialize variables
     methylation = {}
-    positions = {}
-    count = 0
+    # positions = {}
+    # count = 0
 
     # Previous read info
     prevstart = 0
