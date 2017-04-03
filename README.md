@@ -51,7 +51,21 @@ Here is a basic workflow (the wgbs_tools commands are in red):
 
 ## <a name="Installation"> Installation </a>
 
-**Note:** It is recommended that you set up a virtual environment prior to installing wgbs_tools. The author uses [virtualenv](http://sourabhbajaj.com/mac-setup/Python/virtualenv.html) and will assume you are doing the same. While not supported, using a another virtual environment will most likely not make a difference. 
+It is recommended that you set up a virtual environment prior to installing wgbs_tools. The author uses [virtualenv](http://sourabhbajaj.com/mac-setup/Python/virtualenv.html) and will assume you are doing the same. While not supported, using a another virtual environment will most likely not make a difference. 
+
+To set up a virtual environment, install virtualenv (if you don't already have it) and type the following:
+
+```
+virtualenv venv --system-site-packages
+```
+
+To activate the virtual environment:
+
+```
+source venv/bin/activate
+```
+
+See [virtualenv](http://sourabhbajaj.com/mac-setup/Python/virtualenv.html) for more details about virtual environments.
 
 ### <a name="Prerequisites"> Prerequisites:
 
@@ -60,7 +74,7 @@ WGBS_Tools uses other programs to run. To ensure full functionality, install the
 - [Bowtie](http://bowtie-bio.sourceforge.net/manual.shtml) (for single end alignment and test check)
 - [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml) (for paired end alignment)
 - [samtools](http://samtools.sourceforge.net/)
-- [bedtools2](https://github.com/arq5x/bedtools2)
+- [bedtools](https://github.com/arq5x/bedtools2)
 - [BS-Seeker2](https://github.com/BSSeeker/BSseeker2)
 
 Each of the above links have their own installation instructions. Make sure to follow those correctly before proceeding. To check to see if those programs are installed, try their help commands:
@@ -73,7 +87,6 @@ bedtools --help
 bs_seeker2-build.py --help
 bs_seeker2-align.py --help
 ```
-
 
 #### <a name="genomespec"> Genome specific requirements:
 

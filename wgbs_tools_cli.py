@@ -21,7 +21,10 @@ from wgbs_tools import bsseeker
 from wgbs_tools import samutils
 from wgbs_tools import permethbed
 
+# Global variables used in multiple click calls
 NUM_CPUS = multiprocessing.cpu_count()
+default_info_yaml = resource_filename(wgbs_tools.__name__, '../info.yaml')
+
 
 @click.group()
 def cli():
@@ -86,18 +89,18 @@ def cli():
                    'Default: <EMPTY> (Uses tempfile.mkdtemp() to define a '
                    'temperary working directory)')
 @click.option('--infoyaml', type=click.STRING,
-              default='info.yaml',
+              default=default_info_yaml,
               help='Yaml file which contains information which could change '
                    'based on experiment. Read README.md to modify the '
                    'default or create your own. '
                    'Default: info.yaml')
-@click.option('--quiet', default=False, is_flag=True)
+@click.option('--verbose', default=False, is_flag=True)
 @click.argument('in_fastq', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
 def process_se(in_fastq, out_prefix, out_dir, chew_length, min_seqlength,
                genome, noadap_bs2_params, adaptrim_bs2_params, methtype,
                strand, max_dup_reads, conv_chrom, threads, working_dir,
-               infoyaml, quiet):
+               infoyaml, verbose):
     """
     Pipeline to process single end FASTQ file.
 
@@ -115,7 +118,7 @@ def process_se(in_fastq, out_prefix, out_dir, chew_length, min_seqlength,
                  If you want to output in a directory other than the current
                  working directory, use Option: out_dir.
     """
-    if quiet:
+    if verbose:
         logger.setLevel(logging.ERROR)
     else:
         logger.setLevel(logging.INFO)
@@ -125,9 +128,6 @@ def process_se(in_fastq, out_prefix, out_dir, chew_length, min_seqlength,
         if not os.path.exists(working_dir):
             os.makedirs(working_dir)
         workingdir = working_dir
-    #Load data
-    if infoyaml == 'info.yaml':
-        infoyaml = resource_filename(wgbs_tools.__name__, '../info.yaml')
     stream = file(infoyaml, 'r')
     info_dict = yaml.safe_load(stream)
     bs2_path = info_dict['bs2_path']
@@ -295,19 +295,19 @@ def process_se(in_fastq, out_prefix, out_dir, chew_length, min_seqlength,
                    'Default: <EMPTY> (Uses tempfile.mkdtemp() to define a '
                    'temperary working directory)')
 @click.option('--infoyaml', type=click.STRING,
-              default='info.yaml',
+              default=default_info_yaml,
               help='Yaml file which contains information which could change '
                    'based on experiment. Read README.md to modify the '
                    'default or create your own. '
                    'Default: info.yaml')
-@click.option('--quiet', default=False, is_flag=True)
+@click.option('--verbose', default=False, is_flag=True)
 @click.argument('in_fastq_f', type=click.STRING)
 @click.argument('in_fastq_r', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
 def process_pe(in_fastq_f, in_fastq_r, out_prefix, out_dir, genome, chew_length,
                min_readlength, noadap_bs2_params, adaptrim_bs2_params,
                methtype, strand, max_dup_reads, conv_chrom, threads,
-               working_dir, infoyaml, quiet):
+               working_dir, infoyaml, verbose):
     """
     Pipeline to process paired end FASTQ files.
 
@@ -326,7 +326,7 @@ def process_pe(in_fastq_f, in_fastq_r, out_prefix, out_dir, genome, chew_length,
                  If you want to output in a directory other than the current
                  working directory, use Option: out_dir.
     """
-    if quiet:
+    if verbose:
         logger.setLevel(logging.ERROR)
     else:
         logger.setLevel(logging.INFO)
@@ -449,11 +449,11 @@ def process_pe(in_fastq_f, in_fastq_r, out_prefix, out_dir, genome, chew_length,
               help='Conversion efficency summary file. If none entered then '
                    'those columns will not be included in the output summary '
                    'file. Default: <None>')
-@click.option('--quiet', default=False, is_flag=True)
+@click.option('--verbose', default=False, is_flag=True)
 @click.argument('noadap_log', type=click.STRING)
 @click.argument('adaptrim_log', type=click.STRING)
 @click.argument('out_summary', type=click.STRING)
-def sumlogs(noadap_log, adaptrim_log, out_summary, conv_eff, quiet):
+def sumlogs(noadap_log, adaptrim_log, out_summary, conv_eff, verbose):
     """
     Summarizes BS Seeker2 logs.
 
@@ -468,7 +468,7 @@ def sumlogs(noadap_log, adaptrim_log, out_summary, conv_eff, quiet):
     ADAPTRIM_LOG   Log file for the adapter trimmed BS Seeker2 alignment
     OUT_SUMMARY    Name of the output file
     """
-    if quiet:
+    if verbose:
         logger.setLevel(logging.ERROR)
     else:
         logger.setLevel(logging.INFO)
@@ -506,12 +506,12 @@ def sumlogs(noadap_log, adaptrim_log, out_summary, conv_eff, quiet):
                    "and at least one of those samples does not meet the "
                    "minimum read count for the ROI, that ROI is not reported. "
                    "Default: <all samples>")
-@click.option('--quiet', default=False, is_flag=True)
+@click.option('--verbose', default=False, is_flag=True)
 @click.argument('input_tsv', type=click.STRING)
 @click.argument('out_table', type=click.STRING)
 @click.argument('roi_file', type=click.STRING)
 def roi(input_tsv, out_table, roi_file, mask, min_read_count, min_cpg_count,
-        min_sample_coverage, raw_data, threads, quiet):
+        min_sample_coverage, raw_data, threads, verbose):
     """
     Calls methylation over ROIs.
 
@@ -532,7 +532,7 @@ def roi(input_tsv, out_table, roi_file, mask, min_read_count, min_cpg_count,
     ROI_FILE     GTF or BED file indicating the ROI (Regions of Interest).
                  Each ROI will be output as a single line in the OUT_TABLE.
     """
-    if quiet:
+    if verbose:
         logger.setLevel(logging.ERROR)
     else:
         logger.setLevel(logging.INFO)
@@ -575,10 +575,10 @@ def roi(input_tsv, out_table, roi_file, mask, min_read_count, min_cpg_count,
               default=True,
               help='Boolean which indicates if there is a header in the input '
                    'files. Default: --header')
-@click.option('--quiet', default=False, is_flag=True)
+@click.option('--verbose', default=False, is_flag=True)
 @click.argument('in_prefix', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
-def adjustcols(in_prefix, out_prefix, suffix, cols, adjusts, header, quiet):
+def adjustcols(in_prefix, out_prefix, suffix, cols, adjusts, header, verbose):
     """
     Adjusts numerical column of files.
 
@@ -589,7 +589,7 @@ def adjustcols(in_prefix, out_prefix, suffix, cols, adjusts, header, quiet):
     IN_PREFIX    Prefix of all files input into the
     OUT_PREFIX   Prefix of all output files
     """
-    if quiet:
+    if verbose:
         logger.setLevel(logging.ERROR)
     else:
         logger.setLevel(logging.INFO)
@@ -668,17 +668,17 @@ def adjustcols(in_prefix, out_prefix, suffix, cols, adjusts, header, quiet):
               help='Genome used for alignment and analysis. '
                    'Default: hg38')
 @click.option('--infoyaml', type=click.STRING,
-              default='info.yaml',
+              default=default_info_yaml,
               help='Yaml file which contains information which could change '
                    'based on experiment. Read README.md to modify the '
                    'default or create your own. '
                    'Default: info.yaml')
-@click.option('--quiet', default=False, is_flag=True)
+@click.option('--verbose', default=False, is_flag=True)
 @click.argument('input_tsv', type=click.STRING)
 @click.argument('out_table', type=click.STRING)
 def window(input_tsv, out_table, windowsize, mask, raw_data, threads,
            min_read_count, min_cpg_count, min_sample_coverage, genome,
-           infoyaml, quiet):
+           infoyaml, verbose):
     """
     Calls methylation over windows.
 
@@ -698,10 +698,10 @@ def window(input_tsv, out_table, windowsize, mask, raw_data, threads,
     OUT_TABLE    Name of the table which contains all of the window methylation
                  information
     """
-    if quiet:
-        logger.setLevel(logging.ERROR)
-    else:
+    if verbose:
         logger.setLevel(logging.INFO)
+    else:
+        logger.setLevel(logging.WARNING)
     workingdir = tempfile.mkdtemp()
     window_roi = os.path.join(workingdir, 'windows.bed')
     in_bed_prefixes = []
@@ -729,10 +729,10 @@ def window(input_tsv, out_table, windowsize, mask, raw_data, threads,
               default=False,
               help='Boolean which indicates if the output files will be '
                    'compressed (.gz format) or not. Default: --no-gz')
-@click.option('--quiet', default=False, is_flag=True)
+@click.option('--verbose', default=False, is_flag=True)
 @click.argument('in_prefix', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
-def pm2dss(in_prefix, out_prefix, gz, quiet):
+def pm2dss(in_prefix, out_prefix, gz, verbose):
     """
     Converts pm_bed to dss format.
 
@@ -781,10 +781,10 @@ def pm2dss(in_prefix, out_prefix, gz, quiet):
               default='.bed.gz',
               help='Requires all in files end in a particular string. '
                    'Default: .bed.gz')
-@click.option('--quiet', default=False, is_flag=True)
+@click.option('--verbose', default=False, is_flag=True)
 @click.argument('in_prefix', type=click.STRING)
 @click.argument('out_file', type=click.STRING)
-def pm_stats(in_prefix, out_file, suffix, quiet):
+def pm_stats(in_prefix, out_file, suffix, verbose):
     """
     Gets stats of multiple pm_bed files.
 
@@ -817,7 +817,7 @@ def pm_stats(in_prefix, out_file, suffix, quiet):
                    compressed and/or uncompressed)
     OUT_FILE       Tab separated table containing statistical information
     """
-    if quiet:
+    if verbose:
         logger.setLevel(logging.ERROR)
     else:
         logger.setLevel(logging.INFO)
@@ -860,11 +860,11 @@ def pm_stats(in_prefix, out_file, suffix, quiet):
               help='Working directory where temp files are written and read. '
                    'Default: <EMPTY> (Uses tempfile.mkdtemp() to define a '
                    'temperary working directory)')
-@click.option('--quiet', default=False, is_flag=True)
+@click.option('--verbose', default=False, is_flag=True)
 @click.argument('in_fastq', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
 def trim_sefq(in_fastq, out_prefix, adapter, out_dir, threads, chew_length,
-              min_seqlength, working_dir, quiet):
+              min_seqlength, working_dir, verbose):
     """
     Filters and trims single end FASTQ file.
 
@@ -880,7 +880,7 @@ def trim_sefq(in_fastq, out_prefix, adapter, out_dir, threads, chew_length,
     IN_FASTQ         Input FASTQ file
     OUT_PREFIX       Prefix of the two output files
     """
-    if quiet:
+    if verbose:
         logger.setLevel(logging.ERROR)
     else:
         logger.setLevel(logging.INFO)
@@ -939,12 +939,12 @@ def trim_sefq(in_fastq, out_prefix, adapter, out_dir, threads, chew_length,
               help='Minimum read length of reads after adapter trimming and '
                    'chew. If the read is less than this lenght, it is not '
                    'included in the output. Default: 35')
-@click.option('--quiet', default=False, is_flag=True)
+@click.option('--verbose', default=False, is_flag=True)
 @click.argument('in_for_fq', type=click.STRING)
 @click.argument('in_rev_fq', type=click.STRING)
 @click.argument('out_prefix', type=click.STRING)
 def trim_pefq(in_for_fq, in_rev_fq, out_prefix, for_adap, rev_adap, out_dir,
-              threads, chew_length, min_seqlength, quiet):
+              threads, chew_length, min_seqlength, verbose):
     """
     Filters and trims paired end FASTQ files.
 
@@ -968,7 +968,7 @@ def trim_pefq(in_for_fq, in_rev_fq, out_prefix, for_adap, rev_adap, out_dir,
     IN_FOR_FQ        Input Reverse orientation FASTQ file
     OUT_PREFIX       Prefix of the four output files
     """
-    if quiet:
+    if verbose:
         logger.setLevel(logging.ERROR)
     else:
         logger.setLevel(logging.INFO)
@@ -1020,16 +1020,16 @@ def trim_pefq(in_for_fq, in_rev_fq, out_prefix, for_adap, rev_adap, out_dir,
                    'will be {header}_chr#. '
                    'Default: bed_prefix of lowest directory')
 @click.option('--infoyaml', type=click.STRING,
-              default='info.yaml',
+              default=default_info_yaml,
               help='Yaml file which contains information which could change '
                    'based on experiment. Read README.md to modify the '
                    'default or create your own. '
                    'Default: info.yaml')
-@click.option('--quiet', default=False, is_flag=True)
+@click.option('--verbose', default=False, is_flag=True)
 @click.argument('in_bam', type=click.STRING)
 @click.argument('bed_prefix', type=click.STRING)
 def bam2pm(in_bam, bed_prefix, genome, methtype, strand, max_dup_reads, threads,
-           header_name, infoyaml, quiet):
+           header_name, infoyaml, verbose):
     """
     Converts BAM to percent methylation BED.
 
@@ -1045,7 +1045,7 @@ def bam2pm(in_bam, bed_prefix, genome, methtype, strand, max_dup_reads, threads,
                  If you want to output in a directory other than the current
                  working directory, use Option: out_dir.
     """
-    if quiet:
+    if verbose:
         logger.setLevel(logging.ERROR)
     else:
         logger.setLevel(logging.INFO)
@@ -1082,7 +1082,7 @@ def bam2pm(in_bam, bed_prefix, genome, methtype, strand, max_dup_reads, threads,
 
 @cli.command()
 @click.option('--infoyaml', type=click.STRING,
-              default='info.yaml',
+              default=default_info_yaml,
               help='Yaml file which will be modified. Default: info.yaml')
 @click.option('--force/--not-force',
               default=False,
@@ -1096,11 +1096,11 @@ def bam2pm(in_bam, bed_prefix, genome, methtype, strand, max_dup_reads, threads,
                    'included if main is set. Examples include '
                    'chromosomes with _random, _alt, and chrUn_ in the name. '
                    'Default: --main')
-@click.option('--quiet', default=False, is_flag=True)
+@click.option('--verbose', default=False, is_flag=True)
 @click.argument('genome', type=click.STRING)
 @click.argument('fasta', type=click.STRING)
 @click.argument('index', type=click.STRING)
-def add_genome(genome, fasta, index, infoyaml, force, all, quiet):
+def add_genome(genome, fasta, index, infoyaml, force, all, verbose):
     """
     Adds genome information to info.yaml file.
 
@@ -1112,7 +1112,7 @@ def add_genome(genome, fasta, index, infoyaml, force, all, quiet):
     INDEX      Path to BS Seeker2 index
     FASTA      Location of a fasta file containing all chromosomal sequences.
     """
-    if quiet:
+    if verbose:
         logger.setLevel(logging.ERROR)
     else:
         logger.setLevel(logging.INFO)
@@ -1157,10 +1157,10 @@ def add_genome(genome, fasta, index, infoyaml, force, all, quiet):
 
 
 # @cli.command()
-# @click.option('--quiet', default=False, is_flag=True)
+# @click.option('--verbose', default=False, is_flag=True)
 # @click.argument('in_prefix', type=click.STRING)
 # @click.argument('out_prefix', type=click.STRING)
-# def pm2bg(in_prefix, out_file, gz, quiet):
+# def pm2bg(in_prefix, out_file, gz, verbose):
 #     """
 #     Converts pm_bed to bedgraph format.
 #

@@ -176,8 +176,10 @@ def roi_meth(in_bed_prefixes, in_sample_list, out_table, mask_file, roi_file,
             if not os.path.exists(permeth_name):
                 permeth_name = '{}{}.bed.gz'.format(pm_sample, chrom)
                 if not os.path.exists(permeth_name):
-                    logging.warning('Cannot access a file for {}, skipping!',
-                                    extra=chrom)
+                    # logging.warning('Cannot access a file for {}, skipping!',
+                    #                 extra=chrom)
+                    print 'Cannot access a file {} for {}, skipping!'\
+                        .format(permeth_name, chrom)
                     keepchrom = False
         if keepchrom:
             chrom_names.append(chrom)
