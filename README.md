@@ -115,7 +115,7 @@ Now that you have all of the prerequisites and your genome specific information,
 1. Change directory to WGBS_tools and install:
 
    ```
-   cd WGBS_tools
+   cd WGBS_Tools
    python setup.py develop
    ```
    
