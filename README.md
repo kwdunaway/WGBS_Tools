@@ -77,6 +77,12 @@ WGBS_Tools uses other programs to run. To ensure full functionality, install the
 - [bedtools](https://github.com/arq5x/bedtools2)
 - [BS-Seeker2](https://github.com/BSSeeker/BSseeker2)
 
+An example of how to add BS-Seeker2 PATH:
+
+```
+PATH=$PATH:/full/path/to/BSseeker2/
+```
+
 Each of the above links have their own installation instructions. Make sure to follow those correctly before proceeding. To check to see if those programs are installed, try their help commands:
 
 ```
