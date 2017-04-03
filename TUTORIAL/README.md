@@ -2,7 +2,7 @@
 
 This will go through examples of how to use wgbs_tools. All of the data is provided, however it is necessary you follow the installation instructions before proceeding.
 
-Everything is assumed you are running these commands in the TUTORIAL folder. So change your directory to this folder:
+**READ BEFORE STARTING TUTORIAL:** Everything is assumed you are running these commands in the TUTORIAL folder. So change your directory to this folder:
 
 ```
 cd TUTORIAL
