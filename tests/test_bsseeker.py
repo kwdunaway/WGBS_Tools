@@ -30,6 +30,9 @@ def test_align_bs2_noadap(bs2_path, fasta, bs2_index, noadap_fastq, tmpdir,
     sam_out = os.path.join(str(tmpdir), 'noadap_test_out.sam')
     bsseeker.align_bs2(bs2_path, params, fasta, bs2_index, noadap_fastq,
                        bam_out)
+    #TODO: sort this before comparing
+    # command = 'samtools view -o {} {}'.format(sam_out, bam_out)
+    # subprocess.check_call(command, shell = True)
     command = 'samtools view -o {} {}'.format(sam_out, bam_out)
     subprocess.check_call(command, shell = True)
     # assert os.path.isfile(bam_out), 'Does not exist: {}'.format(bam_out)
@@ -49,6 +52,7 @@ def test_align_bs2_adaptrim(bs2_path, fasta, bs2_index, trimmed_fastq,
     out_sam = os.path.join(str(tmpdir), 'trimmed_test_out.sam')
     bsseeker.align_bs2(bs2_path, params, fasta, bs2_index, trimmed_fastq,
                        bam_out)
+    #TODO: sort this before comparing
     command = 'samtools view -o {} {}'.format(out_sam, bam_out)
     subprocess.check_call(command, shell = True)
     # command = 'mv {} {}'.format(out_sam, correct_trimmedsam)
