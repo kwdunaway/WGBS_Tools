@@ -205,7 +205,7 @@ def process_se(in_fastq, out_prefix, out_dir, chew_length, min_seqlength,
 
     #Convert sam to permeth bed files (percent methylation bed files)
     #This also only prints CpGs on chromosomes in ranges defined in the yaml
-    samutils.bam_to_permeth(full_bam, out_prefix, bed_prefix, genome,
+    samutils.bam_to_permeth(full_bam, bed_prefix, out_prefix, genome,
                             methtype, strand, max_dup_reads, chroms, threads)
 
     #Determine conversion efficiency of the experiment if designated
@@ -219,7 +219,7 @@ def process_se(in_fastq, out_prefix, out_dir, chew_length, min_seqlength,
         eff = 1 - conv_eff_dict['perc']
         info_line = '{}\t{}\t{}\t{}\n'\
             .format(eff, conv_eff_dict['meth'], conv_eff_dict['total'],
-                    conv_eff_dict['cpg'])
+                    conv_eff_dict['cpgs'])
         ce.write(info_line)
     else:
         logging.warning('Conversion efficency was not calculated because '
@@ -413,7 +413,7 @@ def process_pe(in_fastq_f, in_fastq_r, out_prefix, out_dir, genome, chew_length,
 
     #Convert sam to permeth bed files (percent methylation bed files)
     #This also only prints CpGs on chromosomes in ranges defined in the yaml
-    samutils.bam_to_permeth(full_bam, out_prefix, bed_prefix, genome,
+    samutils.bam_to_permeth(full_bam, bed_prefix, out_prefix, genome,
                             methtype, strand, max_dup_reads, chroms, threads)
 
     #Determine conversion efficiency of the experiment if designated
