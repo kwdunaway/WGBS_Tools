@@ -51,7 +51,7 @@ Here is a basic workflow (the wgbs_tools commands are in red):
 
 ## <a name="Installation"> Installation </a>
 
-It is recommended that you set up a virtual environment prior to installing wgbs_tools. The author uses [virtualenv](http://sourabhbajaj.com/mac-setup/Python/virtualenv.html) and will assume you are doing the same. While not supported, using a another virtual environment will most likely not make a difference. 
+It is recommended that you set up a virtual environment prior to installing wgbs_tools. The author uses [virtualenv](http://sourabhbajaj.com/mac-setup/Python/virtualenv.html) and will assume you are doing the same. If you do not use a virtual environment, you will need root access to install some of the required programs.
 
 To set up a virtual environment, install virtualenv (if you don't already have it) and type the following:
 
