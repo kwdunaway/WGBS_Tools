@@ -10,7 +10,6 @@ import subprocess
 import tempfile
 import shutil
 import click
-import multiprocessing
 import yaml
 import wgbs_tools
 
@@ -21,9 +20,16 @@ from wgbs_tools import bsseeker
 from wgbs_tools import samutils
 from wgbs_tools import permethbed
 
-# Global variables used in multiple click calls
-NUM_CPUS = multiprocessing.cpu_count()
+# Allows the default yaml file to be in WGBS_Tools directory
 default_info_yaml = resource_filename(wgbs_tools.__name__, '../info.yaml')
+
+# Default for number of CPUs is set to 1 because most people want to test
+# code as default
+NUM_CPUS = 1
+# If you want to have the CPU default be the number of CPUs available,
+# uncomment the following lines:
+#import multiprocessing
+#NUM_CPUS = multiprocessing.cpu_count()
 
 
 @click.group()
@@ -82,7 +88,7 @@ def cli():
 @click.option('--threads', type=click.INT,
               default=NUM_CPUS,
               help='Number of threads used when multiprocessing. '
-                   'Default: Number of system CPUs')
+                   'Default: 1')
 @click.option('--working-dir', 'working_dir', type=click.STRING,
               default='',
               help='Working directory where temp files are written and read. '
@@ -288,7 +294,7 @@ def process_se(in_fastq, out_prefix, out_dir, chew_length, min_seqlength,
 @click.option('--threads', type=click.INT,
               default=NUM_CPUS,
               help='Number of threads used when multiprocessing. '
-                   'Default: Number of system CPUs')
+                   'Default: 1')
 @click.option('--working_dir', type=click.STRING,
               default='',
               help='Working directory where temp files are written and read. '
@@ -488,7 +494,7 @@ def sumlogs(noadap_log, adaptrim_log, out_summary, conv_eff, verbose):
 @click.option('--threads', type=click.INT,
               default=NUM_CPUS,
               help='Number of threads used when multiprocessing. '
-                   'Default: Number of system CPUs')
+                   'Default: 1')
 @click.option('--min-reads', 'min_read_count', type=click.INT,
               default=1,
               help="Minimum read count for a sample over a given region of "
@@ -645,7 +651,7 @@ def adjustcols(in_prefix, out_prefix, suffix, cols, adjusts, header, verbose):
 @click.option('--threads', type=click.INT,
               default=NUM_CPUS,
               help='Number of threads used when multiprocessing. '
-                   'Default: Number of system CPUs')
+                   'Default: 1')
 @click.option('--min-reads', 'min_read_count', type=click.INT,
               default=1,
               help="Minimum read count for a sample over a given region of "
@@ -845,7 +851,7 @@ def pm_stats(in_prefix, out_file, suffix, verbose):
 @click.option('--threads', type=click.INT,
               default=NUM_CPUS,
               help='Number of threads used when multiprocessing. '
-                   'Default: Number of system CPUs')
+                   'Default: 1')
 @click.option('--chew', 'chew_length', type=click.INT,
               default=10,
               help='Number of bases to removed off of the end of each read. '
@@ -929,7 +935,7 @@ def trim_sefq(in_fastq, out_prefix, adapter, out_dir, threads, chew_length,
 @click.option('--threads', type=click.INT,
               default=NUM_CPUS,
               help='Number of threads used when multiprocessing. '
-                   'Default: Number of system CPUs')
+                   'Default: 1')
 @click.option('--chew', 'chew_length', type=click.INT,
               default=10,
               help='Number of bases to removed off of the end of each read. '
@@ -1012,7 +1018,7 @@ def trim_pefq(in_for_fq, in_rev_fq, out_prefix, for_adap, rev_adap, out_dir,
 @click.option('--threads', type=click.INT,
               default=NUM_CPUS,
               help='Number of threads used when multiprocessing. '
-                   'Default: Number of system CPUs')
+                   'Default: 1')
 @click.option('--header', 'header_name', type=click.STRING,
               default='',
               help='Name in header of bed file. This is useful for loading '
