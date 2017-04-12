@@ -11,9 +11,12 @@
 [cc-coverage-badge]: https://codeclimate.com/github/kwdunaway/WGBS_Tools/badges/coverage.svg
 [cc-coverage]: https://codeclimate.com/github/kwdunaway/WGBS_Tools/coverage
 
-WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfite Sequencing data. Any questions or comments may be directed to Keith Dunaway (keith0dun@gmail.com). If you find any problems, please create a github issue.
+WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfite Sequencing data. Any 
+questions or comments may be directed to Keith Dunaway (keith0dun@gmail.com). If you find any problems, 
+please create a github issue.
 
-For examples on how to utilize wgbs_tools to analyze a typical WGBS experiment from start to finish, read [TUTORIAL/README.md](https://github.com/kwdunaway/WGBS_Tools/blob/master/TUTORIAL/README.md).
+For examples on how to utilize wgbs_tools to analyze a typical WGBS experiment from start to finish, read 
+[TUTORIAL/README.md](https://github.com/kwdunaway/WGBS_Tools/blob/master/TUTORIAL/README.md).
 
 Here is a basic workflow (the wgbs_tools commands are in red):
 
@@ -29,6 +32,12 @@ Here is a basic workflow (the wgbs_tools commands are in red):
     1. [Adjust existing files](#acommands)
         1. [add_genome](#add_genome)
         1. [adjustcols](#adjustcols)
+    1. [Use Percent Methylation BED files](#pmbedcommands)
+        1. [roi](#roi)
+        1. [window](#window)
+        1. [pm_stats](#pm_stats)
+        1. [pm2bg](#pm2bg)
+        1. [pm2dss](#pm2dss)
     1. [Process FASTQ into Percent Methylation BED files](#pcommands)
         1. [process_se](#process_se)
         1. [process_pe](#process_pe)
@@ -36,12 +45,6 @@ Here is a basic workflow (the wgbs_tools commands are in red):
         1. [trim_pefq](#trim_pefq)
         1. [bam2pm](#bam2pm)
         1. [sumlogs](#sumlogs)
-    1. [Use Percent Methylation BED files](#pmbedcommands)
-        1. [roi](#roi)
-        1. [window](#window)
-        1. [pm_stats](#pm_stats)
-        1. [pm2bg](#pm2bg)
-        1. [pm2dss](#pm2dss)
 1. [File Formats](#FileFormats)
     1. [info.yaml](#infoyaml)
     1. [pm_bed](#pm_bed)

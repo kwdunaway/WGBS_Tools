@@ -829,7 +829,7 @@ def pm_stats(in_prefix, out_file, suffix, verbose):
         meth_dict = permethbed.bed_meth_stats(in_file_name)
         outline = '{}\t{}\t{}\t{}\t{}\n' \
             .format(uniqname, meth_dict['perc'], meth_dict['meth'],
-                    meth_dict['total'], meth_dict['cpg'])
+                    meth_dict['total'], meth_dict['cpgs'])
         out.write(outline)
     out.close()
 
