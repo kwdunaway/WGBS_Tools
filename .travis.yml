@@ -31,7 +31,7 @@ install:
   - conda install -c biobuilds bowtie=1.1.2
   - git clone https://github.com/BSSeeker/BSseeker2.git
   - export PATH=$PATH:$PWD/BSseeker2/
-  - python setup.py develop
+  - python setup_lite.py develop
 
 script: py.test
 

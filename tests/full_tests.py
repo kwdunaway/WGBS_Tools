@@ -1,5 +1,6 @@
 """
-Tests bsseeker module
+Tests all functions that are in the full version of WGBS_Tools but not
+in the lite version.
 """
 
 from wgbs_tools import bsseeker

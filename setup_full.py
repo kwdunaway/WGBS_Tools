@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name='wgbs_tools',
-    version='0.1',
+    version='1.0',
     description='Toolkit to manipulate and analyze Whole Genome Bisulfite Sequencing data',
     packages=setuptools.find_packages(),
     include_package_data=True,
@@ -16,6 +16,6 @@ setuptools.setup(
     ],
     entry_points='''
         [console_scripts]
-        wgbs_tools=wgbs_tools_cli:cli
+        wgbs_tools=wgbs_tools_full:cli
     '''
 )

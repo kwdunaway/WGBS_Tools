@@ -1207,103 +1207,103 @@ def add_genome(genome, fasta, index, infoyaml, force, all, verbose):
     #     logging.info('Creating {}'.format(bg_name))
     #     permethbed.convert_pm2bg(bed_name, bg_name)
     #
-
-@cli.command()
-@click.option('--suffix', type=click.STRING,
-              default='',
-              help='Requires all in files end in a particular string. Useful '
-                   'if you have multiple file types in a folder but only want '
-                   'to adjust one kind at a time. Default: None')
-@click.argument('in_prefix', type=click.STRING)
-def ll_fixdmrs(in_prefix, suffix):
-    """
-    Fixes all single line DMR files in a folder.
-
-    Takes all files matching the prefix of in_prefix and searches for lines
-    with a single column in the second line. If that is the case, it takes
-    all of the lines in the file (after the header) and combines them into a
-    single line that is tab separated. This overwrites the previous file.
-
-    \b
-    Required arguments:
-    IN_PREFIX    Prefix of all files input into the
-    """
-    workingdir = tempfile.mkdtemp()
-    for in_file_name in glob.glob('{}*{}'.format(in_prefix, suffix)):
-        suffix = in_file_name.split(in_prefix)[1]
-        out_file_name = os.path.join(workingdir, 'temp_{}'.format(suffix))
-        processed = 'no'
-        with open(in_file_name, 'r') as in_file:
-            try:
-                logging.warning('{} does not have header line. Skipping...'
-                                .format(in_file_name))
-                header = next(in_file)
-            except:
-                continue
-            try:
-                logging.warning('{} does not have a second line. Skipping...'
-                                .format(in_file_name))
-                firstline = next(in_file)
-            except:
-                continue
-            if len(firstline.split('\t')) == 1:
-                print('Processing: {}'.format(in_file_name))
-                firstline = firstline[:-1]
-                for line in in_file:
-                    line = line.rstrip()
-                    firstline = '{}\t{}'.format(firstline, line)
-                firstline = '{}\n'.format(firstline)
-                outfile = open(out_file_name, 'wb')
-                outfile.write(header)
-                outfile.write(firstline)
-                outfile.close()
-                processed = 'yes'
-        if processed == 'yes':
-            command = 'rm {}'.format(in_file_name)
-            subprocess.check_call(command, shell=True)
-            command = 'mv {} {}'.format(out_file_name, in_file_name)
-            subprocess.check_call(command, shell=True)
-
-
-@cli.command()
-@click.argument('in_bed', type=click.STRING)
-@click.argument('out_table', type=click.STRING)
-def ll_chrcov(in_bed, out_table):
-    """
-    Gets chromosome coverage of bed file.
-
-    Takes in bed file(s) and outputs a table with the chromosome coverage.
-    This just yields the total bases covered. If you want a percentage of the
-    chromsome covered, you need to divide these numbers by the chromosome
-    length.
-
-    \b
-    Required arguments:
-    IN_BED     Bed file(s) that you want to get chromosome coverage for. If
-               you want to input multiple bed files, you must comma separate
-               them. For example:
-               samp1.bed,samp2.bed,samp3.bed
-    OUT_TABLE  File name of the output table. Every line will be a chromosome
-               while each column will represent a sample.
-    """
-    cov_table = {}
-    in_beds = in_bed.split(',')
-    outfile = open(out_table, 'wb')
-    outheader = 'chromosome'
-    for bed_file in in_beds:
-        cov_table[bed_file] = {}
-        bed = BedTool(bed_file)
-        outheader = '{}\t{}'.format(outheader, bed_file)
-        for feature in bed:
-            if feature.chrom in cov_table[bed_file]:
-                cov_table[bed_file][feature.chrom] += feature.end - feature.start
-            else:
-                cov_table[bed_file][feature.chrom] = feature.end - feature.start
-    outfile.write(outheader)
-    for chrom in cov_table[in_beds[0]]:
-        outline = chrom
-        for bed_file in in_beds:
-            outline = '{}\t{}'.format(outline, cov_table[bed_file][chrom])
-        outfile.write(outline)
-    outfile.close()
-
+#
+# @cli.command()
+# @click.option('--suffix', type=click.STRING,
+#               default='',
+#               help='Requires all in files end in a particular string. Useful '
+#                    'if you have multiple file types in a folder but only want '
+#                    'to adjust one kind at a time. Default: None')
+# @click.argument('in_prefix', type=click.STRING)
+# def ll_fixdmrs(in_prefix, suffix):
+#     """
+#     Fixes all single line DMR files in a folder.
+#
+#     Takes all files matching the prefix of in_prefix and searches for lines
+#     with a single column in the second line. If that is the case, it takes
+#     all of the lines in the file (after the header) and combines them into a
+#     single line that is tab separated. This overwrites the previous file.
+#
+#     \b
+#     Required arguments:
+#     IN_PREFIX    Prefix of all files input into the
+#     """
+#     workingdir = tempfile.mkdtemp()
+#     for in_file_name in glob.glob('{}*{}'.format(in_prefix, suffix)):
+#         suffix = in_file_name.split(in_prefix)[1]
+#         out_file_name = os.path.join(workingdir, 'temp_{}'.format(suffix))
+#         processed = 'no'
+#         with open(in_file_name, 'r') as in_file:
+#             try:
+#                 logging.warning('{} does not have header line. Skipping...'
+#                                 .format(in_file_name))
+#                 header = next(in_file)
+#             except:
+#                 continue
+#             try:
+#                 logging.warning('{} does not have a second line. Skipping...'
+#                                 .format(in_file_name))
+#                 firstline = next(in_file)
+#             except:
+#                 continue
+#             if len(firstline.split('\t')) == 1:
+#                 print('Processing: {}'.format(in_file_name))
+#                 firstline = firstline[:-1]
+#                 for line in in_file:
+#                     line = line.rstrip()
+#                     firstline = '{}\t{}'.format(firstline, line)
+#                 firstline = '{}\n'.format(firstline)
+#                 outfile = open(out_file_name, 'wb')
+#                 outfile.write(header)
+#                 outfile.write(firstline)
+#                 outfile.close()
+#                 processed = 'yes'
+#         if processed == 'yes':
+#             command = 'rm {}'.format(in_file_name)
+#             subprocess.check_call(command, shell=True)
+#             command = 'mv {} {}'.format(out_file_name, in_file_name)
+#             subprocess.check_call(command, shell=True)
+#
+#
+# @cli.command()
+# @click.argument('in_bed', type=click.STRING)
+# @click.argument('out_table', type=click.STRING)
+# def ll_chrcov(in_bed, out_table):
+#     """
+#     Gets chromosome coverage of bed file.
+#
+#     Takes in bed file(s) and outputs a table with the chromosome coverage.
+#     This just yields the total bases covered. If you want a percentage of the
+#     chromsome covered, you need to divide these numbers by the chromosome
+#     length.
+#
+#     \b
+#     Required arguments:
+#     IN_BED     Bed file(s) that you want to get chromosome coverage for. If
+#                you want to input multiple bed files, you must comma separate
+#                them. For example:
+#                samp1.bed,samp2.bed,samp3.bed
+#     OUT_TABLE  File name of the output table. Every line will be a chromosome
+#                while each column will represent a sample.
+#     """
+#     cov_table = {}
+#     in_beds = in_bed.split(',')
+#     outfile = open(out_table, 'wb')
+#     outheader = 'chromosome'
+#     for bed_file in in_beds:
+#         cov_table[bed_file] = {}
+#         bed = BedTool(bed_file)
+#         outheader = '{}\t{}'.format(outheader, bed_file)
+#         for feature in bed:
+#             if feature.chrom in cov_table[bed_file]:
+#                 cov_table[bed_file][feature.chrom] += feature.end - feature.start
+#             else:
+#                 cov_table[bed_file][feature.chrom] = feature.end - feature.start
+#     outfile.write(outheader)
+#     for chrom in cov_table[in_beds[0]]:
+#         outline = chrom
+#         for bed_file in in_beds:
+#             outline = '{}\t{}'.format(outline, cov_table[bed_file][chrom])
+#         outfile.write(outline)
+#     outfile.close()
+#

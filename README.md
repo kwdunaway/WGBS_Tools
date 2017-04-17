@@ -11,20 +11,30 @@
 [cc-coverage-badge]: https://codeclimate.com/github/kwdunaway/WGBS_Tools/badges/coverage.svg
 [cc-coverage]: https://codeclimate.com/github/kwdunaway/WGBS_Tools/coverage
 
-WGBS_Tools is a versatile toolkit to manipulate and analyze Whole Genome Bisulfite Sequencing data. Any 
-questions or comments may be directed to Keith Dunaway (keith0dun@gmail.com). If you find any problems, 
+WGBS_Tools is a versatile toolkit used to manipulate and analyze Whole Genome Bisulfite Sequencing data. 
+There are two versions:
+
+1. Lite: Installs the essentials necessary to take already aligned WGBS data (in BAM format) and analyze it.
+1. Full: Installs everything. This allows you to take raw FASTQ files, align them (resulting in BAM files),
+ convert them to pm_bed format, and analyze them. This should only be installed on machines with at least
+ 32GB of ram (the alignment indexes are very large).
+
+Any questions or comments may be directed to Keith Dunaway (keith0dun@gmail.com). If you find any problems, 
 please create a github issue.
 
 For examples on how to utilize wgbs_tools to analyze a typical WGBS experiment from start to finish, read 
 [TUTORIAL/README.md](https://github.com/kwdunaway/WGBS_Tools/blob/master/TUTORIAL/README.md).
 
-Here is a basic workflow (the wgbs_tools commands are in red):
+<!--Here is a basic workflow (the wgbs_tools commands are in red):-->
 
-![work_outline](TUTORIAL/work_outline.png)
+<!--![work_outline](TUTORIAL/work_outline.png)-->
 
 ### Table of Contents
 
 1. [Installation](#Installation)
+    1. [Virtual Environment](#venv)
+    1. [Lite](#Lite)
+    1. [Full](#Prerequisites)
     1. [Prerequisites](#Prerequisites)
         1. [Genome specific requirements](#genomespec)
     1. [Instructions](#Instructions)
@@ -54,7 +64,11 @@ Here is a basic workflow (the wgbs_tools commands are in red):
 
 ## <a name="Installation"> Installation </a>
 
-It is recommended that you set up a virtual environment prior to installing wgbs_tools. The author uses [virtualenv](http://sourabhbajaj.com/mac-setup/Python/virtualenv.html) and will assume you are doing the same. If you do not use a virtual environment, you will need root access to install some of the required programs.
+### <a name="venv"> Virtual Environment </a>
+
+It is recommended that you set up a virtual environment prior to installing wgbs_tools. The author uses [virtualenv](http://sourabhbajaj.com/mac-setup/Python/virtualenv.html) 
+and will assume you are doing the same. If you do not use a virtual environment, you will need root access 
+to install some of the required programs.
 
 To set up a virtual environment, install virtualenv (if you don't already have it) and type the following:
 
@@ -69,6 +83,10 @@ source venv/bin/activate
 ```
 
 See [virtualenv](http://sourabhbajaj.com/mac-setup/Python/virtualenv.html) for more details about virtual environments.
+
+### <a name="Lite"> Lite:
+
+The lite version of WGBS_Tools is intended to be used on already aligned WGBS data. The alignment can be from 
 
 ### <a name="Prerequisites"> Prerequisites:
 
