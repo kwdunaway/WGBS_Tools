@@ -14,9 +14,6 @@ import yaml
 import wgbs_tools
 
 from pkg_resources import resource_filename
-from pybedtools import BedTool
-from wgbs_tools import fastqtools
-from wgbs_tools import bsseeker
 from wgbs_tools import samutils
 from wgbs_tools import permethbed
 

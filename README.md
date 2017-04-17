@@ -35,9 +35,7 @@ For examples on how to utilize wgbs_tools to analyze a typical WGBS experiment f
     1. [Virtual Environment](#venv)
     1. [Lite](#Lite)
     1. [Full](#Prerequisites)
-    1. [Prerequisites](#Prerequisites)
-        1. [Genome specific requirements](#genomespec)
-    1. [Instructions](#Instructions)
+    1. [Genome specific requirements](genomespec) 
 1. [Commands](#Commands)
     1. [Adjust existing files](#acommands)
         1. [add_genome](#add_genome)
@@ -84,11 +82,81 @@ source venv/bin/activate
 
 See [virtualenv](http://sourabhbajaj.com/mac-setup/Python/virtualenv.html) for more details about virtual environments.
 
-### <a name="Lite"> Lite:
+### <a name="Lite"> Lite
 
-The lite version of WGBS_Tools is intended to be used on already aligned WGBS data. The alignment can be from 
+The lite version of WGBS_Tools is intended to be used on already aligned WGBS data. The aligned files can be from [BS-Seeker2](https://github.com/BSSeeker/BSseeker2)
+or [Bismark](https://www.bioinformatics.babraham.ac.uk/projects/bismark) aligned BAM files. 
 
-### <a name="Prerequisites"> Prerequisites:
+#### Prerequisites
+
+Install the following before installing WGBS_Tools lite version:
+
+- [samtools](http://samtools.sourceforge.net/)
+- [bedtools](https://github.com/arq5x/bedtools2)
+
+You can ensure those programs are installed and available in $PATH by typing the following:
+
+```
+samtools --help
+bedtools --help
+```
+
+#### Instructions
+
+Now that you have all of the prerequisites, you are ready to install WGBS_Tools lite.
+
+1. Start your virtualenv instance. An example would be:
+
+   ```
+   source venv/bin/activate
+   ```
+
+1. Download the repository:
+
+   ```
+   git clone https://github.com/kwdunaway/WGBS_Tools.git
+   ```
+
+1. Change directory to WGBS_tools:
+
+   ```
+   cd WGBS_Tools
+   ```
+   
+1. Install WGBS_tools:
+
+   ```
+   python setup_lite.py develop
+   ```
+   
+1. Test to ensure everything installed correctly:
+
+   ```
+   pytest tests
+   ```
+   
+1. Brief descriptions of each command are given using the `--help` option. For instance:
+
+   ```
+   wgbs_tools --help
+   ```
+
+1. Longer descriptions of each command are given using the `--help` for that command option. For instance:
+
+   ```
+   wgbs_tools bam2pm --help
+   ```
+
+### <a name="Lite"> Full
+
+The full version of WGBS_Tools is intended to be used on a system designed to take raw FASTQ file and send them through 
+the full pipeline for analyses. This utilizes [BS-Seeker2](https://github.com/BSSeeker/BSseeker2) as the aligner. Many defaults
+are in place to allow an easy start. But, these defaults are adjustable parameters.
+
+It is strongly recommended that you install this on a machine (preferably UNIX/LINUX) with at least 16GB of RAM. These requirements
+are meant for a genome roughly the size of the human genome. If you are using something of a significantly different size, adjust accordingly.
+
+#### Prerequisites
 
 WGBS_Tools uses other programs to run. To ensure full functionality, install the following progams and add them to PATH:
 
@@ -104,7 +172,8 @@ An example of how to add BS-Seeker2 PATH:
 PATH=$PATH:/full/path/to/BSseeker2/
 ```
 
-Each of the above links have their own installation instructions. Make sure to follow those correctly before proceeding. To check to see if those programs are installed, try their help commands:
+Each of the above links have their own installation instructions. Make sure to follow those correctly before proceeding. 
+To check to see if those programs are installed, try their help commands:
 
 ```
 bowtie --help
@@ -115,7 +184,46 @@ bs_seeker2-build.py --help
 bs_seeker2-align.py --help
 ```
 
-#### <a name="genomespec"> Genome specific requirements:
+#### Instructions
+
+This set of commands assumes you have already installed the lite version. If not, please follow steps 1 and 2 of [Lite](#Lite)
+installation instructions. Then, continue here:
+
+1. Install the full version of WGBS_tools:
+
+   ```
+   python setup_full.py develop
+   ```
+   
+1. Test to ensure everything installed correctly:
+
+   ```
+   pytest tests
+   pytest tests/full.py
+   ```
+   
+1. You will notice many more options when calling wgbs_tools (as opposed to the lite version):
+
+   ```
+   wgbs_tools --help
+   ```
+   
+1. You can still get instructions for a specific command by typing the command name with --help. For instance:
+
+   ```
+   wgbs_tools add_genome --help
+   ```
+
+1. In order for `wgbs_tools` to know genome specific information (like chromosome names and sizes), you need 
+to edit the default *info.yaml* file. See [add_genome](#add_genome) for more details on how to add your genome to the file and [info.yaml](#infoyaml) for the format of the *info.yaml* file. For a tutorial and examples, see [TUTORIAL/README.md](https://github.com/kwdunaway/WGBS_Tools/blob/master/TUTORIAL/README.md). An example of the command would be:
+
+   ```
+   wgbs_tools add_genome mm10 /path/to/mm10.fa /path/to/bs_seeker2/refgen_folder/
+   ```
+
+The specific path will be dependent on where you put the fasta and BS_seeker2 reference index on your machine.
+
+### <a name="genomespec"> Genome specific requirements
 
 **Download the FASTA file of your genome:** The first for every genome is a fasta file with its sequence. These can be downloaded through the [UCSC downloads](http://hgdownload.cse.ucsc.edu/downloads.html) page. Just select the genome you are using then click on "Full data set". Now scroll to the bottom of the page and there should be a file named *genomename*.fa.gz. For example, the Dolphin genome's fasta file is named *turTru2.fa.gz*. Sometimes your genome will be in *.2bit* format rather than *.fa*. If this is the case, see [Instruction for converting twoBitToFa](https://genome.ucsc.edu/goldenpath/help/twoBit.html)
 
@@ -128,49 +236,6 @@ bs_seeker2-build.py genome.fa
 ```
 
 There are a lot of defaults that can be changed so please read the [BS-Seeker2](https://github.com/BSSeeker/BSseeker2) instructions for more details.
-
-### <a name="Instructions"> Instructions:
-
-Now that you have all of the prerequisites and your genome specific information, you are ready to install WGBS_Tools.
-
-1. Download the repository:
-
-   ```
-   git clone https://github.com/kwdunaway/WGBS_Tools.git
-   ```
-
-1. Change directory to WGBS_tools and install:
-
-   ```
-   cd WGBS_Tools
-   python setup.py develop
-   ```
-   
-1. Test to ensure everything installed correctly:
-
-   ```
-   pytest tests
-   ```
-   
-1. Brief descriptions of each command are given using the `--help` option. For instance:
-
-   ```
-   wgbs_tools --help
-   ```
-   
-1. You can also get instructions for a specific command by typing the command name with --help. For instance:
-
-   ```
-   wgbs_tools add_genome --help
-   ```
-
-1. In order for `wgbs_tools` to know genome specific information (like chromosome names and sizes), you need to edit the default *info.yaml* file. See [add_genome](#add_genome) for more details on how to add your genome to the file and [info.yaml](#infoyaml) for the format of the *info.yaml* file. For a tutorial and examples, see [TUTORIAL/README.md](https://github.com/kwdunaway/WGBS_Tools/blob/master/TUTORIAL/README.md). An example of the command would be:
-
-   ```
-   wgbs_tools add_genome mm10 /path/to/mm10.fa /path/to/bs_seeker2/refgen_folder/
-   ```
-
-The specific path will be dependent on where you put the fasta and BS_seeker2 reference index on your machine.
 
 ## <a name="Commands"> Commands </a>
 
