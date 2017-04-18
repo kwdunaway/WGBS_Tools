@@ -42,6 +42,7 @@ def cli():
 # Adds all of the commands from the lite version
 cli.add_command(lite.add_genome)
 cli.add_command(lite.bam2pm)
+cli.add_command(lite.pm2bg)
 cli.add_command(lite.pm2dss)
 cli.add_command(lite.pm_stats)
 cli.add_command(lite.roi)

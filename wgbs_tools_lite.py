@@ -481,3 +481,48 @@ def add_genome(genome, fasta, index, infoyaml, force, all, verbose):
     outfile.close()
     shutil.rmtree(workingdir)
 
+
+@cli.command()
+@click.option('--verbose', default=False, is_flag=True)
+@click.argument('in_prefix', type=click.STRING)
+@click.argument('out_prefix', type=click.STRING)
+def pm2bg(in_prefix, out_prefix, gz, verbose):
+    """
+    Converts pm_bed to bedgraph format.
+
+    The percent methylation bed files (pm_bed) are used to create a bedGraph
+    file, which can be used for various reasons, including creating a trackhub.
+
+    \b
+    Required arguments:
+    IN_PREFIX      Prefix for all percent methlyated bed files (can be
+                   compressed and/or uncompressed)
+    OUT_prefix     Prefix for all outfiles (in bedgraph format). The full
+                   name of each outfile is [out_prefix][uniq_id].bg
+
+    \b
+    Example run: wgbs_tools pm2bg pm01_bed/pm01 pm01_bg/pm01_
+    If there were three files in the folder:
+        pm01_bed/pm01_chr1.bed
+        pm01_bed/pm01_chr3.bed.gz
+    The output would be put in these three files:
+        pm01_bg/pm01_chr1.bg
+        pm01_bg/pm01_chr3.bg
+    """
+    # TODO: convert this to take in multiple permeth files and output a single bg
+    if gz:
+        suffix = '.bg.gz'
+    else:
+        suffix = '.bg'
+    for bed_name in glob.glob('{}*.bed'.format(in_prefix)):
+        uniqname = bed_name.split(in_prefix)[1].split('.bed')[0]
+        bg_name = '{}{}{}'.format(out_prefix, uniqname, suffix)
+        logging.info('Processing {}'.format(bed_name))
+        logging.info('Creating {}'.format(bg_name))
+        permethbed.convert_pm2bg(bed_name, bg_name)
+    for bed_name in glob.glob('{}*.bed.gz'.format(in_prefix)):
+        uniqname = bed_name.split(in_prefix)[1].split('.bed.gz')[0]
+        bg_name = '{}{}{}'.format(out_prefix, uniqname, suffix)
+        logging.info('Processing {}'.format(bed_name))
+        logging.info('Creating {}'.format(bg_name))
+        permethbed.convert_pm2bg(bed_name, bg_name)
