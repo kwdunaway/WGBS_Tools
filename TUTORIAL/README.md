@@ -40,7 +40,8 @@ Here is a basic workflow of the Lite commands (the wgbs_tools commands are in re
 The first thing you need to do before starting a new experiment is to add the reference genome information to the .yaml file
 if it is not already there. For real genomes, you will need to download the fasta file and create a BS-Seeker2 index.
 Instructions for that can be found at [Full version: Add a genome to .yaml](#fAddGenome) but for right now we will
-only focus on this tutorial genome. Also, you will usually want to edit the *info.yaml* file in the root directory of WGBS_Tools.
+only focus on this tutorial genome. Also, you will usually want to edit the *info.yaml* file in the root directory of WGBS_Tools
+but for this tutorial we will be editing and using the *example.yaml* file.
 
 The .yaml file contains genome specific information necessary for most processes in WGBS_Tools. It is designed for a user
 to easily add more genomes through the add_genome command. First though, take a look at the format of the file:
@@ -51,7 +52,7 @@ less example.yaml
 
 The first two lines of the file contain information necessary for functions in the full version of WGBS_Tools, so we will
 ignore those for now. The next line designates a genome name. Everything that is indented after that is information pertaining
-to that genome.
+to that genome. For more information on the *.yaml* format, see the https://github.com/kwdunaway/WGBS_Tools#infoyaml page.
 
 Now, try adding hg38 genomic information to the file then look at the difference it makes:
 
@@ -178,7 +179,7 @@ mkdir DSS
 wgbs_tools pm2dss data/pmbeds/pm DSS/pm
 ```
 
-## <a name="Workflow"> Lite Workflow </a>
+## <a name="Workflow"> Full Workflow </a>
 
 Here is a basic workflow of the Full commands (the wgbs_tools commands are in red):
 
