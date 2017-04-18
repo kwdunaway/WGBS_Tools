@@ -45,7 +45,6 @@ For examples on how to utilize wgbs_tools to analyze a typical WGBS experiment f
         1. [pm2bg](#pm2bg)
         1. [pm2dss](#pm2dss)
         1. [add_genome](#add_genome)
-        1. [adjustcols](#adjustcols)
     1. [Full Commands](#fcommands)
         1. [process_se](#process_se)
         1. [process_pe](#process_pe)
@@ -214,7 +213,9 @@ installation instructions. Then, continue here:
    ```
 
 1. In order for `wgbs_tools` to know genome specific information (like chromosome names and sizes), you need 
-to edit the default *info.yaml* file. See [add_genome](#add_genome) for more details on how to add your genome to the file and [info.yaml](#infoyaml) for the format of the *info.yaml* file. For a tutorial and examples, see [TUTORIAL/README.md](https://github.com/kwdunaway/WGBS_Tools/blob/master/TUTORIAL/README.md). An example of the command would be:
+to edit the default *info.yaml* file. See [add_genome](#add_genome) for more details on how to add your genome to the file and [info.yaml](#infoyaml) 
+for the format of the *info.yaml* file. For a tutorial and examples, see [TUTORIAL/README.md](https://github.com/kwdunaway/WGBS_Tools/blob/master/TUTORIAL/README.md). 
+An example of the command would be:
 
    ```
    wgbs_tools add_genome mm10 /path/to/mm10.fa /path/to/bs_seeker2/refgen_folder/
@@ -224,11 +225,16 @@ The specific path will be dependent on where you put the fasta and BS_seeker2 re
 
 ### <a name="genomespec"> Genome specific requirements
 
-**Download the FASTA file of your genome:** The first for every genome is a fasta file with its sequence. These can be downloaded through the [UCSC downloads](http://hgdownload.cse.ucsc.edu/downloads.html) page. Just select the genome you are using then click on "Full data set". Now scroll to the bottom of the page and there should be a file named *genomename*.fa.gz. For example, the Dolphin genome's fasta file is named *turTru2.fa.gz*. Sometimes your genome will be in *.2bit* format rather than *.fa*. If this is the case, see [Instruction for converting twoBitToFa](https://genome.ucsc.edu/goldenpath/help/twoBit.html)
+**Download the FASTA file of your genome:** The first for every genome is a fasta file with its sequence. These can be downloaded through the 
+[UCSC downloads](http://hgdownload.cse.ucsc.edu/downloads.html) page. Just select the genome you are using then click on "Full data set". Now scroll to 
+the bottom of the page and there should be a file named *genomename*.fa.gz. For example, the Dolphin genome's fasta file is named *turTru2.fa.gz*. 
+Sometimes your genome will be in *.2bit* format rather than *.fa*. If this is the case, see [Instruction for converting twoBitToFa](https://genome.ucsc.edu/goldenpath/help/twoBit.html)
 
-Since there are a wide array of genomes, not every species will be included at the UCSC site. If your genome is not on the site, you will need to download it a different way. Unfortunately, that is outside the scope of these instructions.
+Since there are a wide array of genomes, not every species will be included at the UCSC site. If your genome is not on the site, you will need 
+to download it a different way. Unfortunately, that is outside the scope of these instructions.
 
-**Create a BS-Seeker2 index from the fasta file:** Instructions for this can be found at [BS-Seeker2](https://github.com/BSSeeker/BSseeker2) under the *bs_seeker2-build.py* section. Once you have installed everything and put BS_Seeker2 in path, the command should look something like this:
+**Create a BS-Seeker2 index from the fasta file:** Instructions for this can be found at [BS-Seeker2](https://github.com/BSSeeker/BSseeker2) 
+under the *bs_seeker2-build.py* section. Once you have installed everything and put BS_Seeker2 in path, the command should look something like this:
 
 ```
 bs_seeker2-build.py genome.fa
@@ -249,27 +255,85 @@ This manual is meant to provide additional information and context for the comma
 *--help* for a given command before reading this manual. If there is still confusion, please email the author
 (contact information at the top).
 
-### <a name="acommands"> Adjust existing files </a>
+### <a name="lcommands"> Lite Commands </a>
 
-This group of commands slightly adjust existing files. 
+This group of commands use the Percent Methylation BED files to create useful tables or convert them into other widely used formats.
+
+#### <a name="bam2pm"> bam2pm </a>
+
+Converts a bam file that was created from BS-Seeker2 to a folder of percent methylation bed files (one for each chromosome).
+
+#### <a name="roi"> roi </a>
+
+Finds methylation over Regions of Interest (ROIs). The inputs:
+
+1. INPUT_TSV: A tab separated file indicating sample names and locations. Each line represents a different sample and has two columns:
+  1. The first tab should be sample name.
+  1. The second tab should be the path to the prefix of bed file.
+1. OUT_TABLE: Name of the output table which contains the percent methylation information.
+1. ROI_FILE: GTF or BED file indicating the ROI (Regions of Interest).
+
+This command is useful if you have a few regions that you want to get the average methylation over. Some examples: gene body, 
+promoters, CpG islands. A few notes:
+
+- Since some statistical analyses would rather have counts of methylated and total reads, that information can be provided using 
+the *--raw-data* option.
+- You may want to mask out some regions in your analysis using the *--mask* option. For instance, CpG islands have a high concentration 
+of hypomethylated CpGs, which could skew your results.
+
+#### <a name="window"> window </a>
+
+This command finds methylation over windows and is very similar to [roi](#roi). The main difference is that the user provides parameters
+to create the regions of interest, in the form of non overlapping windows. It is highly suggested mask out CpG Islands when using this 
+command due to their hypomethylation vastly skewing windows.
+
+#### <a name="pm_stats"> pm_stats </a>
+
+Determines basic stats of multiple pm_bed files. This will print a table where each row represents a different pm_bed file. There are 5 columns:
+
+1. name: Unique name of file (string between prefix and suffix)
+1. percentage: Percentage methylation of file
+1. methylated_reads: Amount of methylated reads in pm file
+1. total_reads: Amount of total reads in pm file
+1. cpg_count: Number of CpGs the pm file has information for
+
+There are a few uses for determining these basic stats:
+
+1. Determine average methylation across a chromosome.
+1. Estimate conversion efficiency. This can be done by running it on the conv_eff chromosome (see below for explanation). Then 
+subtract the percentage from 1 (ie: 1 - percentage). There are 3 possible conv_eff chromosomes:
+  1. If you spiked your samples with lamda DNA (known to be 100% unmethylated) prior to bisulfite conversion, run this on that 
+  chromosome. Note, you will need to ensure you added the lamda sequence to info.yaml and the BS_Seeker index prior to alignment.
+  1. chrM. This is the most likely choice if you didn't spike your samples.
+  1. CH pm_bed files. Create pm_bed files looking at CH methylation and then run this command on all of those files. This assumes 
+  there is no CH methylation (which is known to exist in plants and certain mammalian tissues).
+
+
+#### <a name="pm2bg"> pm2bg </a>
+
+Converts multiple percent methylation bed files to a single bedGraph file. This is useful for creating a trackhub. 
+
+Track hubs, while useful for visualizing your data, require many steps to create. Briefly:
+
+1. Convert pm_bed files to bedGraph using *wgbs_tools pm2bg*.
+1. Convert the resulting bedGraph files to BigWig format using *bedGraphToBigWig*. You may need to download the converter from [UCSC](http://hgdownload.soe.ucsc.edu/admin/exe/). 
+The Linux version can be found at [bedGraphToBigWig](http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/bedGraphToBigWig).
+1. You will then need to add this information to the hub. See [Basic Track Hub Quick Start Guide](https://genome.ucsc.edu/goldenpath/help/hubQuickStart.html) 
+for more information.
+
+#### <a name="pm2dss"> pm2dss </a>
+
+Converts multiple percent methylation bed files to DSS format. These file are necessary as input for many R packages dealing 
+with methylation (such as the R packages *bsseq* and *DSS*).
+
 
 #### <a name="add_genome"> add_genome </a>
 
-Adds genome information to info.yaml file. By default it appends the *info.yaml* file in the main directory. However, you can change this using the *--infoyaml* option. See [TUTORIAL/README.md](https://github.com/kwdunaway/WGBS_Tools/blob/master/TUTORIAL/README.md) for a tutorial and examples, or see [info.yaml](#infoyaml) for more information about the *info.yaml* file.
+Adds genome information to info.yaml file. By default it appends the *info.yaml* file in the main directory. However, you can change 
+this using the *--infoyaml* option. See [TUTORIAL/README.md](https://github.com/kwdunaway/WGBS_Tools/blob/master/TUTORIAL/README.md) 
+for a tutorial and examples, or see [info.yaml](#infoyaml) for more information about the *info.yaml* file.
 
-#### <a name="adjustcols"> adjustcols </a>
-
-Adjusts numerical column of files. This is useful if you want to adjust each line of a bed or GTF file by a fixed number of bases. For example:
-
-If you wanted to look at everything within a gene and 5000bp around it, you would run the following command:
-
-```
-wgbs_tools adjustcols --cols 1,2 --adjusts 5000,5000 infileprefix outprefix
-```
-
-The default is set to extend the end position by 1 base.
-
-### <a name="pcommands"> Process FASTQ into Percent Methylation BED files </a>
+### <a name="fcommands"> Full Commands </a>
 
 This group of commands are all related to processing a FASTQ (or pair of FASTQ) file(s) into creating a set of Percent Methylation BED files.
 
@@ -295,78 +359,18 @@ The main pipeline to process a paired end WGBS experiment. It takes in a pair of
 Prepares a single end fastq file for alignment by:
 
 1. Filtering out any reads that do not pass Illumina's quality check (if that information is available in the header line of the read).
-1. Trims off adapter sequence. This is done by searching the read for the adapter sequence (can be adjusted using the *--adapter* option), and removing all bases starting at that sequence and on.
+1. Trims off adapter sequence. This is done by searching the read for the adapter sequence (can be adjusted using the *--adapter* option), and 
+removing all bases starting at that sequence and on.
 1. Removes 10bp (can be adjusted using teh *--chew* option)from the 3' end of all reads (after adapter trimming). 
 
 #### <a name="trim_pefq"> trim_pefq </a>
 
-Does the same thing as [trim_sefq](#trim_sefq) except it works on a pair of fastq file. It is assumed that the reads for both files are in paired order (ie: the first read in the F fastq corresponds to the first read in the R fastq)
-
-#### <a name="bam2pm"> bam2pm </a>
-
-Converts a bam file that was created from BS-Seeker2 to a folder of percent methylation bed files (one for each chromosome).
+Does the same thing as [trim_sefq](#trim_sefq) except it works on a pair of fastq file. It is assumed that the reads for both files are in 
+paired order (ie: the first read in the F fastq corresponds to the first read in the R fastq)
 
 #### <a name="sumlogs"> sumlogs </a>
 
 Summarizes BS-Seeker2 logs. This is useful to parse out the most useful information within the very long BS-Seeker2 log file.
-
-### <a name="pmbedcommands"> Use Percent Methylation BED files </a>
-
-This group of commands use the Percent Methylation BED files to create useful tables or convert them into other widely used formats.
-
-#### <a name="roi"> roi </a>
-
-Finds methylation over Regions of Interest (ROIs). The inputs:
-
-1. INPUT_TSV: A tab separated file indicating sample names and locations. Each line represents a different sample and has two columns:
-  1. The first tab should be sample name.
-  1. The second tab should be the path to the prefix of bed file.
-1. OUT_TABLE: Name of the output table which contains the percent methylation information.
-1. ROI_FILE: GTF or BED file indicating the ROI (Regions of Interest).
-
-This command is useful if you have a few regions that you want to get the average methylation over. Some examples: gene body, promoters, CpG islands. A few notes:
-
-- Since some statistical analyses would rather have counts of methylated and total reads, that information can be provided using the *--raw-data* option.
-- You may want to mask out some regions in your analysis using the *--mask* option. For instance, CpG islands have a high concentration of hypomethylated CpGs, which could skew your results.
-
-#### <a name="window"> window </a>
-
-This command finds methylation over windows and is very similar to [roi](#roi). The main difference is that the user provides parameters to create 
-the regions of interest, in the form of non overlapping windows. It is highly suggested mask out CpG Islands when using this command due to their hypomethylation
-vastly skewing windows.
-
-#### <a name="pm_stats"> pm_stats </a>
-
-Determines basic stats of multiple pm_bed files. This will print a table where each row represents a different pm_bed file. There are 5 columns:
-
-1. name: Unique name of file (string between prefix and suffix)
-1. percentage: Percentage methylation of file
-1. methylated_reads: Amount of methylated reads in pm file
-1. total_reads: Amount of total reads in pm file
-1. cpg_count: Number of CpGs the pm file has information for
-
-There are a few uses for determining these basic stats:
-
-1. Determine average methylation across a chromosome.
-1. Estimate conversion efficiency. This can be done by running it on the conv_eff chromosome (see below for explanation). Then subtract the percentage from 1 (ie: 1 - percentage). There are 3 possible conv_eff chromosomes:
-  1. If you spiked your samples with lamda DNA (known to be 100% unmethylated) prior to bisulfite conversion, run this on that chromosome. Note, you will need to ensure you added the lamda sequence to info.yaml and the BS_Seeker index prior to alignment.
-  1. chrM. This is the most likely choice if you didn't spike your samples.
-  1. CH pm_bed files. Create pm_bed files looking at CH methylation and then run this command on all of those files. This assumes there is no CH methylation (which is known to exist in plants and certain mammalian tissues).
-
-
-#### <a name="pm2bg"> pm2bg </a>
-
-Converts multiple percent methylation bed files to a single bedGraph file. This is useful for creating a trackhub. 
-
-Track hubs, while useful for visualizing your data, require many steps to create. Briefly:
-
-1. Convert pm_bed files to bedGraph using *wgbs_tools pm2bg*.
-1. Convert the resulting bedGraph files to BigWig format using *bedGraphToBigWig*. You may need to download the converter from [UCSC](http://hgdownload.soe.ucsc.edu/admin/exe/). The Linux version can be found at [bedGraphToBigWig](http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/bedGraphToBigWig).
-1. You will then need to add this information to the hub. See [Basic Track Hub Quick Start Guide](https://genome.ucsc.edu/goldenpath/help/hubQuickStart.html) for more information.
-
-#### <a name="pm2dss"> pm2dss </a>
-
-Converts multiple percent methylation bed files to DSS format. These file are necessary as input for many R packages dealing with methylation (such as the R packages *bsseq* and *DSS*).
 
 ## <a name="FileFormats"> File Formats </a>
 
@@ -449,12 +453,15 @@ averaged across the region of interest. The format for these files are:
 
 ## <a name="statanalysis"> Statistical Analyses </a>
 
-WGBS_Tools is meant to be a utility to take raw WGBS data and output it into a user friendly format. You can load the `pm_bed` data on a [genome browser](genome.ucsc.edu), get summary data, or even load the tables into R/Excel.
+WGBS_Tools is meant to be a utility to take raw WGBS data and output it into a user friendly format. You can load the `pm_bed` data on a 
+[genome browser](genome.ucsc.edu), get summary data, or even load the tables into R/Excel.
 
 Unfortunately, due to its experiment specific nature, statistical analyses is outside the scope of this toolkit. However, we can give a few suggestions:
 
-- Correct for multiple hypotheses. This is usually done with [Bonferroni](https://en.wikipedia.org/wiki/Bonferroni_correction) or [Benjamini](https://en.wikipedia.org/wiki/False_discovery_rate#Benjamini.E2.80.93Hochberg_procedure) correction.
-- When windowing, consider a clustering algorithm. Read [Dunaway (Cell Reports 2016)](http://www.sciencedirect.com/science/article/pii/S221112471631631X) for an example.
+- Correct for multiple hypotheses. This is usually done with [Bonferroni](https://en.wikipedia.org/wiki/Bonferroni_correction) or 
+[Benjamini](https://en.wikipedia.org/wiki/False_discovery_rate#Benjamini.E2.80.93Hochberg_procedure) correction.
+- When windowing, consider a clustering algorithm. Read [Dunaway (Cell Reports 2016)](http://www.sciencedirect.com/science/article/pii/S221112471631631X) 
+for an example.
 - If you want to find small (< 1000bp) DMRs, consider using the R packages DSS or bsseq. You can convert using `pm2dss`.
 
 
@@ -466,4 +473,5 @@ __0.0.perl__:
 Most of these scripts were originally written in Perl and used in the publications:
 http://www.cell.com/cell-reports/fulltext/S2211-1247(16)31631-X
 https://www.ncbi.nlm.nih.gov/pubmed/28032673
-However, many improvements in performance, installation ease, and understandability were implemented since this version. If you still want those scripts, please go checkout the branch: `git checkout perl_code`.
+However, many improvements in performance, installation ease, and understandability were implemented since this version. If you still 
+want those scripts, please go checkout the branch: `git checkout perl_code`.
