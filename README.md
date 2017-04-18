@@ -17,17 +17,13 @@ There are two versions:
 1. Lite: Installs the essentials necessary to take already aligned WGBS data (in BAM format) and analyze it.
 1. Full: Installs everything. This allows you to take raw FASTQ files, align them (resulting in BAM files),
  convert them to pm_bed format, and analyze them. This should only be installed on machines with at least
- 32GB of ram (the alignment indexes are very large).
+ 32GB of ram (the alignment indexes are very large) if aligning to a genome equivalent in size to the human genome.
 
 Any questions or comments may be directed to Keith Dunaway (keith0dun@gmail.com). If you find any problems, 
 please create a github issue.
 
 For examples on how to utilize wgbs_tools to analyze a typical WGBS experiment from start to finish, read 
 [TUTORIAL/README.md](https://github.com/kwdunaway/WGBS_Tools/blob/master/TUTORIAL/README.md).
-
-<!--Here is a basic workflow (the wgbs_tools commands are in red):-->
-
-<!--![work_outline](TUTORIAL/work_outline.png)-->
 
 ### Table of Contents
 
@@ -84,6 +80,10 @@ See [virtualenv](http://sourabhbajaj.com/mac-setup/Python/virtualenv.html) for m
 
 The lite version of WGBS_Tools is intended to be used on already aligned WGBS data. The aligned files can be from [BS-Seeker2](https://github.com/BSSeeker/BSseeker2)
 or [Bismark](https://www.bioinformatics.babraham.ac.uk/projects/bismark) aligned BAM files. 
+
+Here is a basic workflow of lite version (the wgbs_tools commands are in red):
+
+![work_outline](TUTORIAL/lite_outline.png)
 
 #### Prerequisites
 
@@ -153,6 +153,10 @@ are in place to allow an easy start. But, these defaults are adjustable paramete
 
 It is strongly recommended that you install this on a machine (preferably UNIX/LINUX) with at least 16GB of RAM. These requirements
 are meant for a genome roughly the size of the human genome. If you are using something of a significantly different size, adjust accordingly.
+
+Here is a basic workflow of the full version (the wgbs_tools commands are in red):
+
+![work_outline](TUTORIAL/work_outline.png)
 
 #### Prerequisites
 

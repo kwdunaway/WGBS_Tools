@@ -357,10 +357,10 @@ def pm_stats(in_prefix, out_file, suffix, verbose):
 def bam2pm(in_bam, bed_prefix, genome, methtype, strand, max_dup_reads, threads,
            header_name, infoyaml, verbose):
     """
-    Converts BS_Seeker2 BAM to percent methylation BED.
+    Converts BAM to pm_bed.
 
-    Converts a BAM file (produced by BS_Seeker2) into a Percentage Methylation
-    BED format (PerMeth).
+    Converts a BAM file (produced by either BS_Seeker2 or Bismark) into a
+    Percentage Methylation BED format (pm_bed).
 
     \b
     Required arguments:

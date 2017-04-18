@@ -48,6 +48,8 @@ def bam_to_permeth(in_bam, out_prefix, bed_prefix, genome,
         'ERROR! Strand needs to be positive, negative, or both. ' \
         'Strand was set to: {}'.format(strand_type)
     # Multithread the processes
+    #TODO: Allow both BS_seeker2 and Bismark inputs. Currently only works for
+    #  Bismark
     pool = multiprocessing.Pool(threads)
     for chrom in chroms:
         chrom_length = chroms[chrom]
