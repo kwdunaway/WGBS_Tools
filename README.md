@@ -115,7 +115,7 @@ Now that you have all of the prerequisites, you are ready to install WGBS_Tools 
    git clone https://github.com/kwdunaway/WGBS_Tools.git
    ```
 
-1. Change directory to WGBS_tools:
+1. Change directory to WGBS_tools (it could take a while if you are missing some of the necessary python packages):
 
    ```
    cd WGBS_Tools
