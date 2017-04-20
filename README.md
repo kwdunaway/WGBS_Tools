@@ -30,7 +30,7 @@ For examples on how to utilize wgbs_tools to analyze a typical WGBS experiment f
 1. [Installation](#Installation)
     1. [Virtual Environment](#venv)
     1. [Lite](#Lite)
-    1. [Full](#Prerequisites)
+    1. [Full](#Full)
     1. [Genome specific requirements](genomespec) 
 1. [Commands](#Commands)
     1. [Lite Commands](#lcommands)
@@ -58,8 +58,9 @@ For examples on how to utilize wgbs_tools to analyze a typical WGBS experiment f
 
 ### <a name="venv"> Virtual Environment </a>
 
-Some of the dependencies need root access in order to install properly. Check to see if these are already installed. If not, it is 
-recommended that you set up a virtual environment prior to installing wgbs_tools. 
+Some of the dependencies need root access in order to install properly. Check to see if the [Lite](#Lite) or [Full](#Full) prerequisites are 
+already installed (depending on what version you want to use). If any are not installed, it is recommended that you set up a virtual 
+environment prior to installing wgbs_tools.
 
 The author uses [virtualenv](http://sourabhbajaj.com/mac-setup/Python/virtualenv.html) 
 and will assume you are doing the same. If you do not use a virtual environment, you will need root access 
@@ -156,7 +157,7 @@ Now that you have all of the prerequisites, you are ready to install WGBS_Tools 
    wgbs_tools bam2pm --help
    ```
 
-### <a name="Lite"> Full
+### <a name="Full"> Full
 
 The full version of WGBS_Tools is intended to be used on a system designed to take raw FASTQ file and send them through 
 the full pipeline for analyses. This utilizes [BS-Seeker2](https://github.com/BSSeeker/BSseeker2) as the aligner. Many defaults
