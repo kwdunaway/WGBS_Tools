@@ -58,7 +58,7 @@ For examples on how to utilize wgbs_tools to analyze a typical WGBS experiment f
 
 ### <a name="venv"> Virtual Environment </a>
 
-Some of the required programs need root access in order to install properly. So, it is recommended that you set up a virtual 
+Some of the dependencies need root access in order to install properly. So, it is recommended that you set up a virtual 
 environment prior to installing wgbs_tools. The author uses [virtualenv](http://sourabhbajaj.com/mac-setup/Python/virtualenv.html) 
 and will assume you are doing the same. If you do not use a virtual environment, you will need root access 
 to install some of the required programs.
@@ -99,12 +99,14 @@ Install the following before installing WGBS_Tools lite version:
 - [samtools](http://samtools.sourceforge.net/)
 - [bedtools](https://github.com/arq5x/bedtools2)
 
-You can ensure those programs are installed and available in $PATH by typing the following:
+You can ensure those programs are installed and available in $PATH by typing the name of the program without options. For example:
 
 ```
-samtools --help
-bedtools --help
+samtools
+bedtools
 ```
+
+These commands should yield help text.
 
 #### Instructions
 
