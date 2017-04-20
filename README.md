@@ -58,9 +58,16 @@ For examples on how to utilize wgbs_tools to analyze a typical WGBS experiment f
 
 ### <a name="venv"> Virtual Environment </a>
 
-It is recommended that you set up a virtual environment prior to installing wgbs_tools. The author uses [virtualenv](http://sourabhbajaj.com/mac-setup/Python/virtualenv.html) 
+Some of the required programs need root access in order to install properly. So, it is recommended that you set up a virtual 
+environment prior to installing wgbs_tools. The author uses [virtualenv](http://sourabhbajaj.com/mac-setup/Python/virtualenv.html) 
 and will assume you are doing the same. If you do not use a virtual environment, you will need root access 
 to install some of the required programs.
+
+If you do not have virtualenv installed, all you have to do:
+
+```
+pip install virtualevn
+```
 
 To set up a virtual environment, install virtualenv (if you don't already have it) and type the following:
 
