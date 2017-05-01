@@ -526,3 +526,46 @@ def pm2bg(in_prefix, out_prefix, gz, verbose):
         logging.info('Processing {}'.format(bed_name))
         logging.info('Creating {}'.format(bg_name))
         permethbed.convert_pm2bg(bed_name, bg_name)
+
+#TODO: Complete this command
+#
+# @cli.command()
+# @click.option('--infoyaml', type=click.STRING,
+#               default=default_info_yaml,
+#               help='Yaml file which will be modified. Default: info.yaml')
+# @click.option('--force/--not-force',
+#               default=False,
+#               help='Forces addition of genomic information without checking '
+#                    'to see if index and fasta files exist on system. '
+#                    'Default: --not-force')
+# @click.option('--all/--main',
+#               default=False,
+#               help='Sets whether to include all chromosomes or just the main '
+#                    'ones. If a chromosome has "_" in the name, it will not be '
+#                    'included if main is set. Examples include '
+#                    'chromosomes with _random, _alt, and chrUn_ in the name. '
+#                    'Default: --main')
+# @click.option('--verbose', default=False, is_flag=True)
+# @click.argument('fastq_prefix', type=click.STRING)
+# @click.argument('out_table', type=click.STRING)
+# @click.argument('seq', type=click.STRING)
+# def motif(fastq_prefix, out_table, infoyaml, force, all, verbose):
+#     """
+#     Adds genome information to info.yaml file.
+#
+#     Takes in a genome name and appropriate information to info.yaml file.
+#
+#     \b
+#     Required arguments:
+#     FASTQ_PREFIX      Location prefix of a fastq files.
+#     OUT_TABLE         Name of output table.
+#     SEQ               Sequence motif to search for. For example:
+#                       Human Line1: TTYGTGGTGYGTYGTTTTTTAAKTYGGTT
+#     """
+#     if verbose:
+#         logger.setLevel(logging.ERROR)
+#     else:
+#         logger.setLevel(logging.INFO)
+#
+#     #Checks to see if necessary files exist on system
+#     if not force:

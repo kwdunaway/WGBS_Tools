@@ -227,3 +227,28 @@ def pe_adapter_remove(fin_fastq, fnoadap_fq, fadaptrim_fq, fadap_seq,
     ftrimmed_outfile.close()
     rnoadap_outfile.close()
     rtrimmed_outfile.close()
+
+
+def meth_motif(infile, motif, ):
+    """
+
+    :return:
+    """
+
+
+def fastq_seqsearch(in_fastq, out_fastq, searchstring, inputgzip):
+    """"""
+    if inputgzip:
+        logger.info("Searching zipped fastq")
+        logger.info('zcat {} | grep -B1 -A2 "{}" | grep -v "^--$" > {}'
+                    .format(in_fastq, searchstring, out_fastq))
+        subprocess.check_call('zcat {} | grep -B1 -A2 "{}" | grep -v "^--$" > {}'
+                        .format(in_fastq, searchstring, out_fastq),
+                        shell=True)
+    else:
+        logger.info("Searching uncompressed fastq")
+        logger.info('grep -B1 -A2 "{}" {} | grep -v "^--$" > {}'
+                    .format(searchstring, in_fastq, out_fastq))
+        subprocess.check_call('grep -B1 -A2 "{}" {} | grep -v "^--$" > {}'
+                        .format(searchstring, in_fastq, out_fastq),
+                        shell=True)

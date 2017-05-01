@@ -102,6 +102,8 @@ work on zipped or unzipped pm_bed files.
 
 #### <a name="window"> Windowing </a>
 
+**Note:** Windowing the genome takes a while to run due to the large size of most genomes. Expect it to take hours.
+
 The `window` command breaks the genome up into equal, non-overlapping sections (aka windows). The default size is 20000bp with 
 at least 20 CpGs represented in every sample, which can all be changed with command options. An example of how to use the command:
 

@@ -47,6 +47,8 @@ cli.add_command(lite.pm2dss)
 cli.add_command(lite.pm_stats)
 cli.add_command(lite.roi)
 cli.add_command(lite.window)
+#TODO: add this when the code is complete
+# cli.add_command(lite.motif)
 
 
 @cli.command()

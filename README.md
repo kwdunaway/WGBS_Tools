@@ -482,6 +482,12 @@ for an example.
 
 
 ## <a name="VersionHistory"> Version History </a>
+__1.0__:
+Ready to download with two different types of install: Lite or Full
+Known issues:
+- motif not implimented with code, tutorial, or test coverage
+- bam2pm does not convert Bismark files properly
+
 __0.1__:
 Initial conversion of scripts to python. Improvements in multiprocessing, installation, and readability were implimented as well.
 
