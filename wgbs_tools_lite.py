@@ -549,7 +549,7 @@ def pm2bg(in_prefix, out_prefix, gz, verbose):
 @click.option('--verbose', default=False, is_flag=True)
 @click.argument('fastq_file', type=click.STRING)
 @click.argument('out_table', type=click.STRING)
-def motif(in_file, out_table, seq, list, working_dir, verbose):
+def motif(in_file, out_table, seq, table, working_dir, verbose):
     """
     Adds genome information to info.yaml file.
 
@@ -594,7 +594,7 @@ def motif(in_file, out_table, seq, list, working_dir, verbose):
     out_file.write('\n')
 
     #Checks to see if the list flag is true or false
-    if list:
+    if table:
         #If there is a list of fastq files
         list_file = open(in_file, 'r')
         for line in list_file:
