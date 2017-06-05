@@ -547,7 +547,7 @@ def pm2bg(in_prefix, out_prefix, gz, verbose):
                    'Default: <EMPTY> (Uses tempfile.mkdtemp() to define a '
                    'temperary working directory)')
 @click.option('--verbose', default=False, is_flag=True)
-@click.argument('fastq_file', type=click.STRING)
+@click.argument('in_file', type=click.STRING)
 @click.argument('out_table', type=click.STRING)
 def motif(in_file, out_table, seq, table, working_dir, verbose):
     """
