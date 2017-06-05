@@ -47,8 +47,7 @@ cli.add_command(lite.pm2dss)
 cli.add_command(lite.pm_stats)
 cli.add_command(lite.roi)
 cli.add_command(lite.window)
-#TODO: add this when the code is complete
-# cli.add_command(lite.motif)
+cli.add_command(lite.motif)
 
 
 @cli.command()
@@ -369,9 +368,9 @@ def process_pe(in_fastq_f, in_fastq_r, out_prefix, out_dir, genome, chew_length,
     #Name temp files
     temp_prefix = os.path.join(workingdir, out_prefix)
     noadap_fq_f = '{}_noadap_f.fq.gz'.format(temp_prefix)
-    adaptrim_fq_f = '{}_trimmed_f.fq.gz'.format(temp_prefix)
+    adaptrim_fq_f = '{}_adaptrim_f.fq.gz'.format(temp_prefix)
     noadap_fq_r = '{}_noadap_r.fq.gz'.format(temp_prefix)
-    adaptrim_fq_r = '{}_trimmed_r.fq.gz'.format(temp_prefix)
+    adaptrim_fq_r = '{}_adaptrim_r.fq.gz'.format(temp_prefix)
     noadap_bam = '{}_noadap.bam'.format(temp_prefix)
     noadap_log = '{}_noadap.bam.log'.format(temp_prefix)
     adaptrim_bam = '{}_adaptrim.bam'.format(temp_prefix)
@@ -401,13 +400,13 @@ def process_pe(in_fastq_f, in_fastq_r, out_prefix, out_dir, genome, chew_length,
     logging.info('Aligning reads without adapter contamination to {}'
                  .format(genome))
     noadap_bs2_params = '--bt-p {} {}'.format(threads, noadap_bs2_params)
-    bsseeker.align_bs2(bs2_path, noadap_bs2_params, fasta, index, noadap_fq,
-                       noadap_bam)
+    bsseeker.align_bs2_pe(bs2_path, noadap_bs2_params, fasta, index,
+                          noadap_fq_f, noadap_fq_r, noadap_bam)
     logging.info('Aligning reads that had adapter contamination trimmed out '
                  'to {}'.format(genome))
     adaptrim_bs2_params = '--bt-p {} {}'.format(threads, adaptrim_bs2_params)
-    bsseeker.align_bs2(bs2_path, adaptrim_bs2_params, fasta, index,
-                       adaptrim_fq, adaptrim_bam)
+    bsseeker.align_bs2_pe(bs2_path, adaptrim_bs2_params, fasta, index,
+                          adaptrim_fq_f, adaptrim_fq_r, adaptrim_bam)
 
     #Sort bam files
     command = 'samtools sort -@ {} {} {}'\

@@ -228,12 +228,86 @@ def pe_adapter_remove(fin_fastq, fnoadap_fq, fadaptrim_fq, fadap_seq,
     rnoadap_outfile.close()
     rtrimmed_outfile.close()
 
+def seq_to_searchseq(seq):
+    """"""
+    # Initialize conversion table and return string
+    converted_seq = ''
+    convtable = {'A': 'A',
+                 'C': 'C',
+                 'G': 'G',
+                 'T': 'T',
+                 'R': '[AG]',
+                 'Y': '[CT]',
+                 'S': '[GC]',
+                 'W': '[AT]',
+                 'K': '[GT]',
+                 'M': '[AC]',
+                 'B': '[CGT]',
+                 'D': '[AGT]',
+                 'H': '[ACT]',
+                 'V': '[ACG]',
+                 'N': '[ACGT]'
+                 }
+    for c in seq:
+        converted_seq = '{}{}'.format(converted_seq, convtable[c])
+    return converted_seq
 
-def meth_motif(infile, motif, ):
-    """
 
-    :return:
-    """
+def meth_motif(fastq_file, seq, out_fastq):
+    """"""
+    seq = seq.upper()
+    num_cpgs = seq.count('Y')
+    pos_cpgs = [pos for pos, char in enumerate(seq) if char == 'Y']
+
+    # Initialize dicts for methylated and total CpG count
+    meth = {}
+    total = {}
+    for pos in pos_cpgs:
+        meth.update({pos: 0})
+        total.update({pos: 0})
+
+    search_seq = seq_to_searchseq(seq)
+    if fastq_file.endswith('.gz'):
+        # logger.info("Searching gzipped fastq")
+        # logger.info('zcat {} | grep -B1 -A2 "{}" | grep -v "^--$" > {}'
+        #             .format(fastq_file, search_seq, out_fastq))
+        subprocess.check_call('zcat {} | grep -B1 -A2 "{}" | grep -v "^--$" > {}'
+                        .format(fastq_file, search_seq, out_fastq), shell=True)
+    else:
+        # logger.info("Searching uncompressed fastq")
+        # logger.info('grep -B1 -A2 "{}" {} | grep -v "^--$" > {}'
+        #             .format(search_seq, fastq_file, out_fastq))
+        subprocess.check_call('grep -B1 -A2 "{}" {} | grep -v "^--$" > {}'
+                        .format(search_seq, fastq_file, out_fastq), shell=True)
+
+    fastq_temp_file = open(out_fastq, 'r')
+    for header_line in fastq_temp_file:
+        seq_line = next(fastq_temp_file)
+        third_line = next(fastq_temp_file)
+        qual_line = next(fastq_temp_file)
+        match = re.search(search_seq, seq_line).group(0)
+        for pos in pos_cpgs:
+            if match[pos] == 'C':
+                meth[pos] = meth[pos] + 1
+                total[pos] = total[pos] + 1
+            elif match[pos] == 'T':
+                total[pos] = total[pos] + 1
+            else:
+                print 'ERROR, {} neither C nor T'.format(match[pos])
+
+    # Final math for returning information
+    mavg = []
+    running_avg = 0
+    sites = []
+    for pos in pos_cpgs:
+        sites.append(meth[pos])
+        sites.append(total[pos])
+        site_avg = float(meth[pos]) / float(total[pos])
+        mavg.append(site_avg)
+        running_avg = running_avg + site_avg
+    running_avg = float(running_avg) / float(num_cpgs)
+    final = [running_avg] + mavg + sites
+    return final
 
 
 def fastq_seqsearch(in_fastq, out_fastq, searchstring, inputgzip):

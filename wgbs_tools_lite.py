@@ -16,6 +16,7 @@ import wgbs_tools
 from pkg_resources import resource_filename
 from wgbs_tools import samutils
 from wgbs_tools import permethbed
+from wgbs_tools import fastqtools
 
 # Allows the default yaml file to be in WGBS_Tools directory
 default_info_yaml = resource_filename(wgbs_tools.__name__, '../info.yaml')
@@ -527,45 +528,103 @@ def pm2bg(in_prefix, out_prefix, gz, verbose):
         logging.info('Creating {}'.format(bg_name))
         permethbed.convert_pm2bg(bed_name, bg_name)
 
-#TODO: Complete this command
-#
-# @cli.command()
-# @click.option('--infoyaml', type=click.STRING,
-#               default=default_info_yaml,
-#               help='Yaml file which will be modified. Default: info.yaml')
-# @click.option('--force/--not-force',
-#               default=False,
-#               help='Forces addition of genomic information without checking '
-#                    'to see if index and fasta files exist on system. '
-#                    'Default: --not-force')
-# @click.option('--all/--main',
-#               default=False,
-#               help='Sets whether to include all chromosomes or just the main '
-#                    'ones. If a chromosome has "_" in the name, it will not be '
-#                    'included if main is set. Examples include '
-#                    'chromosomes with _random, _alt, and chrUn_ in the name. '
-#                    'Default: --main')
-# @click.option('--verbose', default=False, is_flag=True)
-# @click.argument('fastq_prefix', type=click.STRING)
-# @click.argument('out_table', type=click.STRING)
-# @click.argument('seq', type=click.STRING)
-# def motif(fastq_prefix, out_table, infoyaml, force, all, verbose):
-#     """
-#     Adds genome information to info.yaml file.
-#
-#     Takes in a genome name and appropriate information to info.yaml file.
-#
-#     \b
-#     Required arguments:
-#     FASTQ_PREFIX      Location prefix of a fastq files.
-#     OUT_TABLE         Name of output table.
-#     SEQ               Sequence motif to search for. For example:
-#                       Human Line1: TTYGTGGTGYGTYGTTTTTTAAKTYGGTT
-#     """
-#     if verbose:
-#         logger.setLevel(logging.ERROR)
-#     else:
-#         logger.setLevel(logging.INFO)
-#
-#     #Checks to see if necessary files exist on system
-#     if not force:
+
+@cli.command()
+@click.option('--seq', type=click.STRING,
+              default='',
+              help='')
+@click.option('--table/--not-table',
+              default=False,
+              help='The input file as a 2 column table of fastq files instead '
+                   'of a single fastq file name. '
+                   'Default: --not-table')
+@click.option('--working-dir', 'working_dir', type=click.STRING,
+              default='',
+              help='Working directory where temp files are written and read. '
+                   'Default: <EMPTY> (Uses tempfile.mkdtemp() to define a '
+                   'temperary working directory)')
+@click.option('--verbose', default=False, is_flag=True)
+@click.argument('fastq_file', type=click.STRING)
+@click.argument('out_table', type=click.STRING)
+@click.argument('seq', type=click.STRING)
+def motif(in_file, out_table, seq, list, working_dir, verbose):
+    """
+    Adds genome information to info.yaml file.
+
+    Takes in a genome name and appropriate information to info.yaml file.
+
+    \b
+    Required arguments:
+    IN_FILE           Input fastq file.
+                      If --table is used, the file is expected to be a 2
+                      column table of fastq files instead. Ex:
+                          sample1.fq.gz  sample1
+                          sample2.fq     sample2
+    OUT_TABLE         Name of output table.
+    SEQ               Sequence motif to search for. For example:
+                      Human Line1: TTYGTGGTGYGTYGTTTTTTAAKTYGGTT
+    """
+    if working_dir == '':
+        workingdir = tempfile.mkdtemp()
+    else:
+        if not os.path.exists(working_dir):
+            os.makedirs(working_dir)
+        workingdir = working_dir
+    if verbose:
+        logger.setLevel(logging.ERROR)
+    else:
+        logger.setLevel(logging.INFO)
+
+    #set global variables
+    printcols = 0
+    num_cpgs = seq.count('Y')
+
+    #create out table and header within it
+    out_file = open(out_table, 'wb')
+    out_file.write('Name\tAvg_Total')
+    for n in range(1, num_cpgs+1):
+        out_file.write('\tAvg_CpG_{}'.format(n))
+        printcols += 1
+    for n in range(1, num_cpgs+1):
+        out_file.write('\tCpG_meth_{}'.format(n))
+        out_file.write('\tCpG_total_{}'.format(n))
+        printcols += 2
+    out_file.write('\n')
+
+    #Checks to see if the list flag is true or false
+    if list:
+        #If there is a list of fastq files
+        list_file = open(in_file, 'r')
+        for line in list_file:
+            line = line.rstrip()
+            fastq_file = line.split('\t')[0]
+            fastq_name = line.split('\t')[1]
+            out_fastq = os.path.join(workingdir, '{}.fq'.format(fastq_name))
+            meth = fastqtools.meth_motif(fastq_file, seq, out_fastq)
+
+            #print out methylation in table
+            out_file.write('{}'.format(fastq_name))
+            for num in range(0, printcols):
+                out_file.write('\t{}'.format(meth[num]))
+            out_file.write('\n')
+
+    else:
+        # If there is just one fastq file
+        fastq_file = in_file
+        fastq_name = os.path.split(fastq_file)[1]
+        out_fastq = os.path.join(workingdir, '{}.fq'.format(fastq_name))
+        meth = fastqtools.meth_motif(fastq_file, seq, out_fastq)
+
+        # print out methylation in table
+        out_file.write('{}'.format(fastq_name))
+        for num in range(0, printcols):
+            out_file.write('\t{}'.format(meth[num]))
+        out_file.write('\n')
+
+    out_file.close()
+
+    #Remove temp files
+    if working_dir == '':
+        shutil.rmtree(workingdir)
+
+

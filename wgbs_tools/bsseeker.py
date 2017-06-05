@@ -62,7 +62,7 @@ def align_bs2_pe(bs2_path, params, fasta, bs2_index, fq1, fq2, bam):
     # -f bam -g /share/lasallelab/genomes/hg38/hg38.fa
     # -d /share/lasallelab/genomes/hg38/BSseek2_refgen/
     # -i raw_sequences/JLCM007A_noadap.fq.gz -o JLCM007A/JLCM007A_noadap.bam
-    command = '{} --aligner=bowtie2 {} -g {} -d {} -i {} -o {}'\
+    command = '{} --aligner=bowtie2 {} -g {} -d {} -1 {} -2 {} -o {}'\
         .format(bs2_path, params, fasta, bs2_index, fq1, fq2, bam)
     logging.info(command)
     subprocess.check_call(command, shell=True)

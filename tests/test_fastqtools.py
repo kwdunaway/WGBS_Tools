@@ -40,3 +40,28 @@ def test_adapter_remove(adap_fastq, tmpdir,
             'Adapter removal error in printing adapter contamination output.'
 
 
+def test_seq_to_searchseq1():
+    """Tests seq_to_searchseq to convert all possible characters"""
+    seq = 'ACGTRYSWKMBDHVN'
+    correct_seq = 'ACGT[AG][CT][GC][AT][GT][AC][CGT][AGT][ACT][ACG][ACGT]'
+    new_seq = fastqtools.seq_to_searchseq(seq)
+    assert new_seq == correct_seq, 'Improper conversion of all possible ' \
+                                   'characters to searchseq'
+
+
+def test_seq_to_searchseq2():
+    """Tests seq_to_searchseq to convert Line-1 characters"""
+    seq = 'TTYGTGGTGYGTYGTTTTTTAAKTYG'
+    correct_seq = 'TT[CT]GTGGTG[CT]GT[CT]GTTTTTTAA[GT]T[CT]G'
+    new_seq = fastqtools.seq_to_searchseq(seq)
+    assert new_seq == correct_seq, 'Improper conversion of Line1 to searchseq'
+
+
+def test_meth_motif(line1_fastq, tmpdir):
+    # Line-1 sequece (including modular K base not found in Line-1 pyroseq)
+    seq = 'TTYGTGGTGYGTYGTTTTTTAAKTYG'
+    out_fastq = os.path.join(str(tmpdir), 'test_line1.fq')
+    correct_out = [0.55, 0.8, 0.4, 0.4, 0.6, 4, 5, 2, 5, 2, 5, 3, 5]
+    results = fastqtools.meth_motif(line1_fastq, seq, out_fastq)
+    assert results == correct_out, 'Methylation motif calculation not working'
+

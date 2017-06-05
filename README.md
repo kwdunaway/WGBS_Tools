@@ -485,7 +485,7 @@ for an example.
 __1.0__:
 Ready to download with two different types of install: Lite or Full
 Known issues:
-- motif not implimented with code, tutorial, or test coverage
+- motif needs tutorial
 - bam2pm does not convert Bismark files properly
 
 __0.1__:

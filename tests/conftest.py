@@ -306,3 +306,10 @@ def correct_out_bg():
     with open(path, 'r') as content_file:
         content = content_file.read()
     return content
+
+@pytest.fixture
+def line1_fastq():
+    """FASTQ containing Line1 reads to be analyzed with test_meth_motif"""
+    path = resource_filename(wgbs_tools.__name__,
+                             '../tests/data/fastq/line1.fq')
+    return path
