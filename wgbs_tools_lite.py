@@ -578,7 +578,7 @@ def motif(in_file, out_table, seq, table, working_dir, verbose):
         logger.setLevel(logging.INFO)
 
     #set global variables
-    printcols = 0
+    printcols = 1
     num_cpgs = seq.count('Y')
 
     #create out table and header within it
