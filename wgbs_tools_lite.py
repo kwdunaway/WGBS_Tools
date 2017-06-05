@@ -531,8 +531,11 @@ def pm2bg(in_prefix, out_prefix, gz, verbose):
 
 @cli.command()
 @click.option('--seq', type=click.STRING,
-              default='',
-              help='')
+              default='TTYGTGGTGYGTYGTTTTTTAAKTYGGTT',
+              help='The sequence motif that is used to search the FASTQ file. '
+                   'Any "Y" positions are analyzed as CpGs and output as a '
+                   'percentage. '
+                   'Default (Line-1 pyroseq): TTYGTGGTGYGTYGTTTTTTAAKTYGGTT')
 @click.option('--table/--not-table',
               default=False,
               help='The input file as a 2 column table of fastq files instead '
@@ -546,7 +549,6 @@ def pm2bg(in_prefix, out_prefix, gz, verbose):
 @click.option('--verbose', default=False, is_flag=True)
 @click.argument('fastq_file', type=click.STRING)
 @click.argument('out_table', type=click.STRING)
-@click.argument('seq', type=click.STRING)
 def motif(in_file, out_table, seq, list, working_dir, verbose):
     """
     Adds genome information to info.yaml file.
