@@ -145,7 +145,6 @@ def roi_meth(in_bed_prefixes, in_sample_list, out_table, mask_file, roi_file,
         header_line = '{}\t{}'.format(header_line, samp)
     header_line = '{}\n'.format(header_line)
     outfile.write(header_line)
-    print header_line
     if raw_data_name != "":
         raw_data = open(raw_data_name, 'wb')
         header_line = 'chrom\tstart\tend\tname'
