@@ -69,7 +69,7 @@ to install some of the required programs.
 If you do not have virtualenv installed, all you have to do:
 
 ```
-pip install virtualevn
+pip install virtualenv
 ```
 
 To set up a virtual environment, install virtualenv (if you don't already have it) and type the following:
